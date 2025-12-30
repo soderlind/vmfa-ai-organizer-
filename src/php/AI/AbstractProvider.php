@@ -86,73 +86,22 @@ PROMPT;
 	/**
 	 * Get human-readable language name from WordPress locale.
 	 *
+	 * Uses WordPress core format_code_lang() when available (multisite),
+	 * otherwise extracts the language code and returns a readable name.
+	 *
 	 * @param string $locale WordPress locale code (e.g., 'nb_NO', 'en_US').
 	 * @return string Human-readable language name.
 	 */
 	protected function get_language_name( string $locale ): string {
-		// Map of common locale codes to language names.
-		$language_map = array(
-			'en_US' => 'English',
-			'en_GB' => 'English',
-			'en_AU' => 'English',
-			'en_CA' => 'English',
-			'nb_NO' => 'Norwegian (Bokmål)',
-			'nn_NO' => 'Norwegian (Nynorsk)',
-			'sv_SE' => 'Swedish',
-			'da_DK' => 'Danish',
-			'fi'    => 'Finnish',
-			'de_DE' => 'German',
-			'de_AT' => 'German',
-			'de_CH' => 'German',
-			'fr_FR' => 'French',
-			'fr_CA' => 'French',
-			'fr_BE' => 'French',
-			'es_ES' => 'Spanish',
-			'es_MX' => 'Spanish',
-			'es_AR' => 'Spanish',
-			'it_IT' => 'Italian',
-			'pt_BR' => 'Portuguese',
-			'pt_PT' => 'Portuguese',
-			'nl_NL' => 'Dutch',
-			'nl_BE' => 'Dutch',
-			'pl_PL' => 'Polish',
-			'ru_RU' => 'Russian',
-			'uk'    => 'Ukrainian',
-			'cs_CZ' => 'Czech',
-			'sk_SK' => 'Slovak',
-			'hu_HU' => 'Hungarian',
-			'ro_RO' => 'Romanian',
-			'bg_BG' => 'Bulgarian',
-			'el'    => 'Greek',
-			'tr_TR' => 'Turkish',
-			'ar'    => 'Arabic',
-			'he_IL' => 'Hebrew',
-			'ja'    => 'Japanese',
-			'ko_KR' => 'Korean',
-			'zh_CN' => 'Chinese (Simplified)',
-			'zh_TW' => 'Chinese (Traditional)',
-			'th'    => 'Thai',
-			'vi'    => 'Vietnamese',
-			'id_ID' => 'Indonesian',
-			'ms_MY' => 'Malay',
-			'hi_IN' => 'Hindi',
-		);
+		// Extract the two-letter language code.
+		$lang_code = strtolower( substr( $locale, 0, 2 ) );
 
-		// Check for exact match.
-		if ( isset( $language_map[ $locale ] ) ) {
-			return $language_map[ $locale ];
+		// Load ms.php if not already loaded (contains format_code_lang).
+		if ( ! function_exists( 'format_code_lang' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/ms.php';
 		}
 
-		// Try matching just the language code (before underscore).
-		$lang_code = explode( '_', $locale )[0];
-		foreach ( $language_map as $code => $name ) {
-			if ( str_starts_with( $code, $lang_code . '_' ) || $code === $lang_code ) {
-				return $name;
-			}
-		}
-
-		// Fallback: use the locale code itself.
-		return $locale;
+		return format_code_lang( $lang_code );
 	}
 
 	/**
@@ -191,7 +140,7 @@ PROMPT;
 		$data        = json_decode( $body, true );
 
 		if ( $status_code < 200 || $status_code >= 300 ) {
-			$error_message = $data['error']['message'] ?? $data['error'] ?? "HTTP {$status_code} error";
+			$error_message = $data[ 'error' ][ 'message' ] ?? $data[ 'error' ] ?? "HTTP {$status_code} error";
 			return array(
 				'success' => false,
 				'data'    => $data,
@@ -236,7 +185,7 @@ PROMPT;
 		// Add session suggested folders section.
 		$suggested_folders_text = '';
 		if ( ! empty( $suggested_folders ) ) {
-			$suggested_list = implode( "\n", array_map( fn( $path ) => "- {$path}", $suggested_folders ) );
+			$suggested_list         = implode( "\n", array_map( fn( $path ) => "- {$path}", $suggested_folders ) );
 			$suggested_folders_text = <<<TEXT
 
 ## Folders Already Suggested in This Session (MUST REUSE if applicable)
@@ -273,29 +222,29 @@ PROMPT;
 	protected function format_metadata( array $metadata ): string {
 		$lines = array();
 
-		if ( ! empty( $metadata['filename'] ) ) {
-			$lines[] = "Filename: {$metadata['filename']}";
+		if ( ! empty( $metadata[ 'filename' ] ) ) {
+			$lines[] = "Filename: {$metadata[ 'filename' ]}";
 		}
 
-		if ( ! empty( $metadata['mime_type'] ) ) {
-			$lines[] = "Type: {$metadata['mime_type']}";
+		if ( ! empty( $metadata[ 'mime_type' ] ) ) {
+			$lines[] = "Type: {$metadata[ 'mime_type' ]}";
 		}
 
-		if ( ! empty( $metadata['alt'] ) ) {
-			$lines[] = "Alt text: {$metadata['alt']}";
+		if ( ! empty( $metadata[ 'alt' ] ) ) {
+			$lines[] = "Alt text: {$metadata[ 'alt' ]}";
 		}
 
-		if ( ! empty( $metadata['caption'] ) ) {
-			$lines[] = "Caption: {$metadata['caption']}";
+		if ( ! empty( $metadata[ 'caption' ] ) ) {
+			$lines[] = "Caption: {$metadata[ 'caption' ]}";
 		}
 
-		if ( ! empty( $metadata['description'] ) ) {
-			$lines[] = "Description: {$metadata['description']}";
+		if ( ! empty( $metadata[ 'description' ] ) ) {
+			$lines[] = "Description: {$metadata[ 'description' ]}";
 		}
 
-		if ( ! empty( $metadata['exif'] ) && is_array( $metadata['exif'] ) ) {
+		if ( ! empty( $metadata[ 'exif' ] ) && is_array( $metadata[ 'exif' ] ) ) {
 			$exif_items = array();
-			foreach ( $metadata['exif'] as $key => $value ) {
+			foreach ( $metadata[ 'exif' ] as $key => $value ) {
 				if ( ! empty( $value ) && is_string( $value ) ) {
 					$exif_items[] = "{$key}: {$value}";
 				}
@@ -351,7 +300,7 @@ PROMPT;
 				JSON_ERROR_SYNTAX         => 'Syntax error, malformed JSON',
 				JSON_ERROR_UTF8           => 'Malformed UTF-8 characters',
 			);
-			$error_msg = $error_messages[ $json_error ] ?? "Unknown error (code: {$json_error})";
+			$error_msg      = $error_messages[ $json_error ] ?? "Unknown error (code: {$json_error})";
 
 			// Truncate response for error message.
 			$truncated = strlen( $original_response ) > 100
@@ -382,10 +331,10 @@ PROMPT;
 			);
 		}
 
-		$action      = $data['action'] ?? 'assign';
-		$folder_path = $data['folder_path'] ?? '';
-		$confidence  = (float) ( $data['confidence'] ?? 0.5 );
-		$reason      = $data['reason'] ?? '';
+		$action      = $data[ 'action' ] ?? 'assign';
+		$folder_path = $data[ 'folder_path' ] ?? '';
+		$confidence  = (float) ( $data[ 'confidence' ] ?? 0.5 );
+		$reason      = $data[ 'reason' ] ?? '';
 
 		// Check for missing folder_path.
 		if ( empty( $folder_path ) ) {
