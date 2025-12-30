@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Brain\Monkey;
 use Brain\Monkey\Functions;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery;
 
 /**
  * Base test case for all plugin tests.
@@ -47,24 +48,29 @@ abstract class BrainMonkeyTestCase extends TestCase {
 		// Escaping functions - return input unchanged.
 		Functions\stubs(
 			[
-				'esc_html'       => static fn( $text ) => $text,
-				'esc_attr'       => static fn( $text ) => $text,
-				'esc_url'        => static fn( $url ) => $url,
-				'esc_sql'        => static fn( $data ) => $data,
-				'wp_kses_post'   => static fn( $text ) => $text,
-				'sanitize_text_field' => static fn( $str ) => $str,
-				'sanitize_key'   => static fn( $key ) => strtolower( preg_replace( '/[^a-z0-9_\-]/', '', $key ) ),
-				'absint'         => static fn( $maybeint ) => abs( (int) $maybeint ),
+				'esc_html'             => static fn( $text ) => $text,
+				'esc_attr'             => static fn( $text ) => $text,
+				'esc_url'              => static fn( $url ) => $url,
+				'esc_sql'              => static fn( $data ) => $data,
+				'wp_kses_post'         => static fn( $text ) => $text,
+				'sanitize_text_field'  => static fn( $str ) => $str,
+				'sanitize_key'         => static fn( $key ) => strtolower( preg_replace( '/[^a-z0-9_\-]/', '', $key ) ),
+				'absint'               => static fn( $maybeint ) => abs( (int) $maybeint ),
+				'wp_parse_args'        => static fn( $args, $defaults = [] ) => array_merge( $defaults, is_array( $args ) ? $args : [] ),
+				'get_attached_file'    => static fn( $id ) => '/uploads/test-file.jpg',
+				'wp_json_encode'       => 'json_encode',
+				'wp_remote_retrieve_response_code' => static fn( $response ) => $response['response']['code'] ?? 200,
+				'wp_remote_retrieve_body' => static fn( $response ) => $response['body'] ?? '',
 			]
 		);
 
 		// Translation functions - return first argument.
 		Functions\stubs(
 			[
-				'__'       => static fn( $text, $domain = 'default' ) => $text,
-				'_e'       => static fn( $text, $domain = 'default' ) => print $text,
-				'_n'       => static fn( $single, $plural, $number, $domain = 'default' ) => $number === 1 ? $single : $plural,
-				'_x'       => static fn( $text, $context, $domain = 'default' ) => $text,
+				'__'         => static fn( $text, $domain = 'default' ) => $text,
+				'_e'         => static fn( $text, $domain = 'default' ) => print $text,
+				'_n'         => static fn( $single, $plural, $number, $domain = 'default' ) => $number === 1 ? $single : $plural,
+				'_x'         => static fn( $text, $context, $domain = 'default' ) => $text,
 				'esc_html__' => static fn( $text, $domain = 'default' ) => $text,
 				'esc_attr__' => static fn( $text, $domain = 'default' ) => $text,
 			]
@@ -108,7 +114,7 @@ abstract class BrainMonkeyTestCase extends TestCase {
 		} else {
 			Functions\expect( 'update_option' )
 				->once()
-				->with( $option_name, \Mockery::any() )
+				->with( $option_name, Mockery::any() )
 				->andReturn( true );
 		}
 	}
