@@ -1,25 +1,26 @@
 # Virtual Media Folders AI Organizer
 
-AI-powered media organization add-on for the Virtual Media Folders plugin.
+AI-powered media organization add-on for the [Virtual Media Folders](https://wordpress.org/plugins/virtual-media-folders/) plugin. Uses vision-capable AI models to analyze actual image content and automatically organize your media library into virtual folders.
+
+## Features
+
+- **Vision-Based AI Analysis**: Analyzes actual image content (objects, scenes, colors) - not just metadata
+- **Multiple AI Providers**: OpenAI/Azure, Anthropic Claude, Google Gemini, Ollama, Grok, Exo, and heuristic fallback
+- **Azure OpenAI Support**: Full support for Azure-hosted OpenAI deployments
+- **Three Scan Modes**:
+  - **Organize Unassigned**: Only process media not already in a folder
+  - **Re-analyze All**: Re-analyze all media and update assignments
+  - **Reorganize All**: Remove all folders and rebuild from scratch
+- **Preview Mode**: Dry-run to see proposed changes before applying
+- **Backup & Restore**: Automatic backup before reorganization with one-click restore
+- **Background Processing**: Uses Action Scheduler for efficient chunked processing
+- **Real-time Progress**: Live progress updates in the admin UI
 
 ## Requirements
 
 - WordPress 6.8+
 - PHP 8.3+
 - [Virtual Media Folders](https://wordpress.org/plugins/virtual-media-folders/) plugin
-
-## Features
-
-- **AI-Powered Analysis**: Uses AI to analyze media metadata (filename, alt text, caption, EXIF data) and suggest appropriate folder assignments
-- **Multiple AI Providers**: Support for OpenAI, Anthropic, Gemini, Ollama, Grok, Exo, and a heuristic fallback
-- **Scan Modes**:
-  - **Organize Unassigned**: Only process media not already in a folder
-  - **Re-analyze All**: Re-analyze all media and update assignments
-  - **Reorganize All**: Remove all folders and rebuild from scratch
-- **Preview Mode**: Dry-run to see proposed changes before applying
-- **Backup & Restore**: Automatic backup before reorganization with one-click restore
-- **Chunked Processing**: Uses Action Scheduler for efficient background processing
-- **Progress Tracking**: Real-time progress updates in the admin UI
 
 ## Installation
 
@@ -31,13 +32,18 @@ AI-powered media organization add-on for the Virtual Media Folders plugin.
 
 ## Configuration
 
-### Settings
+Navigate to **Media → AI Organizer** to configure:
 
-Navigate to **Media > Virtual Media Folders > AI Organizer** to configure:
+### AI Provider Tab
 
 - **AI Provider**: Select which AI service to use
+- **OpenAI Type**: Choose between OpenAI or Azure OpenAI
 - **API Keys**: Enter API keys for your chosen provider
-- **Model**: Specify which model to use
+- **Model/Deployment**: Specify which model (or Azure deployment) to use
+- **Azure Endpoint**: Your Azure OpenAI resource endpoint (for Azure)
+
+### Organization Settings
+
 - **Max Folder Depth**: Limit folder hierarchy depth (1-5)
 - **Allow New Folders**: Enable AI to suggest new folder structures
 - **Batch Size**: Number of items to process per batch
@@ -45,34 +51,70 @@ Navigate to **Media > Virtual Media Folders > AI Organizer** to configure:
 ### Configuration Priority
 
 Settings are resolved in this order:
-1. PHP Constants (e.g., `VMFA_OPENAI_KEY`)
-2. Environment Variables (e.g., `VMFA_OPENAI_KEY`)
-3. Database Options
+1. PHP Constants (e.g., `VMFA_AI_OPENAI_KEY`)
+2. Environment Variables (e.g., `VMFA_AI_OPENAI_KEY`)
+3. Database Options (Settings page)
 4. Default Values
 
 ### Environment Variables / Constants
 
 ```php
-// API Keys
-define( 'VMFA_OPENAI_KEY', 'sk-...' );
-define( 'VMFA_ANTHROPIC_KEY', 'sk-ant-...' );
-define( 'VMFA_GEMINI_KEY', '...' );
-define( 'VMFA_GROK_KEY', '...' );
-
-// Local AI Hosts
-define( 'VMFA_OLLAMA_HOST', 'http://localhost:11434' );
-define( 'VMFA_EXO_HOST', 'http://localhost:52415' );
-
-// Models
-define( 'VMFA_OPENAI_MODEL', 'gpt-4o-mini' );
-define( 'VMFA_ANTHROPIC_MODEL', 'claude-sonnet-4-20250514' );
-
-// General Settings
+// Provider Selection
 define( 'VMFA_AI_PROVIDER', 'openai' );
-define( 'VMFA_MAX_FOLDER_DEPTH', 3 );
-define( 'VMFA_ALLOW_NEW_FOLDERS', true );
-define( 'VMFA_BATCH_SIZE', 20 );
+
+// OpenAI / Azure OpenAI
+define( 'VMFA_AI_OPENAI_TYPE', 'openai' ); // 'openai' or 'azure'
+define( 'VMFA_AI_OPENAI_KEY', 'sk-...' );
+define( 'VMFA_AI_OPENAI_MODEL', 'gpt-4o-mini' );
+define( 'VMFA_AI_AZURE_ENDPOINT', 'https://your-resource.openai.azure.com' );
+define( 'VMFA_AI_AZURE_API_VERSION', '2024-02-15-preview' );
+
+// Anthropic Claude
+define( 'VMFA_AI_ANTHROPIC_KEY', 'sk-ant-...' );
+define( 'VMFA_AI_ANTHROPIC_MODEL', 'claude-3-haiku-20240307' );
+
+// Google Gemini
+define( 'VMFA_AI_GEMINI_KEY', '...' );
+define( 'VMFA_AI_GEMINI_MODEL', 'gemini-1.5-flash' );
+
+// Grok (xAI)
+define( 'VMFA_AI_GROK_KEY', '...' );
+define( 'VMFA_AI_GROK_MODEL', 'grok-beta' );
+
+// Ollama (Local)
+define( 'VMFA_AI_OLLAMA_URL', 'http://localhost:11434' );
+define( 'VMFA_AI_OLLAMA_MODEL', 'llama3.2' );
+
+// Exo (Distributed Local)
+define( 'VMFA_AI_EXO_URL', 'http://localhost:52415' );
+define( 'VMFA_AI_EXO_MODEL', 'llama-3.2-3b' );
+
+// Organization Settings
+define( 'VMFA_AI_MAX_FOLDER_DEPTH', 3 );
+define( 'VMFA_AI_ALLOW_NEW_FOLDERS', true );
+define( 'VMFA_AI_BATCH_SIZE', 20 );
 ```
+
+## Vision API Support
+
+The plugin uses vision-capable AI models to analyze actual image content. When processing images, the AI receives:
+
+1. **Image Content** (primary): The actual visual content of the image
+2. **EXIF/Metadata**: Camera info, date taken, GPS location, keywords
+3. **Text metadata**: Title, alt text, caption, description
+4. **Filename**: As a last resort hint
+
+Supported image formats: JPEG, PNG, GIF, WebP (max 10MB per image).
+
+### Vision-Capable Models
+
+| Provider | Models with Vision |
+|----------|-------------------|
+| OpenAI | GPT-4o, GPT-4o-mini, GPT-4-turbo |
+| Azure OpenAI | GPT-4o, GPT-4-turbo deployments |
+| Anthropic | Claude 3 (Haiku, Sonnet, Opus), Claude 3.5 Sonnet |
+| Gemini | Gemini 1.5 Flash, Gemini 1.5 Pro, Gemini 2.0 Flash |
+| Ollama | LLaVA, BakLLaVA (vision-capable models) |
 
 ## Development
 
@@ -93,11 +135,11 @@ npm run start
 ### Running Tests
 
 ```bash
-# Install dev dependencies
-composer install
-
-# Run PHPUnit tests
+# Run PHPUnit tests (13 tests)
 ./vendor/bin/phpunit
+
+# Run JavaScript tests (12 tests)
+npm test
 
 # Run with coverage
 ./vendor/bin/phpunit --coverage-html coverage
@@ -129,33 +171,6 @@ All endpoints require `manage_options` capability.
 | DELETE | `/vmfa/v1/backup` | Delete backup |
 | GET | `/vmfa/v1/stats` | Get media statistics |
 
-### Start Scan Request
-
-```json
-{
-  "mode": "organize_unassigned",
-  "dry_run": true
-}
-```
-
-### Scan Status Response
-
-```json
-{
-  "status": "running",
-  "mode": "organize_unassigned",
-  "dry_run": false,
-  "total": 100,
-  "processed": 45,
-  "percentage": 45,
-  "applied": 40,
-  "failed": 5,
-  "results": [],
-  "started_at": 1704067200,
-  "completed_at": null
-}
-```
-
 ## Hooks
 
 ### Filters
@@ -168,7 +183,6 @@ add_filter( 'vmfa_ai_prompt', function( $prompt, $metadata, $folders ) {
 
 // Filter analysis result
 add_filter( 'vmfa_analysis_result', function( $result, $attachment_id ) {
-    // Modify or override result
     return $result;
 }, 10, 2 );
 
