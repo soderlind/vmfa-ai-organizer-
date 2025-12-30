@@ -19,6 +19,10 @@ AI-powered media organization add-on for the [Virtual Media Folders](https://wor
 
 
 
+https://github.com/user-attachments/assets/7512fec5-dd31-4615-940e-53dd124200f6
+
+
+
 ## Documentation
 
 - **[AI Provider Guide](docs/AI-PROVIDERS.md)** - Detailed guide on choosing and configuring AI providers, recommended models, and cost comparison
