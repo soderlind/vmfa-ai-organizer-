@@ -20,6 +20,7 @@ vi.mock( '@wordpress/i18n', () => ( {
 		let i = 0;
 		return format.replace( /%[sd]/g, () => args[ i++ ] );
 	},
+	isRTL: () => false,
 } ) );
 
 // Mock window.matchMedia

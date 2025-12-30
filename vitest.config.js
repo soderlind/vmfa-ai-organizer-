@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig( {
 	plugins: [ react() ],
@@ -18,6 +19,8 @@ export default defineConfig( {
 	resolve: {
 		alias: {
 			'@wordpress/element': 'react',
+			'@wordpress/keycodes': path.resolve( __dirname, 'src/js/__tests__/mocks/keycodes.js' ),
+			'@wordpress/components': path.resolve( __dirname, 'src/js/__tests__/mocks/components.jsx' ),
 		},
 	},
 } );
