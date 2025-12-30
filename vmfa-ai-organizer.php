@@ -8,7 +8,7 @@
  * Requires PHP:      8.3
  * Requires Plugins:  virtual-media-folders
  * Author:            Per Soderlind
- * Author URI:        https://developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.developer.soderlind.no
+ * Author URI:        https://soderlind.no
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       vmfa-ai-organizer

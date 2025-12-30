@@ -7,14 +7,22 @@
 	"scripts": {
 		"build": "wp-scripts build src/js/index.js --output-path=build",
 		"start": "wp-scripts start src/js/index.js --output-path=build",
+		"test": "vitest",
+		"test:run": "vitest run",
+		"test:coverage": "vitest run --coverage",
 		"lint:js": "wp-scripts lint-js src/js",
 		"lint:css": "wp-scripts lint-style src/js/styles",
 		"format": "wp-scripts format src/js",
 		"packages-update": "wp-scripts packages-update"
 	},
 	"devDependencies": {
+		"@testing-library/jest-dom": "^6.9.1",
+		"@testing-library/react": "^16.0.0",
+		"@vitejs/plugin-react": "^4.3.0",
+		"@wordpress/eslint-plugin": "^21.0.0",
 		"@wordpress/scripts": "^28.0.0",
-		"@wordpress/eslint-plugin": "^21.0.0"
+		"jsdom": "^25.0.0",
+		"vitest": "^4.0.0"
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "^7.0.0",
