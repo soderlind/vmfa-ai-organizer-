@@ -1,0 +1,378 @@
+# Virtual Media Folders AI Organizer
+# Copyright (C) 2024
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Virtual Media Folders AI Organizer 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/your-repo/issues\n"
+"POT-Creation-Date: 2024-01-01 00:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: WP-CLI\n"
+"X-Domain: vmfa-ai-organizer\n"
+
+#: src/php/Admin/SettingsPage.php
+msgid "AI Organizer"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "AI Provider"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Select the AI provider to use for media analysis."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "OpenAI"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Anthropic"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Gemini"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Ollama (Local)"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Grok"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Exo (Local)"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Heuristic (No AI)"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "API Key"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Enter your API key."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Model"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Enter the model to use."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Max Folder Depth"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Maximum folder hierarchy depth (1-5)."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Allow New Folders"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Allow AI to suggest creating new folders."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Batch Size"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Number of media items to process per batch (10-100)."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php
+msgid "Locked by constant or environment variable"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Media Library Statistics"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Total Media"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "In Folders"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Unassigned"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Folders"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Scan Options"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Scan Mode"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Organize Unassigned"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Re-analyze All"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Reorganize All (Reset & Rebuild)"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Only process media files that are not already in a folder."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Re-analyze all media and suggest new folder assignments."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Remove all folders and assignments, then create a new AI-optimized structure."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Warning: This will remove all existing folder assignments and reorganize from scratch. A backup will be created automatically."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Preview mode (dry run)"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Show proposed changes without applying them."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Preview Changes"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Start Organizing"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Reset"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Preview scan started. Results will be shown when complete."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Scan started. Media files are being organized."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Failed to start scan."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Scan cancelled."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Failed to cancel scan."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx
+msgid "Failed to reset."
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Ready"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Processing..."
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Completed"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Cancelled"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Failed"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Preview"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Mode:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Progress:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Elapsed:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Applied:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Failed:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Cancel Scan"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Start New Scan"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx
+msgid "Recent Results"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Preview Changes"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Summary"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Will be assigned to existing folders"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Will create new folders"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "No suitable folder found"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "New Folders to Create"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Folder Assignments"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Media ID"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Folder"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Confidence"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Reason"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Skipped Items"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "These items could not be matched to any folder."
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Cancel"
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx
+msgid "Apply Changes"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "Backup & Restore"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "Backup Available"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "Created:"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "Folders:"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "Assignments:"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "This will replace all current folders and assignments with the backup. Are you sure?"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "Yes, Restore Backup"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "Restore Backup"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "Delete Backup"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "Backup deleted."
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "Failed to restore backup."
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx
+msgid "Failed to delete backup."
+msgstr ""
+
+#: src/php/REST/AnalysisController.php
+msgid "Scan already in progress."
+msgstr ""
+
+#: src/php/REST/AnalysisController.php
+msgid "No backup available."
+msgstr ""
+
+#: src/php/REST/AnalysisController.php
+msgid "Invalid attachment ID."
+msgstr ""

@@ -1,0 +1,806 @@
+<?php
+/**
+ * Admin Settings Page.
+ *
+ * @package VmfaAiOrganizer
+ */
+
+declare(strict_types=1);
+
+namespace VmfaAiOrganizer\Admin;
+
+use VmfaAiOrganizer\AI\ProviderFactory;
+use VmfaAiOrganizer\Plugin;
+
+/**
+ * Admin settings page integration with Virtual Media Folders.
+ */
+class SettingsPage {
+
+	/**
+	 * Option name for settings.
+	 */
+	private const OPTION_NAME = 'vmfa_ai_organizer_settings';
+
+	/**
+	 * Settings group name.
+	 */
+	private const SETTINGS_GROUP = 'vmfa_ai_organizer_settings_group';
+
+	/**
+	 * Configuration map for settings with environment/constant overrides.
+	 *
+	 * @var array<string, array{env: string, const: string, default: mixed}>
+	 */
+	private static array $config_map = array(
+		'ai_provider'       => array(
+			'env'     => 'VMFA_AI_PROVIDER',
+			'const'   => 'VMFA_AI_PROVIDER',
+			'default' => 'heuristic',
+		),
+		'openai_key'        => array(
+			'env'     => 'VMFA_AI_OPENAI_KEY',
+			'const'   => 'VMFA_AI_OPENAI_KEY',
+			'default' => '',
+		),
+		'openai_model'      => array(
+			'env'     => 'VMFA_AI_OPENAI_MODEL',
+			'const'   => 'VMFA_AI_OPENAI_MODEL',
+			'default' => 'gpt-4o-mini',
+		),
+		'anthropic_key'     => array(
+			'env'     => 'VMFA_AI_ANTHROPIC_KEY',
+			'const'   => 'VMFA_AI_ANTHROPIC_KEY',
+			'default' => '',
+		),
+		'anthropic_model'   => array(
+			'env'     => 'VMFA_AI_ANTHROPIC_MODEL',
+			'const'   => 'VMFA_AI_ANTHROPIC_MODEL',
+			'default' => 'claude-3-haiku-20240307',
+		),
+		'gemini_key'        => array(
+			'env'     => 'VMFA_AI_GEMINI_KEY',
+			'const'   => 'VMFA_AI_GEMINI_KEY',
+			'default' => '',
+		),
+		'gemini_model'      => array(
+			'env'     => 'VMFA_AI_GEMINI_MODEL',
+			'const'   => 'VMFA_AI_GEMINI_MODEL',
+			'default' => 'gemini-1.5-flash',
+		),
+		'ollama_url'        => array(
+			'env'     => 'VMFA_AI_OLLAMA_URL',
+			'const'   => 'VMFA_AI_OLLAMA_URL',
+			'default' => 'http://localhost:11434',
+		),
+		'ollama_model'      => array(
+			'env'     => 'VMFA_AI_OLLAMA_MODEL',
+			'const'   => 'VMFA_AI_OLLAMA_MODEL',
+			'default' => 'llama3.2',
+		),
+		'grok_key'          => array(
+			'env'     => 'VMFA_AI_GROK_KEY',
+			'const'   => 'VMFA_AI_GROK_KEY',
+			'default' => '',
+		),
+		'grok_model'        => array(
+			'env'     => 'VMFA_AI_GROK_MODEL',
+			'const'   => 'VMFA_AI_GROK_MODEL',
+			'default' => 'grok-beta',
+		),
+		'exo_url'           => array(
+			'env'     => 'VMFA_AI_EXO_URL',
+			'const'   => 'VMFA_AI_EXO_URL',
+			'default' => 'http://localhost:52415',
+		),
+		'exo_model'         => array(
+			'env'     => 'VMFA_AI_EXO_MODEL',
+			'const'   => 'VMFA_AI_EXO_MODEL',
+			'default' => 'llama-3.2-3b',
+		),
+		'max_folder_depth'  => array(
+			'env'     => 'VMFA_AI_MAX_FOLDER_DEPTH',
+			'const'   => 'VMFA_AI_MAX_FOLDER_DEPTH',
+			'default' => 3,
+		),
+		'allow_new_folders' => array(
+			'env'     => 'VMFA_AI_ALLOW_NEW_FOLDERS',
+			'const'   => 'VMFA_AI_ALLOW_NEW_FOLDERS',
+			'default' => false,
+		),
+		'batch_size'        => array(
+			'env'     => 'VMFA_AI_BATCH_SIZE',
+			'const'   => 'VMFA_AI_BATCH_SIZE',
+			'default' => 20,
+		),
+	);
+
+	/**
+	 * Initialize the settings page.
+	 *
+	 * @return void
+	 */
+	public function init(): void {
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
+
+		// Hook into VMF settings page to add our tab.
+		add_filter( 'vmfo_settings_tabs', array( $this, 'add_settings_tab' ) );
+		add_action( 'vmfo_settings_content_ai_organizer', array( $this, 'render_settings_content' ) );
+
+		// Add admin notices for validation.
+		add_action( 'admin_notices', array( $this, 'show_admin_notices' ) );
+	}
+
+	/**
+	 * Register settings.
+	 *
+	 * @return void
+	 */
+	public function register_settings(): void {
+		register_setting(
+			self::SETTINGS_GROUP,
+			self::OPTION_NAME,
+			array(
+				'type'              => 'array',
+				'sanitize_callback' => array( $this, 'sanitize_settings' ),
+				'default'           => $this->get_defaults(),
+			)
+		);
+
+		// AI Provider section.
+		add_settings_section(
+			'vmfa_ai_provider_section',
+			__( 'AI Provider', 'vmfa-ai-organizer' ),
+			array( $this, 'render_provider_section' ),
+			'vmfa-ai-organizer'
+		);
+
+		add_settings_field(
+			'ai_provider',
+			__( 'Provider', 'vmfa-ai-organizer' ),
+			array( $this, 'render_provider_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section'
+		);
+
+		// OpenAI settings.
+		add_settings_field(
+			'openai_key',
+			__( 'OpenAI API Key', 'vmfa-ai-organizer' ),
+			array( $this, 'render_api_key_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'openai_key',
+				'provider' => 'openai',
+			)
+		);
+
+		add_settings_field(
+			'openai_model',
+			__( 'OpenAI Model', 'vmfa-ai-organizer' ),
+			array( $this, 'render_model_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'openai_model',
+				'provider' => 'openai',
+			)
+		);
+
+		// Anthropic settings.
+		add_settings_field(
+			'anthropic_key',
+			__( 'Anthropic API Key', 'vmfa-ai-organizer' ),
+			array( $this, 'render_api_key_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'anthropic_key',
+				'provider' => 'anthropic',
+			)
+		);
+
+		add_settings_field(
+			'anthropic_model',
+			__( 'Anthropic Model', 'vmfa-ai-organizer' ),
+			array( $this, 'render_model_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'anthropic_model',
+				'provider' => 'anthropic',
+			)
+		);
+
+		// Gemini settings.
+		add_settings_field(
+			'gemini_key',
+			__( 'Gemini API Key', 'vmfa-ai-organizer' ),
+			array( $this, 'render_api_key_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'gemini_key',
+				'provider' => 'gemini',
+			)
+		);
+
+		add_settings_field(
+			'gemini_model',
+			__( 'Gemini Model', 'vmfa-ai-organizer' ),
+			array( $this, 'render_model_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'gemini_model',
+				'provider' => 'gemini',
+			)
+		);
+
+		// Ollama settings.
+		add_settings_field(
+			'ollama_url',
+			__( 'Ollama URL', 'vmfa-ai-organizer' ),
+			array( $this, 'render_url_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'ollama_url',
+				'provider' => 'ollama',
+			)
+		);
+
+		add_settings_field(
+			'ollama_model',
+			__( 'Ollama Model', 'vmfa-ai-organizer' ),
+			array( $this, 'render_model_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'ollama_model',
+				'provider' => 'ollama',
+			)
+		);
+
+		// Grok settings.
+		add_settings_field(
+			'grok_key',
+			__( 'Grok API Key', 'vmfa-ai-organizer' ),
+			array( $this, 'render_api_key_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'grok_key',
+				'provider' => 'grok',
+			)
+		);
+
+		add_settings_field(
+			'grok_model',
+			__( 'Grok Model', 'vmfa-ai-organizer' ),
+			array( $this, 'render_model_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'grok_model',
+				'provider' => 'grok',
+			)
+		);
+
+		// Exo settings.
+		add_settings_field(
+			'exo_url',
+			__( 'Exo URL', 'vmfa-ai-organizer' ),
+			array( $this, 'render_url_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'exo_url',
+				'provider' => 'exo',
+			)
+		);
+
+		add_settings_field(
+			'exo_model',
+			__( 'Exo Model', 'vmfa-ai-organizer' ),
+			array( $this, 'render_model_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'exo_model',
+				'provider' => 'exo',
+			)
+		);
+
+		// Organization section.
+		add_settings_section(
+			'vmfa_organization_section',
+			__( 'Organization Settings', 'vmfa-ai-organizer' ),
+			array( $this, 'render_organization_section' ),
+			'vmfa-ai-organizer'
+		);
+
+		add_settings_field(
+			'max_folder_depth',
+			__( 'Maximum Folder Depth', 'vmfa-ai-organizer' ),
+			array( $this, 'render_depth_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_organization_section'
+		);
+
+		add_settings_field(
+			'allow_new_folders',
+			__( 'Allow New Folders', 'vmfa-ai-organizer' ),
+			array( $this, 'render_checkbox_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_organization_section',
+			array(
+				'key'         => 'allow_new_folders',
+				'description' => __( 'Allow AI to suggest creating new folders when no suitable existing folder is found.', 'vmfa-ai-organizer' ),
+			)
+		);
+
+		add_settings_field(
+			'batch_size',
+			__( 'Batch Size', 'vmfa-ai-organizer' ),
+			array( $this, 'render_batch_size_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_organization_section'
+		);
+	}
+
+	/**
+	 * Add settings tab to VMF settings.
+	 *
+	 * @param array<string, string> $tabs Existing tabs.
+	 * @return array<string, string>
+	 */
+	public function add_settings_tab( array $tabs ): array {
+		$tabs['ai_organizer'] = __( 'AI Organizer', 'vmfa-ai-organizer' );
+		return $tabs;
+	}
+
+	/**
+	 * Render settings content.
+	 *
+	 * @return void
+	 */
+	public function render_settings_content(): void {
+		?>
+		<form method="post" action="options.php" id="vmfa-ai-organizer-settings">
+			<?php
+			settings_fields( self::SETTINGS_GROUP );
+			do_settings_sections( 'vmfa-ai-organizer' );
+			submit_button( __( 'Save AI Settings', 'vmfa-ai-organizer' ) );
+			?>
+		</form>
+
+		<hr>
+
+		<h2><?php esc_html_e( 'Media Scanner', 'vmfa-ai-organizer' ); ?></h2>
+		<p class="description">
+			<?php esc_html_e( 'Use the scanner to organize your media library with AI suggestions.', 'vmfa-ai-organizer' ); ?>
+		</p>
+
+		<div id="vmfa-ai-organizer-scanner">
+			<!-- React component will mount here -->
+			<noscript>
+				<?php esc_html_e( 'JavaScript is required for the media scanner.', 'vmfa-ai-organizer' ); ?>
+			</noscript>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render provider section description.
+	 *
+	 * @return void
+	 */
+	public function render_provider_section(): void {
+		?>
+		<p class="description">
+			<?php esc_html_e( 'Configure the AI provider to use for analyzing and organizing media files.', 'vmfa-ai-organizer' ); ?>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Render organization section description.
+	 *
+	 * @return void
+	 */
+	public function render_organization_section(): void {
+		?>
+		<p class="description">
+			<?php esc_html_e( 'Configure how media files should be organized into folders.', 'vmfa-ai-organizer' ); ?>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Render provider selection field.
+	 *
+	 * @return void
+	 */
+	public function render_provider_field(): void {
+		$settings   = $this->get_settings();
+		$value      = $settings['ai_provider'];
+		$providers  = ProviderFactory::get_available_providers();
+		$is_locked  = $this->is_setting_locked( 'ai_provider' );
+
+		?>
+		<select 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[ai_provider]" 
+			id="vmfa_ai_provider"
+			<?php disabled( $is_locked ); ?>
+		>
+			<?php foreach ( $providers as $key => $label ) : ?>
+				<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $value, $key ); ?>>
+					<?php echo esc_html( $label ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+		<?php
+		$this->render_locked_badge( 'ai_provider' );
+	}
+
+	/**
+	 * Render API key field.
+	 *
+	 * @param array{key: string, provider: string} $args Field arguments.
+	 * @return void
+	 */
+	public function render_api_key_field( array $args ): void {
+		$key       = $args['key'];
+		$provider  = $args['provider'];
+		$settings  = $this->get_settings();
+		$value     = $settings[ $key ] ?? '';
+		$is_locked = $this->is_setting_locked( $key );
+
+		?>
+		<input 
+			type="password" 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $key ); ?>]"
+			id="vmfa_<?php echo esc_attr( $key ); ?>"
+			value="<?php echo esc_attr( $value ); ?>"
+			class="regular-text vmfa-provider-field"
+			data-provider="<?php echo esc_attr( $provider ); ?>"
+			autocomplete="off"
+			<?php disabled( $is_locked ); ?>
+		>
+		<?php
+		$this->render_locked_badge( $key );
+	}
+
+	/**
+	 * Render model selection field.
+	 *
+	 * @param array{key: string, provider: string} $args Field arguments.
+	 * @return void
+	 */
+	public function render_model_field( array $args ): void {
+		$key       = $args['key'];
+		$provider  = $args['provider'];
+		$settings  = $this->get_settings();
+		$value     = $settings[ $key ] ?? '';
+		$is_locked = $this->is_setting_locked( $key );
+
+		$provider_instance = ProviderFactory::get_provider( $provider );
+		$models            = $provider_instance->get_available_models();
+
+		?>
+		<select 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $key ); ?>]"
+			id="vmfa_<?php echo esc_attr( $key ); ?>"
+			class="vmfa-provider-field"
+			data-provider="<?php echo esc_attr( $provider ); ?>"
+			<?php disabled( $is_locked ); ?>
+		>
+			<?php foreach ( $models as $model_key => $label ) : ?>
+				<option value="<?php echo esc_attr( $model_key ); ?>" <?php selected( $value, $model_key ); ?>>
+					<?php echo esc_html( $label ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+		<?php
+		$this->render_locked_badge( $key );
+	}
+
+	/**
+	 * Render URL field.
+	 *
+	 * @param array{key: string, provider: string} $args Field arguments.
+	 * @return void
+	 */
+	public function render_url_field( array $args ): void {
+		$key       = $args['key'];
+		$provider  = $args['provider'];
+		$settings  = $this->get_settings();
+		$value     = $settings[ $key ] ?? '';
+		$is_locked = $this->is_setting_locked( $key );
+
+		?>
+		<input 
+			type="url" 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $key ); ?>]"
+			id="vmfa_<?php echo esc_attr( $key ); ?>"
+			value="<?php echo esc_url( $value ); ?>"
+			class="regular-text vmfa-provider-field"
+			data-provider="<?php echo esc_attr( $provider ); ?>"
+			placeholder="http://localhost:11434"
+			<?php disabled( $is_locked ); ?>
+		>
+		<?php
+		$this->render_locked_badge( $key );
+	}
+
+	/**
+	 * Render depth field.
+	 *
+	 * @return void
+	 */
+	public function render_depth_field(): void {
+		$settings  = $this->get_settings();
+		$value     = (int) ( $settings['max_folder_depth'] ?? 3 );
+		$is_locked = $this->is_setting_locked( 'max_folder_depth' );
+
+		?>
+		<input 
+			type="number" 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[max_folder_depth]"
+			id="vmfa_max_folder_depth"
+			value="<?php echo esc_attr( (string) $value ); ?>"
+			min="1"
+			max="5"
+			class="small-text"
+			<?php disabled( $is_locked ); ?>
+		>
+		<p class="description">
+			<?php esc_html_e( 'Maximum depth for folder hierarchy (1-5). Higher values allow more nested folders.', 'vmfa-ai-organizer' ); ?>
+		</p>
+		<?php
+		$this->render_locked_badge( 'max_folder_depth' );
+	}
+
+	/**
+	 * Render checkbox field.
+	 *
+	 * @param array{key: string, description: string} $args Field arguments.
+	 * @return void
+	 */
+	public function render_checkbox_field( array $args ): void {
+		$key         = $args['key'];
+		$description = $args['description'];
+		$settings    = $this->get_settings();
+		$value       = (bool) ( $settings[ $key ] ?? false );
+		$is_locked   = $this->is_setting_locked( $key );
+
+		?>
+		<label>
+			<input 
+				type="checkbox" 
+				name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $key ); ?>]"
+				id="vmfa_<?php echo esc_attr( $key ); ?>"
+				value="1"
+				<?php checked( $value ); ?>
+				<?php disabled( $is_locked ); ?>
+			>
+			<?php echo esc_html( $description ); ?>
+		</label>
+		<?php
+		$this->render_locked_badge( $key );
+	}
+
+	/**
+	 * Render batch size field.
+	 *
+	 * @return void
+	 */
+	public function render_batch_size_field(): void {
+		$settings  = $this->get_settings();
+		$value     = (int) ( $settings['batch_size'] ?? 20 );
+		$is_locked = $this->is_setting_locked( 'batch_size' );
+
+		?>
+		<input 
+			type="number" 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[batch_size]"
+			id="vmfa_batch_size"
+			value="<?php echo esc_attr( (string) $value ); ?>"
+			min="10"
+			max="100"
+			step="10"
+			class="small-text"
+			<?php disabled( $is_locked ); ?>
+		>
+		<p class="description">
+			<?php esc_html_e( 'Number of media files to process in each batch (10-100). Lower values are safer for shared hosting.', 'vmfa-ai-organizer' ); ?>
+		</p>
+		<?php
+		$this->render_locked_badge( 'batch_size' );
+	}
+
+	/**
+	 * Render locked badge if setting is overridden.
+	 *
+	 * @param string $key Setting key.
+	 * @return void
+	 */
+	private function render_locked_badge( string $key ): void {
+		$source = $this->get_override_source( $key );
+
+		if ( $source ) {
+			?>
+			<span class="vmfa-locked-badge" title="<?php esc_attr_e( 'This setting is overridden', 'vmfa-ai-organizer' ); ?>">
+				<?php
+				if ( 'const' === $source ) {
+					esc_html_e( '🔒 Constant', 'vmfa-ai-organizer' );
+				} else {
+					esc_html_e( '🔒 Environment', 'vmfa-ai-organizer' );
+				}
+				?>
+			</span>
+			<?php
+		}
+	}
+
+	/**
+	 * Check if a setting is locked by constant or environment variable.
+	 *
+	 * @param string $key Setting key.
+	 * @return bool
+	 */
+	private function is_setting_locked( string $key ): bool {
+		return null !== $this->get_override_source( $key );
+	}
+
+	/**
+	 * Get the override source for a setting.
+	 *
+	 * @param string $key Setting key.
+	 * @return string|null 'const', 'env', or null.
+	 */
+	private function get_override_source( string $key ): ?string {
+		if ( ! isset( self::$config_map[ $key ] ) ) {
+			return null;
+		}
+
+		$config = self::$config_map[ $key ];
+
+		if ( defined( $config['const'] ) ) {
+			return 'const';
+		}
+
+		$env_value = getenv( $config['env'] );
+		if ( false !== $env_value && '' !== $env_value ) {
+			return 'env';
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get all settings with defaults.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function get_settings(): array {
+		return Plugin::get_instance()->get_settings();
+	}
+
+	/**
+	 * Get default settings.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function get_defaults(): array {
+		$defaults = array();
+
+		foreach ( self::$config_map as $key => $config ) {
+			$defaults[ $key ] = $config['default'];
+		}
+
+		return $defaults;
+	}
+
+	/**
+	 * Sanitize settings.
+	 *
+	 * @param array<string, mixed> $input Input settings.
+	 * @return array<string, mixed>
+	 */
+	public function sanitize_settings( array $input ): array {
+		$sanitized = array();
+
+		// Provider.
+		if ( isset( $input['ai_provider'] ) ) {
+			$sanitized['ai_provider'] = sanitize_key( $input['ai_provider'] );
+			if ( ! ProviderFactory::provider_exists( $sanitized['ai_provider'] ) ) {
+				$sanitized['ai_provider'] = 'heuristic';
+			}
+		}
+
+		// API keys.
+		$key_fields = array( 'openai_key', 'anthropic_key', 'gemini_key', 'grok_key' );
+		foreach ( $key_fields as $field ) {
+			if ( isset( $input[ $field ] ) ) {
+				$sanitized[ $field ] = sanitize_text_field( $input[ $field ] );
+			}
+		}
+
+		// Models.
+		$model_fields = array( 'openai_model', 'anthropic_model', 'gemini_model', 'ollama_model', 'grok_model', 'exo_model' );
+		foreach ( $model_fields as $field ) {
+			if ( isset( $input[ $field ] ) ) {
+				$sanitized[ $field ] = sanitize_text_field( $input[ $field ] );
+			}
+		}
+
+		// URLs.
+		if ( isset( $input['ollama_url'] ) ) {
+			$sanitized['ollama_url'] = esc_url_raw( $input['ollama_url'] );
+		}
+		if ( isset( $input['exo_url'] ) ) {
+			$sanitized['exo_url'] = esc_url_raw( $input['exo_url'] );
+		}
+
+		// Numeric fields.
+		if ( isset( $input['max_folder_depth'] ) ) {
+			$sanitized['max_folder_depth'] = max( 1, min( 5, absint( $input['max_folder_depth'] ) ) );
+		}
+
+		if ( isset( $input['batch_size'] ) ) {
+			$sanitized['batch_size'] = max( 10, min( 100, absint( $input['batch_size'] ) ) );
+		}
+
+		// Checkbox.
+		$sanitized['allow_new_folders'] = ! empty( $input['allow_new_folders'] );
+
+		// Validate AI configuration if not heuristic.
+		if ( isset( $sanitized['ai_provider'] ) && 'heuristic' !== $sanitized['ai_provider'] ) {
+			$this->validate_ai_configuration( $sanitized );
+		}
+
+		return $sanitized;
+	}
+
+	/**
+	 * Validate AI configuration and add admin notice if invalid.
+	 *
+	 * @param array<string, mixed> $settings Settings to validate.
+	 * @return void
+	 */
+	private function validate_ai_configuration( array $settings ): void {
+		$provider_name = $settings['ai_provider'] ?? 'heuristic';
+
+		if ( 'heuristic' === $provider_name ) {
+			return;
+		}
+
+		$provider = ProviderFactory::get_provider( $provider_name );
+		$error    = $provider->test( $settings );
+
+		if ( null !== $error ) {
+			add_settings_error(
+				self::OPTION_NAME,
+				'ai_validation_error',
+				sprintf(
+					/* translators: %s: error message */
+					__( 'AI Configuration Warning: %s', 'vmfa-ai-organizer' ),
+					$error
+				),
+				'warning'
+			);
+		}
+	}
+
+	/**
+	 * Show admin notices.
+	 *
+	 * @return void
+	 */
+	public function show_admin_notices(): void {
+		settings_errors( self::OPTION_NAME );
+	}
+}

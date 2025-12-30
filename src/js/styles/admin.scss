@@ -1,0 +1,413 @@
+/**
+ * Admin styles for Virtual Media Folders AI Organizer.
+ *
+ * @package VmfaAiOrganizer
+ */
+
+.vmfa-ai-organizer-panel {
+	max-width: 800px;
+
+	.components-card {
+		margin-bottom: 20px;
+	}
+}
+
+/* Statistics Card */
+.vmfa-stats-card {
+	.vmfa-stats-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 16px;
+	}
+
+	.vmfa-stat {
+		text-align: center;
+		padding: 12px;
+		background: #f0f0f1;
+		border-radius: 4px;
+	}
+
+	.vmfa-stat-value {
+		display: block;
+		font-size: 24px;
+		font-weight: 600;
+		color: #1e1e1e;
+	}
+
+	.vmfa-stat-label {
+		display: block;
+		font-size: 12px;
+		color: #757575;
+		margin-top: 4px;
+	}
+}
+
+/* Scan Controls */
+.vmfa-scan-controls {
+	.components-radio-control {
+		margin-bottom: 16px;
+	}
+
+	.components-notice {
+		margin: 16px 0;
+	}
+
+	.vmfa-scan-actions {
+		display: flex;
+		gap: 12px;
+		margin-top: 20px;
+		padding-top: 20px;
+		border-top: 1px solid #e0e0e0;
+	}
+}
+
+/* Progress Display */
+.vmfa-scan-progress {
+	.components-card__header {
+		h3 {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin: 0;
+		}
+	}
+
+	.vmfa-badge {
+		font-size: 11px;
+		padding: 2px 8px;
+		border-radius: 3px;
+		font-weight: 500;
+
+		&.vmfa-badge-info {
+			background: #e5f3ff;
+			color: #0073aa;
+		}
+	}
+
+	.vmfa-progress-info {
+		margin-bottom: 20px;
+	}
+
+	.vmfa-progress-row {
+		display: flex;
+		justify-content: space-between;
+		padding: 8px 0;
+		border-bottom: 1px solid #f0f0f1;
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
+	.vmfa-progress-label {
+		color: #757575;
+	}
+
+	.vmfa-progress-value {
+		font-weight: 500;
+
+		&.vmfa-success {
+			color: #00a32a;
+		}
+
+		&.vmfa-error {
+			color: #d63638;
+		}
+	}
+
+	.vmfa-progress-bar-container {
+		height: 8px;
+		background: #e0e0e0;
+		border-radius: 4px;
+		margin: 16px 0;
+		overflow: hidden;
+	}
+
+	.vmfa-progress-bar {
+		height: 100%;
+		background: #2271b1;
+		border-radius: 4px;
+		transition: width 0.3s ease;
+	}
+
+	.vmfa-progress-error {
+		color: #d63638;
+		background: #fcf0f1;
+		padding: 12px;
+		border-radius: 4px;
+		margin-top: 12px;
+	}
+
+	.vmfa-progress-actions {
+		display: flex;
+		gap: 12px;
+		margin-top: 20px;
+	}
+
+	.vmfa-recent-results {
+		margin-top: 20px;
+		padding-top: 20px;
+		border-top: 1px solid #e0e0e0;
+
+		h4 {
+			margin: 0 0 12px 0;
+		}
+	}
+
+	.vmfa-results-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.vmfa-result-item {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px;
+		background: #f9f9f9;
+		border-radius: 4px;
+		margin-bottom: 4px;
+		font-size: 13px;
+
+		&.vmfa-result-skip {
+			opacity: 0.6;
+		}
+	}
+
+	.vmfa-result-action {
+		font-size: 16px;
+	}
+
+	.vmfa-result-id {
+		font-weight: 500;
+		min-width: 60px;
+	}
+
+	.vmfa-result-reason {
+		flex: 1;
+		color: #757575;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.vmfa-result-confidence {
+		font-size: 12px;
+		padding: 2px 6px;
+		background: #e5f3ff;
+		border-radius: 3px;
+	}
+}
+
+/* Preview Modal */
+.vmfa-preview-modal {
+	.components-modal__content {
+		padding: 0;
+	}
+
+	.vmfa-preview-content {
+		padding: 20px;
+		max-height: 60vh;
+		overflow-y: auto;
+	}
+
+	.vmfa-preview-summary {
+		margin-bottom: 24px;
+
+		h3 {
+			margin: 0 0 12px 0;
+		}
+	}
+
+	.vmfa-preview-stats {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 12px;
+	}
+
+	.vmfa-preview-stat {
+		text-align: center;
+		padding: 16px;
+		background: #f0f0f1;
+		border-radius: 4px;
+
+		.vmfa-stat-value {
+			display: block;
+			font-size: 28px;
+			font-weight: 600;
+			color: #1e1e1e;
+		}
+
+		.vmfa-stat-label {
+			display: block;
+			font-size: 12px;
+			color: #757575;
+			margin-top: 4px;
+		}
+	}
+
+	.vmfa-preview-section {
+		margin-top: 24px;
+		padding-top: 24px;
+		border-top: 1px solid #e0e0e0;
+
+		h4 {
+			margin: 0 0 12px 0;
+		}
+	}
+
+	.vmfa-folder-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.vmfa-folder-item {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 12px;
+		background: #f9f9f9;
+		border-radius: 4px;
+		margin-bottom: 4px;
+	}
+
+	.vmfa-preview-table-wrapper {
+		overflow-x: auto;
+	}
+
+	.vmfa-preview-table {
+		width: 100%;
+		border-collapse: collapse;
+
+		th,
+		td {
+			padding: 8px 12px;
+			text-align: left;
+			border-bottom: 1px solid #e0e0e0;
+		}
+
+		th {
+			background: #f0f0f1;
+			font-weight: 600;
+		}
+	}
+
+	.vmfa-confidence-high {
+		color: #00a32a;
+	}
+
+	.vmfa-confidence-medium {
+		color: #dba617;
+	}
+
+	.vmfa-confidence-low {
+		color: #d63638;
+	}
+
+	.vmfa-preview-more {
+		color: #757575;
+		font-style: italic;
+		margin-top: 8px;
+	}
+
+	.vmfa-preview-skipped {
+		.description {
+			color: #757575;
+			margin-bottom: 12px;
+		}
+	}
+
+	.vmfa-skipped-list {
+		margin: 0;
+		padding-left: 20px;
+
+		li {
+			margin-bottom: 4px;
+			color: #757575;
+		}
+	}
+
+	.vmfa-preview-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 12px;
+		padding: 16px 20px;
+		border-top: 1px solid #e0e0e0;
+		background: #f9f9f9;
+	}
+}
+
+/* Restore Panel */
+.vmfa-restore-panel {
+	.vmfa-backup-info {
+		margin-bottom: 16px;
+	}
+
+	.vmfa-backup-details {
+		background: #f9f9f9;
+		padding: 12px;
+		border-radius: 4px;
+	}
+
+	.vmfa-backup-row {
+		display: flex;
+		justify-content: space-between;
+		padding: 4px 0;
+	}
+
+	.vmfa-backup-label {
+		color: #757575;
+	}
+
+	.vmfa-backup-value {
+		font-weight: 500;
+	}
+
+	.vmfa-restore-confirm {
+		background: #fcf0f1;
+		padding: 16px;
+		border-radius: 4px;
+		margin-top: 16px;
+	}
+
+	.vmfa-restore-warning {
+		margin: 0 0 12px 0;
+		color: #d63638;
+	}
+
+	.vmfa-restore-actions {
+		display: flex;
+		gap: 12px;
+	}
+}
+
+/* Locked badge for settings */
+.vmfa-locked-badge {
+	display: inline-block;
+	margin-left: 8px;
+	padding: 2px 8px;
+	background: #f0f0f1;
+	border-radius: 3px;
+	font-size: 11px;
+	color: #757575;
+}
+
+/* Provider-specific field visibility */
+.vmfa-provider-field {
+	&[data-provider] {
+		transition: opacity 0.2s ease;
+	}
+}
+
+/* Responsive adjustments */
+@media (max-width: 782px) {
+	.vmfa-stats-card .vmfa-stats-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.vmfa-preview-modal .vmfa-preview-stats {
+		grid-template-columns: 1fr;
+	}
+}

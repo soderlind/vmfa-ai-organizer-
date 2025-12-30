@@ -1,0 +1,46 @@
+{
+	"name": "soderlind/vmfa-ai-organizer",
+	"description": "AI-powered media organization add-on for Virtual Media Folders",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"authors": [
+		{
+			"name": "Per Soderlind",
+			"email": "per@soderlind.no"
+		}
+	],
+	"require": {
+		"php": ">=8.3",
+		"woocommerce/action-scheduler": "^3.7"
+	},
+	"require-dev": {
+		"brain/monkey": "^2.6",
+		"mockery/mockery": "^1.6",
+		"phpunit/phpunit": "^10.5",
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"wp-coding-standards/wpcs": "^3.0",
+		"phpcompatibility/php-compatibility": "^9.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"VmfaAiOrganizer\\": "src/php/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"VmfaAiOrganizer\\Tests\\": "tests/php/"
+		}
+	},
+	"scripts": {
+		"lint:php": "phpcs -p",
+		"fix:php": "phpcbf -p",
+		"test": "phpunit",
+		"test:coverage": "phpunit --coverage-html coverage"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"sort-packages": true
+	}
+}
