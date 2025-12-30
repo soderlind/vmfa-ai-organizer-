@@ -40,7 +40,8 @@ class OllamaProvider extends AbstractProvider {
 		array $media_metadata,
 		array $folder_paths,
 		int $max_depth,
-		bool $allow_new_folders
+		bool $allow_new_folders,
+		?array $image_data = null
 	): array {
 		if ( ! $this->is_configured() ) {
 			return array(
@@ -57,6 +58,17 @@ class OllamaProvider extends AbstractProvider {
 
 		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders );
 
+		// Build user message - Ollama vision uses 'images' array.
+		$user_message = array(
+			'role'    => 'user',
+			'content' => $user_prompt,
+		);
+
+		// Add images for vision-capable models like llava.
+		if ( null !== $image_data && ! empty( $image_data['base64'] ) ) {
+			$user_message['images'] = array( $image_data['base64'] );
+		}
+
 		$response = $this->make_request(
 			rtrim( $base_url, '/' ) . '/api/chat',
 			array(
@@ -66,10 +78,7 @@ class OllamaProvider extends AbstractProvider {
 						'role'    => 'system',
 						'content' => self::SYSTEM_PROMPT,
 					),
-					array(
-						'role'    => 'user',
-						'content' => $user_prompt,
-					),
+					$user_message,
 				),
 				'stream'   => false,
 				'options'  => array(

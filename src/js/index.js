@@ -27,6 +27,36 @@ function updateProviderFields( provider ) {
 			}
 		}
 	} );
+
+	// Update Azure fields visibility based on openai_type when OpenAI is selected.
+	if ( provider === 'openai' ) {
+		updateAzureFields();
+	}
+}
+
+/**
+ * Update visibility of Azure-specific fields based on openai_type selector.
+ */
+function updateAzureFields() {
+	const openaiTypeSelect = document.getElementById( 'vmfa_openai_type' );
+	if ( ! openaiTypeSelect ) {
+		return;
+	}
+
+	const isAzure = openaiTypeSelect.value === 'azure';
+
+	document.querySelectorAll( '.vmfa-azure-field' ).forEach( ( field ) => {
+		const row = field.closest( 'tr' );
+		if ( row ) {
+			// Mark as Azure row for CSS targeting
+			row.classList.add( 'vmfa-azure-row' );
+			if ( isAzure ) {
+				row.classList.add( 'vmfa-azure-active' );
+			} else {
+				row.classList.remove( 'vmfa-azure-active' );
+			}
+		}
+	} );
 }
 
 /**
@@ -41,6 +71,14 @@ function initProviderToggle() {
 		// Listen for changes.
 		providerSelect.addEventListener( 'change', ( e ) => {
 			updateProviderFields( e.target.value );
+		} );
+	}
+
+	// Listen for OpenAI type changes.
+	const openaiTypeSelect = document.getElementById( 'vmfa_openai_type' );
+	if ( openaiTypeSelect ) {
+		openaiTypeSelect.addEventListener( 'change', () => {
+			updateAzureFields();
 		} );
 	}
 }

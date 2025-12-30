@@ -40,7 +40,8 @@ class ExoProvider extends AbstractProvider {
 		array $media_metadata,
 		array $folder_paths,
 		int $max_depth,
-		bool $allow_new_folders
+		bool $allow_new_folders,
+		?array $image_data = null
 	): array {
 		if ( ! $this->is_configured() ) {
 			return array(
@@ -58,6 +59,23 @@ class ExoProvider extends AbstractProvider {
 		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders );
 
 		// Exo uses OpenAI-compatible API.
+		// Note: Vision support depends on the model being used.
+		$user_content = $user_prompt;
+		if ( null !== $image_data && ! empty( $image_data['base64'] ) ) {
+			$user_content = array(
+				array(
+					'type' => 'text',
+					'text' => $user_prompt,
+				),
+				array(
+					'type'      => 'image_url',
+					'image_url' => array(
+						'url' => 'data:' . $image_data['mime_type'] . ';base64,' . $image_data['base64'],
+					),
+				),
+			);
+		}
+
 		$response = $this->make_request(
 			rtrim( $base_url, '/' ) . '/v1/chat/completions',
 			array(
@@ -69,7 +87,7 @@ class ExoProvider extends AbstractProvider {
 					),
 					array(
 						'role'    => 'user',
-						'content' => $user_prompt,
+						'content' => $user_content,
 					),
 				),
 				'max_tokens'  => 500,

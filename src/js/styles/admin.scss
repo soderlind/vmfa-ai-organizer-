@@ -4,6 +4,15 @@
  * @package VmfaAiOrganizer
  */
 
+/* Tab navigation */
+.vmfa-nav-tabs {
+	margin-bottom: 20px;
+}
+
+.vmfa-tab-content {
+	margin-top: 20px;
+}
+
 /* Provider-specific field visibility */
 .vmfa-provider-row {
 	display: none;
@@ -11,18 +20,28 @@
 	&.vmfa-provider-active {
 		display: table-row;
 	}
+
+	/* Azure-specific fields: only show when both OpenAI is selected AND Azure type is chosen */
+	&.vmfa-azure-row {
+		display: none;
+
+		&.vmfa-provider-active.vmfa-azure-active {
+			display: table-row;
+		}
+	}
 }
 
 .vmfa-ai-organizer-panel {
-	max-width: 800px;
-
 	.components-card {
 		margin-bottom: 20px;
+		max-width: 800px;
 	}
 }
 
 /* Statistics Card */
 .vmfa-stats-card {
+	max-width: 100% !important;
+
 	.vmfa-stats-grid {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
@@ -53,6 +72,8 @@
 
 /* Scan Controls */
 .vmfa-scan-controls {
+	max-width: 100% !important;
+
 	.components-radio-control {
 		margin-bottom: 16px;
 	}

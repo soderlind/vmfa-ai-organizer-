@@ -22,6 +22,9 @@ class ProviderFactoryTest extends BrainMonkeyTestCase {
 	 * Test get_available_providers returns all provider names.
 	 */
 	public function test_get_available_providers(): void {
+		// Mock get_option for settings lookup.
+		Functions\when( 'get_option' )->justReturn( array() );
+
 		$factory   = new ProviderFactory();
 		$providers = $factory->get_available_providers();
 

@@ -22,29 +22,32 @@ abstract class AbstractProvider implements ProviderInterface {
 	protected const REQUEST_TIMEOUT = 30;
 
 	/**
-	 * System prompt for folder organization.
+	 * System prompt for folder organization with vision capabilities.
 	 */
 	protected const SYSTEM_PROMPT = <<<'PROMPT'
-You are a media organization assistant. Your task is to analyze media file metadata and suggest the most appropriate folder for organizing the file.
+You are a media organization assistant with vision capabilities. Your PRIMARY task is to ANALYZE THE IMAGE CONTENT to determine the most appropriate folder.
 
-You will receive:
-1. Media metadata (filename, alt text, caption, description, MIME type, EXIF data)
-2. A list of existing folder paths
+## Analysis Priority (highest to lowest):
+1. **IMAGE CONTENT**: What objects, scenes, people, activities, colors, or subjects are visible?
+2. **EXIF/Metadata**: Camera info, date taken, GPS location, keywords
+3. **Text metadata**: Title, alt text, caption, description
+4. **Filename**: Only as a last resort hint
 
-Rules:
-- Prefer placing media in existing folders when there's a good match
-- Consider the file type, content description, and any contextual clues
-- Be specific but not overly granular
-- If no existing folder is suitable and new folders are allowed, suggest a new folder path
-- Keep folder names concise and descriptive
-- Use proper capitalization (Title Case for folder names)
+## Rules:
+- ALWAYS describe what you SEE in the image first
+- Base your folder decision primarily on visual content
+- Use metadata only to supplement or confirm your visual analysis
+- Prefer existing folders when there's a good match
+- Keep folder names concise and descriptive (Title Case)
+- If no existing folder fits and new folders are allowed, suggest a new path
 
 Respond with valid JSON only, no markdown formatting:
 {
+    "visual_description": "Brief description of what is visible in the image",
     "action": "assign" or "create",
     "folder_path": "path/to/folder",
     "confidence": 0.0 to 1.0,
-    "reason": "brief explanation"
+    "reason": "Why this folder based on visual content"
 }
 PROMPT;
 
@@ -64,9 +67,10 @@ PROMPT;
 		$response = wp_remote_post(
 			$url,
 			array(
-				'headers' => array_merge( $default_headers, $headers ),
-				'body'    => wp_json_encode( $body ),
-				'timeout' => static::REQUEST_TIMEOUT,
+				'headers'   => array_merge( $default_headers, $headers ),
+				'body'      => wp_json_encode( $body ),
+				'timeout'   => static::REQUEST_TIMEOUT,
+				'sslverify' => true,
 			)
 		);
 
@@ -124,9 +128,11 @@ PROMPT;
 			: 'You must ONLY use existing folders. Do not suggest new folders.';
 
 		return <<<PROMPT
-Analyze this media file and suggest a folder:
+Analyze this media file and suggest a folder.
 
-## Media Metadata
+## IMPORTANT: If an image is provided, FIRST describe what you SEE in it.
+
+## Media Metadata (use as supplementary context)
 {$metadata_text}
 
 ## Available Folders
@@ -135,7 +141,7 @@ Analyze this media file and suggest a folder:
 ## Constraints
 {$new_folders_text}
 
-Respond with JSON only.
+Respond with JSON only. Include "visual_description" if you analyzed an image.
 PROMPT;
 	}
 

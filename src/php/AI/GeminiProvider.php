@@ -40,7 +40,8 @@ class GeminiProvider extends AbstractProvider {
 		array $media_metadata,
 		array $folder_paths,
 		int $max_depth,
-		bool $allow_new_folders
+		bool $allow_new_folders,
+		?array $image_data = null
 	): array {
 		if ( ! $this->is_configured() ) {
 			return array(
@@ -60,14 +61,15 @@ class GeminiProvider extends AbstractProvider {
 
 		$url = sprintf( '%s/%s:generateContent?key=%s', self::API_BASE_URL, $model, $api_key );
 
+		// Build parts array - with or without image.
+		$parts = $this->build_gemini_parts( $full_prompt, $image_data );
+
 		$response = $this->make_request(
 			$url,
 			array(
 				'contents'         => array(
 					array(
-						'parts' => array(
-							array( 'text' => $full_prompt ),
-						),
+						'parts' => $parts,
 					),
 				),
 				'generationConfig' => array(
@@ -147,5 +149,33 @@ class GeminiProvider extends AbstractProvider {
 			'gemini-1.5-pro'     => 'Gemini 1.5 Pro (Powerful)',
 			'gemini-2.0-flash'   => 'Gemini 2.0 Flash (Latest)',
 		);
+	}
+
+	/**
+	 * Build parts array for Gemini API request.
+	 *
+	 * For vision-capable models, includes both text and inline image data.
+	 *
+	 * @param string                   $text_prompt The text prompt.
+	 * @param array<string, mixed>|null $image_data  Image data (base64, mime_type).
+	 * @return array<int, array<string, mixed>> Parts array for Gemini API.
+	 */
+	private function build_gemini_parts( string $text_prompt, ?array $image_data ): array {
+		$parts = array();
+
+		// Add text part.
+		$parts[] = array( 'text' => $text_prompt );
+
+		// Add image part if available.
+		if ( null !== $image_data && ! empty( $image_data['base64'] ) ) {
+			$parts[] = array(
+				'inline_data' => array(
+					'mime_type' => $image_data['mime_type'],
+					'data'      => $image_data['base64'],
+				),
+			);
+		}
+
+		return $parts;
 	}
 }

@@ -78,11 +78,85 @@ class AIAnalysisService {
 		$max_depth     = (int) Plugin::get_instance()->get_setting( 'max_folder_depth', 3 );
 		$allow_new     = (bool) Plugin::get_instance()->get_setting( 'allow_new_folders', false );
 
-		$result = $this->get_provider()->analyze( $metadata, $folder_paths, $max_depth, $allow_new );
+		// Get image data for vision-capable providers.
+		$image_data = $this->get_image_data( $attachment_id );
+
+		$result = $this->get_provider()->analyze( $metadata, $folder_paths, $max_depth, $allow_new, $image_data );
 
 		$result['attachment_id'] = $attachment_id;
 
 		return $result;
+	}
+
+	/**
+	 * Get image data for vision API.
+	 *
+	 * Returns base64-encoded image data for vision-capable AI models.
+	 * Images are resized to reduce token usage while maintaining quality.
+	 *
+	 * @param int $attachment_id Attachment ID.
+	 * @return array{base64: string, mime_type: string}|null Image data or null if not available.
+	 */
+	public function get_image_data( int $attachment_id ): ?array {
+		$attachment = get_post( $attachment_id );
+
+		if ( ! $attachment || 'attachment' !== $attachment->post_type ) {
+			return null;
+		}
+
+		// Only process images.
+		$mime_type = $attachment->post_mime_type;
+		if ( ! str_starts_with( $mime_type, 'image/' ) ) {
+			return null;
+		}
+
+		// Skip SVGs and unsupported formats.
+		$supported_types = array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' );
+		if ( ! in_array( $mime_type, $supported_types, true ) ) {
+			return null;
+		}
+
+		// Get file path.
+		$file_path = get_attached_file( $attachment_id );
+		if ( empty( $file_path ) || ! file_exists( $file_path ) ) {
+			return null;
+		}
+
+		// Try to get a smaller size for efficiency (medium or large).
+		// This reduces token usage for vision APIs.
+		$image_sizes = array( 'medium_large', 'medium', 'large' );
+		$image_path  = $file_path;
+
+		foreach ( $image_sizes as $size ) {
+			$image_src = wp_get_attachment_image_src( $attachment_id, $size );
+			if ( $image_src ) {
+				$sized_path = str_replace(
+					wp_basename( $file_path ),
+					wp_basename( $image_src[0] ),
+					$file_path
+				);
+				if ( file_exists( $sized_path ) ) {
+					$image_path = $sized_path;
+					break;
+				}
+			}
+		}
+
+		// Read and encode image.
+		$image_content = file_get_contents( $image_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		if ( false === $image_content ) {
+			return null;
+		}
+
+		// Check file size (limit to 10MB for API constraints).
+		if ( strlen( $image_content ) > 10 * 1024 * 1024 ) {
+			return null;
+		}
+
+		return array(
+			'base64'    => base64_encode( $image_content ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+			'mime_type' => $mime_type,
+		);
 	}
 
 	/**

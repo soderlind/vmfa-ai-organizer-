@@ -40,7 +40,8 @@ class GrokProvider extends AbstractProvider {
 		array $media_metadata,
 		array $folder_paths,
 		int $max_depth,
-		bool $allow_new_folders
+		bool $allow_new_folders,
+		?array $image_data = null
 	): array {
 		if ( ! $this->is_configured() ) {
 			return array(
@@ -57,6 +58,23 @@ class GrokProvider extends AbstractProvider {
 
 		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders );
 
+		// Note: Grok vision API format is OpenAI-compatible.
+		$user_content = $user_prompt;
+		if ( null !== $image_data && ! empty( $image_data['base64'] ) ) {
+			$user_content = array(
+				array(
+					'type' => 'text',
+					'text' => $user_prompt,
+				),
+				array(
+					'type'      => 'image_url',
+					'image_url' => array(
+						'url' => 'data:' . $image_data['mime_type'] . ';base64,' . $image_data['base64'],
+					),
+				),
+			);
+		}
+
 		$response = $this->make_request(
 			self::API_URL,
 			array(
@@ -68,7 +86,7 @@ class GrokProvider extends AbstractProvider {
 					),
 					array(
 						'role'    => 'user',
-						'content' => $user_prompt,
+						'content' => $user_content,
 					),
 				),
 				'max_tokens'  => 500,

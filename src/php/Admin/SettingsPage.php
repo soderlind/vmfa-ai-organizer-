@@ -38,6 +38,11 @@ class SettingsPage {
 			'const'   => 'VMFA_AI_PROVIDER',
 			'default' => 'heuristic',
 		),
+		'openai_type'       => array(
+			'env'     => 'VMFA_AI_OPENAI_TYPE',
+			'const'   => 'VMFA_AI_OPENAI_TYPE',
+			'default' => 'openai',
+		),
 		'openai_key'        => array(
 			'env'     => 'VMFA_AI_OPENAI_KEY',
 			'const'   => 'VMFA_AI_OPENAI_KEY',
@@ -47,6 +52,16 @@ class SettingsPage {
 			'env'     => 'VMFA_AI_OPENAI_MODEL',
 			'const'   => 'VMFA_AI_OPENAI_MODEL',
 			'default' => 'gpt-4o-mini',
+		),
+		'azure_endpoint'    => array(
+			'env'     => 'VMFA_AI_AZURE_ENDPOINT',
+			'const'   => 'VMFA_AI_AZURE_ENDPOINT',
+			'default' => '',
+		),
+		'azure_api_version' => array(
+			'env'     => 'VMFA_AI_AZURE_API_VERSION',
+			'const'   => 'VMFA_AI_AZURE_API_VERSION',
+			'default' => '2024-02-15-preview',
 		),
 		'anthropic_key'     => array(
 			'env'     => 'VMFA_AI_ANTHROPIC_KEY',
@@ -182,10 +197,11 @@ class SettingsPage {
 			'vmfa-ai-organizer-admin',
 			'vmfaAiOrganizer',
 			array(
-				'restUrl'   => rest_url( 'vmfa/v1/' ),
-				'nonce'     => wp_create_nonce( 'wp_rest' ),
-				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-				'providers' => ProviderFactory::get_available_providers(),
+				'restUrl'    => rest_url( 'vmfa/v1/' ),
+				'nonce'      => wp_create_nonce( 'wp_rest' ),
+				'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+				'adminNonce' => wp_create_nonce( 'vmfa_admin_nonce' ),
+				'providers'  => ProviderFactory::get_available_providers(),
 			)
 		);
 	}
@@ -210,31 +226,41 @@ class SettingsPage {
 			);
 		}
 
+		$active_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'scanner'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<?php settings_errors( 'vmfa_messages' ); ?>
 
-			<form method="post" action="options.php" id="vmfa-ai-organizer-settings">
-				<?php
-				settings_fields( self::SETTINGS_GROUP );
-				do_settings_sections( 'vmfa-ai-organizer' );
-				submit_button( __( 'Save AI Settings', 'vmfa-ai-organizer' ) );
-				?>
-			</form>
+			<nav class="nav-tab-wrapper vmfa-nav-tabs">
+				<a href="<?php echo esc_url( add_query_arg( 'tab', 'scanner', remove_query_arg( 'tab' ) ) ); ?>" 
+				   class="nav-tab <?php echo 'scanner' === $active_tab ? 'nav-tab-active' : ''; ?>">
+					<?php esc_html_e( 'Media Scanner', 'vmfa-ai-organizer' ); ?>
+				</a>
+				<a href="<?php echo esc_url( add_query_arg( 'tab', 'provider', remove_query_arg( 'tab' ) ) ); ?>" 
+				   class="nav-tab <?php echo 'provider' === $active_tab ? 'nav-tab-active' : ''; ?>">
+					<?php esc_html_e( 'AI Provider', 'vmfa-ai-organizer' ); ?>
+				</a>
+			</nav>
 
-			<hr>
-
-			<h2><?php esc_html_e( 'Media Scanner', 'vmfa-ai-organizer' ); ?></h2>
-			<p class="description">
-				<?php esc_html_e( 'Use the scanner to organize your media library with AI suggestions.', 'vmfa-ai-organizer' ); ?>
-			</p>
-
-			<div id="vmfa-ai-organizer-scanner">
-				<!-- React component will mount here -->
-				<noscript>
-					<?php esc_html_e( 'JavaScript is required for the media scanner.', 'vmfa-ai-organizer' ); ?>
-				</noscript>
+			<div class="vmfa-tab-content">
+				<?php if ( 'scanner' === $active_tab ) : ?>
+					<div id="vmfa-ai-organizer-scanner">
+						<!-- React component will mount here -->
+						<noscript>
+							<?php esc_html_e( 'JavaScript is required for the media scanner.', 'vmfa-ai-organizer' ); ?>
+						</noscript>
+					</div>
+				<?php else : ?>
+					<form method="post" action="options.php" id="vmfa-ai-organizer-settings">
+						<?php
+						settings_fields( self::SETTINGS_GROUP );
+						do_settings_sections( 'vmfa-ai-organizer' );
+						submit_button( __( 'Save AI Settings', 'vmfa-ai-organizer' ) );
+						?>
+					</form>
+				<?php endif; ?>
 			</div>
 		</div>
 		<?php
@@ -274,8 +300,19 @@ class SettingsPage {
 
 		// OpenAI settings.
 		add_settings_field(
+			'openai_type',
+			__( 'OpenAI Type', 'vmfa-ai-organizer' ),
+			array( $this, 'render_openai_type_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'provider' => 'openai',
+			)
+		);
+
+		add_settings_field(
 			'openai_key',
-			__( 'OpenAI API Key', 'vmfa-ai-organizer' ),
+			__( 'API Key', 'vmfa-ai-organizer' ),
 			array( $this, 'render_api_key_field' ),
 			'vmfa-ai-organizer',
 			'vmfa_ai_provider_section',
@@ -287,12 +324,34 @@ class SettingsPage {
 
 		add_settings_field(
 			'openai_model',
-			__( 'OpenAI Model', 'vmfa-ai-organizer' ),
-			array( $this, 'render_model_field' ),
+			__( 'Model / Deployment', 'vmfa-ai-organizer' ),
+			array( $this, 'render_openai_model_field' ),
 			'vmfa-ai-organizer',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'openai_model',
+				'provider' => 'openai',
+			)
+		);
+
+		add_settings_field(
+			'azure_endpoint',
+			__( 'Azure Endpoint', 'vmfa-ai-organizer' ),
+			array( $this, 'render_azure_endpoint_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
+				'provider' => 'openai',
+			)
+		);
+
+		add_settings_field(
+			'azure_api_version',
+			__( 'Azure API Version', 'vmfa-ai-organizer' ),
+			array( $this, 'render_azure_api_version_field' ),
+			'vmfa-ai-organizer',
+			'vmfa_ai_provider_section',
+			array(
 				'provider' => 'openai',
 			)
 		);
@@ -471,37 +530,6 @@ class SettingsPage {
 	}
 
 	/**
-	 * Render settings content.
-	 *
-	 * @return void
-	 */
-	public function render_settings_content(): void {
-		?>
-		<form method="post" action="options.php" id="vmfa-ai-organizer-settings">
-			<?php
-			settings_fields( self::SETTINGS_GROUP );
-			do_settings_sections( 'vmfa-ai-organizer' );
-			submit_button( __( 'Save AI Settings', 'vmfa-ai-organizer' ) );
-			?>
-		</form>
-
-		<hr>
-
-		<h2><?php esc_html_e( 'Media Scanner', 'vmfa-ai-organizer' ); ?></h2>
-		<p class="description">
-			<?php esc_html_e( 'Use the scanner to organize your media library with AI suggestions.', 'vmfa-ai-organizer' ); ?>
-		</p>
-
-		<div id="vmfa-ai-organizer-scanner">
-			<!-- React component will mount here -->
-			<noscript>
-				<?php esc_html_e( 'JavaScript is required for the media scanner.', 'vmfa-ai-organizer' ); ?>
-			</noscript>
-		</div>
-		<?php
-	}
-
-	/**
 	 * Render provider section description.
 	 *
 	 * @return void
@@ -578,6 +606,37 @@ class SettingsPage {
 			autocomplete="off"
 			<?php disabled( $is_locked ); ?>
 		>
+		<?php
+		$this->render_locked_badge( $key );
+	}
+
+	/**
+	 * Render OpenAI model/deployment field as text input.
+	 *
+	 * @param array{key: string, provider: string} $args Field arguments.
+	 * @return void
+	 */
+	public function render_openai_model_field( array $args ): void {
+		$key       = $args['key'];
+		$provider  = $args['provider'];
+		$settings  = $this->get_settings();
+		$value     = $settings[ $key ] ?? 'gpt-4o-mini';
+		$is_locked = $this->is_setting_locked( $key );
+
+		?>
+		<input 
+			type="text" 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $key ); ?>]"
+			id="vmfa_<?php echo esc_attr( $key ); ?>"
+			value="<?php echo esc_attr( $value ); ?>"
+			class="regular-text vmfa-provider-field"
+			data-provider="<?php echo esc_attr( $provider ); ?>"
+			placeholder="gpt-4o-mini"
+			<?php disabled( $is_locked ); ?>
+		>
+		<p class="description">
+			<?php esc_html_e( 'For OpenAI: model name (e.g., gpt-4o-mini, gpt-4o). For Azure: deployment name.', 'vmfa-ai-organizer' ); ?>
+		</p>
 		<?php
 		$this->render_locked_badge( $key );
 	}
@@ -731,6 +790,94 @@ class SettingsPage {
 	}
 
 	/**
+	 * Render OpenAI type selection field.
+	 *
+	 * @return void
+	 */
+	public function render_openai_type_field(): void {
+		$settings  = $this->get_settings();
+		$value     = $settings['openai_type'] ?? 'openai';
+		$is_locked = $this->is_setting_locked( 'openai_type' );
+
+		?>
+		<select 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[openai_type]"
+			id="vmfa_openai_type"
+			class="vmfa-provider-field vmfa-openai-type-selector"
+			data-provider="openai"
+			<?php disabled( $is_locked ); ?>
+		>
+			<option value="openai" <?php selected( $value, 'openai' ); ?>>
+				<?php esc_html_e( 'OpenAI', 'vmfa-ai-organizer' ); ?>
+			</option>
+			<option value="azure" <?php selected( $value, 'azure' ); ?>>
+				<?php esc_html_e( 'Azure OpenAI', 'vmfa-ai-organizer' ); ?>
+			</option>
+		</select>
+		<p class="description">
+			<?php esc_html_e( 'Select OpenAI or Azure OpenAI as your provider.', 'vmfa-ai-organizer' ); ?>
+		</p>
+		<?php
+		$this->render_locked_badge( 'openai_type' );
+	}
+
+	/**
+	 * Render Azure endpoint field.
+	 *
+	 * @return void
+	 */
+	public function render_azure_endpoint_field(): void {
+		$settings  = $this->get_settings();
+		$value     = $settings['azure_endpoint'] ?? '';
+		$is_locked = $this->is_setting_locked( 'azure_endpoint' );
+
+		?>
+		<input 
+			type="url" 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[azure_endpoint]"
+			id="vmfa_azure_endpoint"
+			value="<?php echo esc_url( $value ); ?>"
+			class="regular-text vmfa-provider-field vmfa-azure-field"
+			data-provider="openai"
+			placeholder="https://your-resource.openai.azure.com"
+			<?php disabled( $is_locked ); ?>
+		>
+		<p class="description">
+			<?php esc_html_e( 'Your Azure OpenAI resource endpoint URL.', 'vmfa-ai-organizer' ); ?>
+		</p>
+		<?php
+		$this->render_locked_badge( 'azure_endpoint' );
+	}
+
+	/**
+	 * Render Azure API version field.
+	 *
+	 * @return void
+	 */
+	public function render_azure_api_version_field(): void {
+		$settings  = $this->get_settings();
+		$value     = $settings['azure_api_version'] ?? '2024-02-15-preview';
+		$is_locked = $this->is_setting_locked( 'azure_api_version' );
+
+		?>
+		<input 
+			type="text" 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[azure_api_version]"
+			id="vmfa_azure_api_version"
+			value="<?php echo esc_attr( $value ); ?>"
+			class="regular-text vmfa-provider-field vmfa-azure-field"
+			data-provider="openai"
+			placeholder="2024-02-15-preview"
+			<?php disabled( $is_locked ); ?>
+		>
+		<p class="description">
+			<?php esc_html_e( 'Azure OpenAI API version (e.g., 2024-02-15-preview).', 'vmfa-ai-organizer' ); ?>
+		</p>
+		<?php
+		$this->render_locked_badge( 'azure_api_version' );
+	}
+
+	/**
 	 * Render locked badge if setting is overridden.
 	 *
 	 * @param string $key Setting key.
@@ -836,6 +983,23 @@ class SettingsPage {
 			if ( isset( $input[ $field ] ) ) {
 				$sanitized[ $field ] = sanitize_text_field( $input[ $field ] );
 			}
+		}
+
+		// OpenAI type (openai or azure).
+		if ( isset( $input['openai_type'] ) ) {
+			$sanitized['openai_type'] = in_array( $input['openai_type'], array( 'openai', 'azure' ), true )
+				? $input['openai_type']
+				: 'openai';
+		}
+
+		// Azure endpoint.
+		if ( isset( $input['azure_endpoint'] ) ) {
+			$sanitized['azure_endpoint'] = esc_url_raw( $input['azure_endpoint'] );
+		}
+
+		// Azure API version.
+		if ( isset( $input['azure_api_version'] ) ) {
+			$sanitized['azure_api_version'] = sanitize_text_field( $input['azure_api_version'] );
 		}
 
 		// Models.

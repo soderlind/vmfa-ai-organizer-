@@ -33,13 +33,19 @@ class HeuristicProvider extends AbstractProvider {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * Note: Heuristic provider ignores image_data as it cannot process images.
 	 */
 	public function analyze(
 		array $media_metadata,
 		array $folder_paths,
 		int $max_depth,
-		bool $allow_new_folders
+		bool $allow_new_folders,
+		?array $image_data = null
 	): array {
+		// Note: $image_data is ignored - heuristic provider uses metadata only.
+		unset( $image_data );
+
 		$filename    = strtolower( $media_metadata['filename'] ?? '' );
 		$mime_type   = $media_metadata['mime_type'] ?? '';
 		$alt         = strtolower( $media_metadata['alt'] ?? '' );

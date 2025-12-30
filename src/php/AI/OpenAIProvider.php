@@ -20,6 +20,45 @@ class OpenAIProvider extends AbstractProvider {
 	private const API_URL = 'https://api.openai.com/v1/chat/completions';
 
 	/**
+	 * Get the API URL based on type (OpenAI or Azure).
+	 *
+	 * @param string $model Model/deployment name.
+	 * @return string API URL.
+	 */
+	private function get_api_url( string $model ): string {
+		$type = $this->get_setting( 'openai_type' ) ?: 'openai';
+
+		if ( 'azure' === $type ) {
+			$endpoint    = $this->get_setting( 'azure_endpoint' );
+			$api_version = $this->get_setting( 'azure_api_version' ) ?: '2024-02-15-preview';
+
+			return rtrim( $endpoint, '/' ) . '/openai/deployments/' . $model . '/chat/completions?api-version=' . $api_version;
+		}
+
+		return self::API_URL;
+	}
+
+	/**
+	 * Get headers based on type (OpenAI or Azure).
+	 *
+	 * @param string $api_key API key.
+	 * @return array<string, string> Headers.
+	 */
+	private function get_headers( string $api_key ): array {
+		$type = $this->get_setting( 'openai_type' ) ?: 'openai';
+
+		if ( 'azure' === $type ) {
+			return array(
+				'api-key' => $api_key,
+			);
+		}
+
+		return array(
+			'Authorization' => "Bearer {$api_key}",
+		);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function get_name(): string {
@@ -30,7 +69,10 @@ class OpenAIProvider extends AbstractProvider {
 	 * {@inheritDoc}
 	 */
 	public function get_label(): string {
-		return __( 'OpenAI', 'vmfa-ai-organizer' );
+		$type = $this->get_setting( 'openai_type' ) ?: 'openai';
+		return 'azure' === $type
+			? __( 'Azure OpenAI', 'vmfa-ai-organizer' )
+			: __( 'OpenAI', 'vmfa-ai-organizer' );
 	}
 
 	/**
@@ -40,7 +82,8 @@ class OpenAIProvider extends AbstractProvider {
 		array $media_metadata,
 		array $folder_paths,
 		int $max_depth,
-		bool $allow_new_folders
+		bool $allow_new_folders,
+		?array $image_data = null
 	): array {
 		if ( ! $this->is_configured() ) {
 			return array(
@@ -54,29 +97,37 @@ class OpenAIProvider extends AbstractProvider {
 
 		$api_key = $this->get_setting( 'openai_key' );
 		$model   = $this->get_setting( 'openai_model' ) ?: 'gpt-4o-mini';
+		$type    = $this->get_setting( 'openai_type' ) ?: 'openai';
 
 		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders );
 
-		$response = $this->make_request(
-			self::API_URL,
-			array(
-				'model'       => $model,
-				'messages'    => array(
-					array(
-						'role'    => 'system',
-						'content' => self::SYSTEM_PROMPT,
-					),
-					array(
-						'role'    => 'user',
-						'content' => $user_prompt,
-					),
+		// Build user message content - with or without image.
+		$user_content = $this->build_user_content( $user_prompt, $image_data );
+
+		// Build request body - Azure doesn't need model in body.
+		$body = array(
+			'messages'    => array(
+				array(
+					'role'    => 'system',
+					'content' => self::SYSTEM_PROMPT,
 				),
-				'max_tokens'  => 500,
-				'temperature' => 0.3,
+				array(
+					'role'    => 'user',
+					'content' => $user_content,
+				),
 			),
-			array(
-				'Authorization' => "Bearer {$api_key}",
-			)
+			'max_tokens'  => 500,
+			'temperature' => 0.3,
+		);
+
+		if ( 'openai' === $type ) {
+			$body['model'] = $model;
+		}
+
+		$response = $this->make_request(
+			$this->get_api_url( $model ),
+			$body,
+			$this->get_headers( $api_key )
 		);
 
 		if ( ! $response['success'] ) {
@@ -99,32 +150,83 @@ class OpenAIProvider extends AbstractProvider {
 	}
 
 	/**
+	 * Build user content for the API request.
+	 *
+	 * For vision-capable models, this creates a multi-part content array with text and image.
+	 * For text-only requests, returns just the text prompt.
+	 *
+	 * @param string                   $text_prompt The text prompt.
+	 * @param array<string, mixed>|null $image_data  Image data (base64, mime_type, url).
+	 * @return string|array<int, array<string, mixed>> Content for the message.
+	 */
+	private function build_user_content( string $text_prompt, ?array $image_data ): string|array {
+		// If no image data, return plain text.
+		if ( null === $image_data || empty( $image_data['base64'] ) ) {
+			return $text_prompt;
+		}
+
+		// Build multi-part content with image for vision models.
+		$content = array(
+			array(
+				'type' => 'text',
+				'text' => $text_prompt,
+			),
+			array(
+				'type'      => 'image_url',
+				'image_url' => array(
+					'url'    => 'data:' . $image_data['mime_type'] . ';base64,' . $image_data['base64'],
+					'detail' => 'low', // Use 'low' for faster/cheaper processing, 'high' for more detail.
+				),
+			),
+		);
+
+		return $content;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function test( array $settings ): ?string {
 		$api_key = $settings['openai_key'] ?? '';
 		$model   = $settings['openai_model'] ?? 'gpt-4o-mini';
+		$type    = $settings['openai_type'] ?? 'openai';
 
 		if ( empty( $api_key ) ) {
-			return __( 'OpenAI API key is required.', 'vmfa-ai-organizer' );
+			return __( 'API key is required.', 'vmfa-ai-organizer' );
 		}
 
-		$response = $this->make_request(
-			self::API_URL,
-			array(
-				'model'      => $model,
-				'messages'   => array(
-					array(
-						'role'    => 'user',
-						'content' => 'Say "OK" if you can read this.',
-					),
+		if ( 'azure' === $type ) {
+			$endpoint = $settings['azure_endpoint'] ?? '';
+			if ( empty( $endpoint ) ) {
+				return __( 'Azure endpoint is required.', 'vmfa-ai-organizer' );
+			}
+			if ( empty( $model ) ) {
+				return __( 'Azure deployment name is required.', 'vmfa-ai-organizer' );
+			}
+
+			$api_version = $settings['azure_api_version'] ?? '2024-02-15-preview';
+			$url         = rtrim( $endpoint, '/' ) . '/openai/deployments/' . $model . '/chat/completions?api-version=' . $api_version;
+			$headers     = array( 'api-key' => $api_key );
+		} else {
+			$url     = self::API_URL;
+			$headers = array( 'Authorization' => "Bearer {$api_key}" );
+		}
+
+		$body = array(
+			'messages'   => array(
+				array(
+					'role'    => 'user',
+					'content' => 'Say "OK" if you can read this.',
 				),
-				'max_tokens' => 10,
 			),
-			array(
-				'Authorization' => "Bearer {$api_key}",
-			)
+			'max_tokens' => 10,
 		);
+
+		if ( 'openai' === $type ) {
+			$body['model'] = $model;
+		}
+
+		$response = $this->make_request( $url, $body, $headers );
 
 		if ( ! $response['success'] ) {
 			return $response['error'];
@@ -138,7 +240,18 @@ class OpenAIProvider extends AbstractProvider {
 	 */
 	public function is_configured(): bool {
 		$api_key = $this->get_setting( 'openai_key' );
-		return ! empty( $api_key );
+		$type    = $this->get_setting( 'openai_type' ) ?: 'openai';
+
+		if ( empty( $api_key ) ) {
+			return false;
+		}
+
+		if ( 'azure' === $type ) {
+			$endpoint = $this->get_setting( 'azure_endpoint' );
+			return ! empty( $endpoint );
+		}
+
+		return true;
 	}
 
 	/**

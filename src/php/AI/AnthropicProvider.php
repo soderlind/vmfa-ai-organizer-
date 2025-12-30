@@ -45,7 +45,8 @@ class AnthropicProvider extends AbstractProvider {
 		array $media_metadata,
 		array $folder_paths,
 		int $max_depth,
-		bool $allow_new_folders
+		bool $allow_new_folders,
+		?array $image_data = null
 	): array {
 		if ( ! $this->is_configured() ) {
 			return array(
@@ -62,6 +63,9 @@ class AnthropicProvider extends AbstractProvider {
 
 		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders );
 
+		// Build user content - with or without image.
+		$user_content = $this->build_user_content( $user_prompt, $image_data );
+
 		$response = $this->make_request(
 			self::API_URL,
 			array(
@@ -71,7 +75,7 @@ class AnthropicProvider extends AbstractProvider {
 				'messages'   => array(
 					array(
 						'role'    => 'user',
-						'content' => $user_prompt,
+						'content' => $user_content,
 					),
 				),
 			),
@@ -153,6 +157,39 @@ class AnthropicProvider extends AbstractProvider {
 			'claude-3-sonnet-20240229' => 'Claude 3 Sonnet (Balanced)',
 			'claude-3-opus-20240229'   => 'Claude 3 Opus (Powerful)',
 			'claude-3-5-sonnet-latest' => 'Claude 3.5 Sonnet (Latest)',
+		);
+	}
+
+	/**
+	 * Build user content for the API request.
+	 *
+	 * For vision-capable models (Claude 3), this creates content with text and image.
+	 * For text-only requests, returns just the text string.
+	 *
+	 * @param string                   $text_prompt The text prompt.
+	 * @param array<string, mixed>|null $image_data  Image data (base64, mime_type).
+	 * @return string|array<int, array<string, mixed>> Content for the message.
+	 */
+	private function build_user_content( string $text_prompt, ?array $image_data ): string|array {
+		// If no image data, return plain text.
+		if ( null === $image_data || empty( $image_data['base64'] ) ) {
+			return $text_prompt;
+		}
+
+		// Build Anthropic vision content format.
+		return array(
+			array(
+				'type' => 'text',
+				'text' => $text_prompt,
+			),
+			array(
+				'type'   => 'image',
+				'source' => array(
+					'type'         => 'base64',
+					'media_type'   => $image_data['mime_type'],
+					'data'         => $image_data['base64'],
+				),
+			),
 		);
 	}
 }
