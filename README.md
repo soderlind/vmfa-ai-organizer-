@@ -31,11 +31,9 @@ AI-powered media organization add-on for the [Virtual Media Folders](https://wor
 
 ## Installation
 
-1. Ensure Virtual Media Folders is installed and activated
-2. Upload the plugin to `/wp-content/plugins/vmfa-ai-organizer`
-3. Run `composer install` to install dependencies
-4. Run `npm install && npm run build` to build assets
-5. Activate the plugin
+1. Download [`vmfa-ai-organizer.zip`](https://github.com/soderlind/vmfa-ai-organizer/releases/latest/download/vmfa-ai-organizer.zip)
+2. Upload via  `Plugins → Add New → Upload Plugin`
+3. Activate via `WordPress Admin → Plugins`
 
 ## Configuration
 
