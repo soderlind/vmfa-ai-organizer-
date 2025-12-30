@@ -24,12 +24,13 @@ jobs:
           type: 'zip'
           filename: 'vmfa-ai-organizer.zip'
           exclusions: >-
-            *.git* /*.github/* /*.vscode/* /*.specify/* /*.phpunit.cache/* /*node_modules/* /*tests/* /*docs/* /*specs/* 
+            *.git* /*.github/* /*.vscode/* /*node_modules/* /*tests/* /*docs/*
+            /src/js/* !/src/php/*
             composer.json composer.lock package.json package-lock.json
-            CHANGELOG.md README.md phpunit.xml phpunit.xml.dist build/phpunit.xml phpcs.xml vitest.config.js
+            phpunit.xml phpunit.xml.dist phpcs.xml vitest.config.js i18n-map.json
             .editorconfig .eslintignore .phpunit.result.cache .eslintrc.js .gitignore .gitattributes webpack.config.js
-            *.log *.md run-tests.sh
-            !readme.txt
+            *.log CHANGELOG.md README.md
+            !readme.txt !build/* !languages/* !src/php/* !vendor/*
       
       - name: Verify Archive Contents
         run: |
