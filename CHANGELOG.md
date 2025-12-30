@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Session Folder Tracking**: AI remembers folders suggested during the current scan session
+  - Prevents duplicate/synonymous folders like "Nature/Flowers" vs "Nature/Plants/Flowers"
+  - Session is cleared when a new scan starts
+  - Suggested folders are passed to AI with instructions to reuse them
+
+- **Automatic File Type Folders**: Documents and videos are now auto-assigned without AI
+  - Documents (PDF, Word, Excel, PowerPoint, text files, etc.) → "Documents" folder
+  - Videos (MP4, WebM, MOV, AVI, etc.) → "Videos" folder
+  - Creates folders automatically if "Allow New Folders" is enabled
+
 - **Localized Folder Names**: AI providers now return folder names in the WordPress site language
   - Automatically detects WordPress locale (e.g., nb_NO, de_DE, fr_FR)
   - Supports 35+ languages with human-readable names
@@ -18,6 +28,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Saves time and API costs by reusing cached analysis when accepting preview results
   - Cache is automatically cleared when starting a new preview scan
   - New REST endpoints: `/vmfa/v1/scan/apply-cached` and `/vmfa/v1/scan/cached-count`
+
+### Changed
+
+- **AI Provider Required**: Removed HeuristicProvider - an AI provider must now be configured to scan images
+  - Scanning will not start without a configured AI provider
+  - Clear error message guides users to configure provider in settings
+  - Documents and videos still work without AI (type-based assignment)
+
+- **Improved AI Prompts**: Enhanced system prompt to avoid similar/synonymous folder names
+  - Explicit rules against creating synonym folders (e.g., "Wildlife" if "Animals" exists)
+  - Standard category examples provided (Animals, Nature, People, Buildings, etc.)
+  - Enforces one or two word folder names maximum
+  - Strongly prefers existing folders over creating new ones
+
+- **VMF Compatibility**: Fixed folder assignment to match Virtual Media Folders behavior
+  - Uses `append=true` with `wp_set_object_terms()` to match VMF
+  - Fires `vmfo_media_moved` action for VMF compatibility
+  - Improved parent folder matching with proper `get_terms()` query
+
+### Fixed
+
+- Fixed folders being created but empty after applying changes
+- Fixed progress bar exceeding 100% during scanning
+- Fixed preview modal not showing all results (now shows actual count)
+- Fixed modal buttons not visible when content overflows
 
 ## [0.1.0] - 2024-12-30
 
@@ -36,7 +71,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Ollama for local LLM inference (including LLaVA for vision)
   - Grok (xAI) - Grok Beta, Grok 2, Grok 2 Mini
   - Exo for distributed local inference
-  - Heuristic fallback (pattern matching, no API required)
 
 - **Scan Modes**:
   - Organize Unassigned: Process only media not in any folder
