@@ -295,10 +295,10 @@ class AIAnalysisService {
 				continue;
 			}
 
-			// Check if this folder already exists.
-			$existing = get_term_by( 'name', $part, self::TAXONOMY );
+			// Check if this folder already exists under the current parent.
+			$existing = $this->find_term_by_name_and_parent( $part, $parent_id );
 
-			if ( $existing && $existing->parent === $parent_id ) {
+			if ( $existing ) {
 				$parent_id = $existing->term_id;
 				continue;
 			}
@@ -311,21 +311,52 @@ class AIAnalysisService {
 			);
 
 			if ( is_wp_error( $result ) ) {
-				// Term might exist with different parent, try to find it.
-				if ( $existing ) {
-					$parent_id = $existing->term_id;
-					continue;
+				// If term exists error, try to get the existing term.
+				if ( 'term_exists' === $result->get_error_code() ) {
+					$existing_term_id = $result->get_error_data();
+					if ( $existing_term_id ) {
+						$parent_id = (int) $existing_term_id;
+						continue;
+					}
 				}
 				return null;
 			}
 
 			$parent_id = $result['term_id'];
+
+			// Set default order for new folder.
+			update_term_meta( $parent_id, 'vmfo_order', 0 );
 		}
 
 		// Clear folder cache.
 		$this->folder_paths = null;
 
 		return $parent_id > 0 ? $parent_id : null;
+	}
+
+	/**
+	 * Find a term by name and parent ID.
+	 *
+	 * @param string $name      Term name.
+	 * @param int    $parent_id Parent term ID.
+	 * @return \WP_Term|null
+	 */
+	private function find_term_by_name_and_parent( string $name, int $parent_id ): ?\WP_Term {
+		$terms = get_terms(
+			array(
+				'taxonomy'   => self::TAXONOMY,
+				'name'       => $name,
+				'parent'     => $parent_id,
+				'hide_empty' => false,
+				'number'     => 1,
+			)
+		);
+
+		if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+			return $terms[0];
+		}
+
+		return null;
 	}
 
 	/**
@@ -336,15 +367,39 @@ class AIAnalysisService {
 	 * @return bool
 	 */
 	public function assign_to_folder( int $attachment_id, int $folder_id ): bool {
-		$result = wp_set_object_terms( $attachment_id, array( $folder_id ), self::TAXONOMY );
+		// Verify the attachment exists.
+		$attachment = get_post( $attachment_id );
+		if ( ! $attachment || 'attachment' !== $attachment->post_type ) {
+			return false;
+		}
+
+		// Verify the folder term exists.
+		$term = get_term( $folder_id, self::TAXONOMY );
+		if ( ! $term || is_wp_error( $term ) ) {
+			return false;
+		}
+
+		// Use wp_set_object_terms with integer term IDs.
+		// Match VMF's approach: append=true to add to existing folders.
+		$result = wp_set_object_terms( $attachment_id, array( $folder_id ), self::TAXONOMY, true );
 
 		if ( is_wp_error( $result ) ) {
 			return false;
 		}
 
-		// Clear any AI suggestion metadata.
+		// Clear any AI suggestion metadata (same as VMF does).
 		delete_post_meta( $attachment_id, '_vmfo_folder_suggestions' );
 		delete_post_meta( $attachment_id, '_vmfo_suggestions_dismissed' );
+
+		/**
+		 * Fires when media is moved to a folder.
+		 * This is the same action VMF uses for compatibility.
+		 *
+		 * @param int   $attachment_id The attachment ID.
+		 * @param int   $folder_id     The folder term ID.
+		 * @param array $result        The term IDs that were set.
+		 */
+		do_action( 'vmfo_media_moved', $attachment_id, $folder_id, $result );
 
 		return true;
 	}
