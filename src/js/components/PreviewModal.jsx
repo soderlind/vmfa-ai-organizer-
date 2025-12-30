@@ -151,15 +151,15 @@ export function PreviewModal( { results, onClose, onApply } ) {
 			</div>
 
 			<div className="vmfa-preview-actions">
-				<Button variant="secondary" onClick={ onClose }>
-					{ __( 'Cancel', 'vmfa-ai-organizer' ) }
-				</Button>
 				<Button
 					variant="primary"
 					onClick={ onApply }
 					disabled={ assignCount === 0 && createCount === 0 }
 				>
 					{ __( 'Apply Changes', 'vmfa-ai-organizer' ) }
+				</Button>
+				<Button variant="secondary" onClick={ onClose }>
+					{ __( 'Cancel', 'vmfa-ai-organizer' ) }
 				</Button>
 			</div>
 		</Modal>
