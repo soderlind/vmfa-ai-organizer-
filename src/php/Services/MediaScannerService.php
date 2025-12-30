@@ -27,6 +27,11 @@ class MediaScannerService {
 	private const PENDING_RESULTS_OPTION = 'vmfa_scan_pending_results';
 
 	/**
+	 * Cached dry-run results option name.
+	 */
+	private const DRYRUN_CACHE_OPTION = 'vmfa_scan_dryrun_cache';
+
+	/**
 	 * AI Analysis Service.
 	 *
 	 * @var AIAnalysisService
@@ -124,6 +129,11 @@ class MediaScannerService {
 
 		// Clear pending results.
 		delete_option( self::PENDING_RESULTS_OPTION );
+
+		// Clear dry-run cache when starting a new dry-run.
+		if ( $dry_run ) {
+			delete_option( self::DRYRUN_CACHE_OPTION );
+		}
 
 		$batch_size = (int) Plugin::get_instance()->get_setting( 'batch_size', 20 );
 
@@ -231,8 +241,9 @@ class MediaScannerService {
 		}
 
 		// Process each attachment in batch.
-		$batch_results  = array();
+		$batch_results   = array();
 		$pending_results = get_option( self::PENDING_RESULTS_OPTION, array() );
+		$dryrun_cache    = $dry_run ? get_option( self::DRYRUN_CACHE_OPTION, array() ) : array();
 
 		foreach ( $batch_ids as $attachment_id ) {
 			$result          = $this->analysis_service->analyze_media( (int) $attachment_id );
@@ -242,10 +253,20 @@ class MediaScannerService {
 			if ( ! $dry_run && in_array( $result['action'], array( 'assign', 'create' ), true ) ) {
 				$pending_results[] = $result;
 			}
+
+			// Cache ALL actionable results during dry-run for later application.
+			if ( $dry_run && in_array( $result['action'], array( 'assign', 'create' ), true ) ) {
+				$dryrun_cache[] = $result;
+			}
 		}
 
 		// Update pending results.
 		update_option( self::PENDING_RESULTS_OPTION, $pending_results, false );
+
+		// Update dry-run cache.
+		if ( $dry_run ) {
+			update_option( self::DRYRUN_CACHE_OPTION, $dryrun_cache, false );
+		}
 
 		// Update progress.
 		$new_processed = $progress['processed'] + count( $batch_ids );
@@ -315,6 +336,151 @@ class MediaScannerService {
 			array(),
 			'vmfa-ai-organizer'
 		);
+	}
+
+	/**
+	 * Apply cached dry-run results.
+	 *
+	 * This allows applying previously cached dry-run results without re-running the AI analysis.
+	 *
+	 * @param string $mode The scan mode for progress tracking.
+	 * @return array{success: bool, message: string, applied?: int, failed?: int}
+	 */
+	public function apply_cached_results( string $mode ): array {
+		$cached_results = get_option( self::DRYRUN_CACHE_OPTION, array() );
+
+		if ( empty( $cached_results ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'No cached dry-run results found. Please run a preview first.', 'vmfa-ai-organizer' ),
+			);
+		}
+
+		// Check if a scan is already running.
+		$progress = $this->get_progress();
+		if ( 'running' === $progress['status'] ) {
+			return array(
+				'success' => false,
+				'message' => __( 'A scan is already in progress. Please wait for it to complete or cancel it.', 'vmfa-ai-organizer' ),
+			);
+		}
+
+		// For reorganize_all mode, create backup and cleanup folders first.
+		if ( 'reorganize_all' === $mode ) {
+			$this->backup_service->export();
+
+			// Remove all media from all folders.
+			$folders = get_terms(
+				array(
+					'taxonomy'   => 'vmfo_folder',
+					'hide_empty' => false,
+					'fields'     => 'ids',
+				)
+			);
+
+			if ( ! is_wp_error( $folders ) && ! empty( $folders ) ) {
+				foreach ( $folders as $folder_id ) {
+					$attachments = get_posts(
+						array(
+							'post_type'      => 'attachment',
+							'posts_per_page' => -1,
+							'fields'         => 'ids',
+							'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+								array(
+									'taxonomy' => 'vmfo_folder',
+									'terms'    => $folder_id,
+								),
+							),
+						)
+					);
+
+					foreach ( $attachments as $attachment_id ) {
+						wp_remove_object_terms( $attachment_id, $folder_id, 'vmfo_folder' );
+					}
+				}
+			}
+		}
+
+		// Initialize progress for applying cached results.
+		$this->update_progress(
+			array(
+				'status'      => 'running',
+				'mode'        => $mode,
+				'dry_run'     => false,
+				'total'       => count( $cached_results ),
+				'processed'   => 0,
+				'results'     => array(),
+				'started_at'  => time(),
+				'error'       => null,
+			)
+		);
+
+		$applied = 0;
+		$failed  = 0;
+		$results = array();
+
+		foreach ( $cached_results as $result ) {
+			$success   = $this->analysis_service->apply_result( $result );
+			$results[] = $result;
+
+			if ( $success ) {
+				++$applied;
+			} else {
+				++$failed;
+			}
+		}
+
+		// Keep only last 100 results for memory efficiency.
+		if ( count( $results ) > 100 ) {
+			$results = array_slice( $results, -100 );
+		}
+
+		// Update progress with final results.
+		$this->update_progress(
+			array(
+				'status'       => 'completed',
+				'processed'    => count( $cached_results ),
+				'results'      => $results,
+				'applied'      => $applied,
+				'failed'       => $failed,
+				'completed_at' => time(),
+			)
+		);
+
+		// Clean up cached results and temporary data.
+		delete_option( self::DRYRUN_CACHE_OPTION );
+		delete_option( 'vmfa_scan_attachment_ids' );
+		delete_option( self::PENDING_RESULTS_OPTION );
+
+		/**
+		 * Fires when cached results are applied.
+		 *
+		 * @param int $applied Number of successfully applied results.
+		 * @param int $failed  Number of failed results.
+		 */
+		do_action( 'vmfa_cached_results_applied', $applied, $failed );
+
+		return array(
+			'success' => true,
+			'message' => sprintf(
+				/* translators: 1: applied count, 2: failed count */
+				__( 'Applied %1$d assignments (%2$d failed).', 'vmfa-ai-organizer' ),
+				$applied,
+				$failed
+			),
+			'applied' => $applied,
+			'failed'  => $failed,
+		);
+	}
+
+	/**
+	 * Get the number of cached dry-run results.
+	 *
+	 * @return int
+	 */
+	public function get_cached_results_count(): int {
+		$cached = get_option( self::DRYRUN_CACHE_OPTION, array() );
+		return count( $cached );
 	}
 
 	/**

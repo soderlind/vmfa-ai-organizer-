@@ -133,6 +133,41 @@ class AnalysisController extends WP_REST_Controller {
 			)
 		);
 
+		// Apply cached dry-run results.
+		register_rest_route(
+			$this->namespace,
+			'/scan/apply-cached',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'apply_cached_results' ),
+					'permission_callback' => array( $this, 'check_permission' ),
+					'args'                => array(
+						'mode' => array(
+							'required'          => true,
+							'type'              => 'string',
+							'enum'              => array( 'organize_unassigned', 'reanalyze_all', 'reorganize_all' ),
+							'description'       => __( 'Original scan mode.', 'vmfa-ai-organizer' ),
+							'sanitize_callback' => 'sanitize_key',
+						),
+					),
+				),
+			)
+		);
+
+		// Get cached results count.
+		register_rest_route(
+			$this->namespace,
+			'/scan/cached-count',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_cached_count' ),
+					'permission_callback' => array( $this, 'check_permission' ),
+				),
+			)
+		);
+
 		// Analyze single media.
 		register_rest_route(
 			$this->namespace,
@@ -348,6 +383,53 @@ class AnalysisController extends WP_REST_Controller {
 			array(
 				'success' => true,
 				'message' => __( 'Scan progress reset.', 'vmfa-ai-organizer' ),
+			),
+			200
+		);
+	}
+
+	/**
+	 * Apply cached dry-run results.
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function apply_cached_results( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+		$mode = $request->get_param( 'mode' );
+
+		$result = $this->scanner_service->apply_cached_results( $mode );
+
+		if ( ! $result['success'] ) {
+			return new WP_Error(
+				'apply_error',
+				$result['message'],
+				array( 'status' => 400 )
+			);
+		}
+
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+				'message' => $result['message'],
+				'applied' => $result['applied'] ?? 0,
+				'failed'  => $result['failed'] ?? 0,
+			),
+			200
+		);
+	}
+
+	/**
+	 * Get cached dry-run results count.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function get_cached_count(): WP_REST_Response {
+		$count = $this->scanner_service->get_cached_results_count();
+
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+				'count'   => $count,
 			),
 			200
 		);

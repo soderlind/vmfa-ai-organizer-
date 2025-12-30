@@ -41,6 +41,7 @@ export function AiOrganizerPanel() {
 		startScan,
 		cancelScan,
 		resetScan,
+		applyCachedResults,
 		refresh,
 	} = useScanStatus();
 
@@ -131,12 +132,27 @@ export function AiOrganizerPanel() {
 	};
 
 	/**
-	 * Apply preview results.
+	 * Apply preview results using cached dry-run data.
 	 */
 	const handleApplyPreview = async () => {
 		setShowPreview( false );
-		setDryRun( false );
-		await startScan( mode, false );
+		try {
+			setNotice( {
+				type: 'info',
+				message: __( 'Applying cached preview results...', 'vmfa-ai-organizer' ),
+			} );
+			const response = await applyCachedResults( mode );
+			await fetchStats();
+			setNotice( {
+				type: 'success',
+				message: response.message || __( 'Preview results applied successfully.', 'vmfa-ai-organizer' ),
+			} );
+		} catch ( err ) {
+			setNotice( {
+				type: 'error',
+				message: err.message || __( 'Failed to apply preview results.', 'vmfa-ai-organizer' ),
+			} );
+		}
 	};
 
 	const isRunning = status.status === 'running';

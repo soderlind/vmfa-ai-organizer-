@@ -155,6 +155,48 @@ export function useScanStatus( pollInterval = 2000 ) {
 		}
 	}, [ fetchStatus ] );
 
+	/**
+	 * Apply cached dry-run results.
+	 *
+	 * @param {string} mode - Original scan mode.
+	 * @return {Promise<Object>} Apply result.
+	 */
+	const applyCachedResults = useCallback( async ( mode ) => {
+		try {
+			setIsLoading( true );
+			const response = await apiFetch( {
+				path: '/vmfa/v1/scan/apply-cached',
+				method: 'POST',
+				data: { mode },
+			} );
+			await fetchStatus();
+			return response;
+		} catch ( err ) {
+			setError( err.message || 'Failed to apply cached results' );
+			throw err;
+		} finally {
+			setIsLoading( false );
+		}
+	}, [ fetchStatus ] );
+
+	/**
+	 * Get count of cached dry-run results.
+	 *
+	 * @return {Promise<number>} Cached results count.
+	 */
+	const getCachedCount = useCallback( async () => {
+		try {
+			const response = await apiFetch( {
+				path: '/vmfa/v1/scan/cached-count',
+				method: 'GET',
+			} );
+			return response.count;
+		} catch ( err ) {
+			setError( err.message || 'Failed to get cached count' );
+			return 0;
+		}
+	}, [] );
+
 	return {
 		status,
 		isLoading,
@@ -162,6 +204,8 @@ export function useScanStatus( pollInterval = 2000 ) {
 		startScan,
 		cancelScan,
 		resetScan,
+		applyCachedResults,
+		getCachedCount,
 		refresh: fetchStatus,
 	};
 }

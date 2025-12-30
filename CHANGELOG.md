@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Dry-Run Result Caching**: Preview results are now cached so applying them doesn't require re-running AI analysis
+  - Saves time and API costs by reusing cached analysis when accepting preview results
+  - Cache is automatically cleared when starting a new preview scan
+  - New REST endpoints: `/vmfa/v1/scan/apply-cached` and `/vmfa/v1/scan/cached-count`
+
 ## [0.1.0] - 2024-12-30
 
 ### Added
