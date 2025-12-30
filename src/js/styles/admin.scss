@@ -151,6 +151,13 @@
 		border-radius: 4px;
 		margin: 16px 0;
 		overflow: hidden;
+
+		&.vmfa-progress-indeterminate {
+			.vmfa-progress-bar {
+				width: 30% !important;
+				animation: vmfa-indeterminate 1.5s infinite ease-in-out;
+			}
+		}
 	}
 
 	.vmfa-progress-bar {
@@ -158,6 +165,14 @@
 		background: #2271b1;
 		border-radius: 4px;
 		transition: width 0.3s ease;
+	}
+
+	.vmfa-progress-hint {
+		font-size: 12px;
+		color: #757575;
+		font-style: italic;
+		margin-top: -8px;
+		margin-bottom: 16px;
 	}
 
 	.vmfa-progress-error {
@@ -439,5 +454,16 @@
 
 	.vmfa-preview-modal .vmfa-preview-stats {
 		grid-template-columns: 1fr;
+	}
+}
+
+/* Indeterminate progress bar animation */
+@keyframes vmfa-indeterminate {
+	0% {
+		transform: translateX(-100%);
+	}
+
+	100% {
+		transform: translateX(400%);
 	}
 }

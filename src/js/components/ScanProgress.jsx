@@ -34,10 +34,18 @@ function formatElapsedTime( startTime ) {
 /**
  * Get status label.
  *
- * @param {string} status - Status string.
+ * @param {string}  status     - Status string.
+ * @param {number}  processed  - Number of items processed.
+ * @param {boolean} dryRun     - Whether this is a dry run.
  * @return {string} Human-readable status.
  */
-function getStatusLabel( status ) {
+function getStatusLabel( status, processed = 0, dryRun = false ) {
+	if ( status === 'running' && processed === 0 ) {
+		return dryRun
+			? __( 'Preparing preview...', 'vmfa-ai-organizer' )
+			: __( 'Initializing...', 'vmfa-ai-organizer' );
+	}
+
 	const labels = {
 		idle: __( 'Ready', 'vmfa-ai-organizer' ),
 		running: __( 'Processing...', 'vmfa-ai-organizer' ),
@@ -82,7 +90,7 @@ export function ScanProgress( { status, onCancel, onReset, isLoading } ) {
 			<CardHeader>
 				<h3>
 					{ isRunning && <Spinner /> }
-					{ getStatusLabel( status.status ) }
+					{ getStatusLabel( status.status, status.processed, status.dry_run ) }
 					{ status.dry_run && (
 						<span className="vmfa-badge vmfa-badge-info">
 							{ __( 'Preview', 'vmfa-ai-organizer' ) }
@@ -106,16 +114,25 @@ export function ScanProgress( { status, onCancel, onReset, isLoading } ) {
 							{ __( 'Progress:', 'vmfa-ai-organizer' ) }
 						</span>
 						<span className="vmfa-progress-value">
-							{ status.processed } / { status.total } ({ status.percentage }%)
+							{ status.processed === 0 && isRunning
+								? __( 'Starting...', 'vmfa-ai-organizer' )
+								: `${ status.processed } / ${ status.total } (${ status.percentage }%)`
+							}
 						</span>
 					</div>
 
-					<div className="vmfa-progress-bar-container">
+					<div className={ `vmfa-progress-bar-container${ isRunning && status.processed === 0 ? ' vmfa-progress-indeterminate' : '' }` }>
 						<div
 							className="vmfa-progress-bar"
-							style={ { width: `${ status.percentage }%` } }
+							style={ { width: isRunning && status.processed === 0 ? '100%' : `${ status.percentage }%` } }
 						/>
 					</div>
+
+					{ isRunning && status.processed === 0 && (
+						<div className="vmfa-progress-hint">
+							{ __( 'Connecting to AI provider and analyzing first batch...', 'vmfa-ai-organizer' ) }
+						</div>
+					) }
 
 					{ isRunning && (
 						<div className="vmfa-progress-row">
