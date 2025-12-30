@@ -1,740 +1,836 @@
-# Norwegian Bokmål translation for Virtual Media Folders AI Organizer
-# Copyright (C) 2025 Per Soderlind
-# This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
 "Project-Id-Version: Virtual Media Folders AI Organizer 0.1.0\n"
 "Report-Msgid-Bugs-To: https://developer.suspended.suspended.suspended.no\n"
-"POT-Creation-Date: 2025-12-30 00:00:00+00:00\n"
-"PO-Revision-Date: 2025-12-30 00:00:00+00:00\n"
 "Last-Translator: Per Soderlind <per@soderlind.no>\n"
 "Language-Team: Norwegian Bokmål\n"
-"Language: nb_NO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-12-30 00:00:00+00:00\n"
+"PO-Revision-Date: 2025-12-30 00:00:00+00:00\n"
+"Language: nb_NO\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: WP-CLI\n"
 "X-Domain: vmfa-ai-organizer\n"
 
 #. Plugin Name of the plugin
+#: vmfa-ai-organizer.php
 msgid "Virtual Media Folders AI Organizer"
 msgstr "Virtuelle mediemapper AI-organisator"
 
-#. Description of the plugin
-msgid "AI-powered media organization add-on for Virtual Media Folders"
-msgstr "AI-drevet medieorganisering for Virtuelle mediemapper"
-
-#: vmfa-ai-organizer.php
+#. translators: %s: Plugin name
+#: vmfa-ai-organizer.php:54
+#, php-format
 msgid "%s requires Virtual Media Folders to be installed and activated."
 msgstr "%s krever at Virtuelle mediemapper er installert og aktivert."
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:155
 msgid "AI Organizer Settings"
 msgstr "AI-organisator innstillinger"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:156
+#: src/php/Admin/SettingsPage.php:528
 msgid "AI Organizer"
 msgstr "AI-organisator"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:224
 msgid "Settings saved."
 msgstr "Innstillinger lagret."
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:239
 msgid "Media Scanner"
 msgstr "Medieskanner"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:243
+#: src/php/Admin/SettingsPage.php:288
 msgid "AI Provider"
 msgstr "AI-leverandør"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:252
 msgid "JavaScript is required for the media scanner."
 msgstr "JavaScript er påkrevd for medieskanneren."
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:260
 msgid "Save AI Settings"
 msgstr "Lagre AI-innstillinger"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:295
 msgid "Provider"
 msgstr "Leverandør"
 
-#: src/php/Admin/SettingsPage.php
-msgid "Select the AI provider to use for media analysis."
-msgstr "Velg AI-leverandøren som skal brukes for medieanalyse."
-
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:811
+#: src/php/AI/OpenAIProvider.php:75
 msgid "OpenAI"
 msgstr "OpenAI"
 
-#: src/php/Admin/SettingsPage.php
-msgid "Anthropic"
-msgstr "Anthropic"
-
-#: src/php/Admin/SettingsPage.php
-msgid "Gemini"
-msgstr "Gemini"
-
-#: src/php/Admin/SettingsPage.php
+#: src/php/AI/OllamaProvider.php:33
 msgid "Ollama (Local)"
 msgstr "Ollama (lokal)"
 
-#: src/php/Admin/SettingsPage.php
-msgid "Grok"
-msgstr "Grok"
-
-#: src/php/Admin/SettingsPage.php
-msgid "Exo (Local)"
-msgstr "Exo (lokal)"
-
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:304
 msgid "OpenAI Type"
 msgstr "OpenAI-type"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:315
 msgid "API Key"
 msgstr "API-nøkkel"
 
-#: src/php/Admin/SettingsPage.php
-msgid "Enter your API key."
-msgstr "Skriv inn din API-nøkkel."
-
-#: src/php/Admin/SettingsPage.php
-msgid "Model"
-msgstr "Modell"
-
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:327
 msgid "Model / Deployment"
 msgstr "Modell / Distribusjon"
 
-#: src/php/Admin/SettingsPage.php
-msgid "Enter the model to use."
-msgstr "Skriv inn modellen som skal brukes."
-
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:339
 msgid "Azure Endpoint"
 msgstr "Azure-endepunkt"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:350
 msgid "Azure API Version"
 msgstr "Azure API-versjon"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:362
 msgid "Anthropic API Key"
 msgstr "Anthropic API-nøkkel"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:374
 msgid "Anthropic Model"
 msgstr "Anthropic-modell"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:387
 msgid "Gemini API Key"
 msgstr "Gemini API-nøkkel"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:399
 msgid "Gemini Model"
 msgstr "Gemini-modell"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:412
 msgid "Ollama URL"
 msgstr "Ollama URL"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:424
 msgid "Ollama Model"
 msgstr "Ollama-modell"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:437
 msgid "Grok API Key"
 msgstr "Grok API-nøkkel"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:449
 msgid "Grok Model"
 msgstr "Grok-modell"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:462
 msgid "Exo URL"
 msgstr "Exo URL"
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:474
 msgid "Exo Model"
 msgstr "Exo-modell"
 
-#: src/php/Admin/SettingsPage.php
-msgid "Max Folder Depth"
-msgstr "Maks mappedybde"
-
-#: src/php/Admin/SettingsPage.php
-msgid "Maximum folder hierarchy depth (1-5)."
-msgstr "Maksimal mappehierarkidybde (1-5)."
-
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:502
 msgid "Allow New Folders"
 msgstr "Tillat nye mapper"
 
-#: src/php/Admin/SettingsPage.php
-msgid "Allow AI to suggest creating new folders."
-msgstr "Tillat AI å foreslå opprettelse av nye mapper."
-
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:514
 msgid "Batch Size"
 msgstr "Batchstørrelse"
 
-#: src/php/Admin/SettingsPage.php
-msgid "Number of media items to process per batch (10-100)."
-msgstr "Antall medieelementer som skal behandles per batch (10-100)."
-
-#: src/php/Admin/SettingsPage.php
-msgid "Locked by constant or environment variable"
-msgstr "Låst av konstant eller miljøvariabel"
-
-#: src/php/AI/AbstractProvider.php
+#: src/php/AI/AbstractProvider.php:338
 msgid "AI returned empty response."
 msgstr "AI returnerte tomt svar."
 
-#: src/php/AI/AbstractProvider.php
+#. translators: 1: JSON error message, 2: truncated response
+#: src/php/AI/AbstractProvider.php:368
+#, php-format
 msgid "JSON parse error: %1$s. Response: %2$s"
 msgstr "JSON-parsefeil: %1$s. Svar: %2$s"
 
-#: src/php/AI/AbstractProvider.php
+#: src/php/AI/AbstractProvider.php:381
 msgid "AI response is not a valid JSON object."
 msgstr "AI-svaret er ikke et gyldig JSON-objekt."
 
-#: src/php/AI/AbstractProvider.php
+#. translators: %s: AI's reason if provided
+#: src/php/AI/AbstractProvider.php:399
+#, php-format
 msgid "AI did not suggest a folder. %s"
 msgstr "AI foreslo ikke en mappe. %s"
 
-#: src/php/AI/OpenAIProvider.php
+#: src/php/Admin/SettingsPage.php:814
+#: src/php/AI/OpenAIProvider.php:74
 msgid "Azure OpenAI"
 msgstr "Azure OpenAI"
 
-#: src/php/AI/OpenAIProvider.php
+#: src/php/AI/OpenAIProvider.php:95
 msgid "OpenAI API key not configured."
 msgstr "OpenAI API-nøkkel er ikke konfigurert."
 
-#: src/php/AI/OpenAIProvider.php
+#. translators: %s: error message
+#: src/php/AI/OpenAIProvider.php:142
+#, php-format
 msgid "OpenAI API error: %s"
 msgstr "OpenAI API-feil: %s"
 
-#: src/php/AI/OpenAIProvider.php
+#: src/php/AI/OpenAIProvider.php:196
 msgid "API key is required."
 msgstr "API-nøkkel er påkrevd."
 
-#: src/php/AI/OpenAIProvider.php
+#: src/php/AI/OpenAIProvider.php:202
 msgid "Azure endpoint is required."
 msgstr "Azure-endepunkt er påkrevd."
 
-#: src/php/AI/OpenAIProvider.php
+#: src/php/AI/OpenAIProvider.php:205
 msgid "Azure deployment name is required."
 msgstr "Azure-distribusjonsnavn er påkrevd."
 
-#: src/php/AI/AnthropicProvider.php
+#: src/php/AI/AnthropicProvider.php:38
 msgid "Anthropic Claude"
 msgstr "Anthropic Claude"
 
-#: src/php/AI/AnthropicProvider.php
+#: src/php/AI/AnthropicProvider.php:58
 msgid "Anthropic API key not configured."
 msgstr "Anthropic API-nøkkel er ikke konfigurert."
 
-#: src/php/AI/AnthropicProvider.php
+#. translators: %s: error message
+#: src/php/AI/AnthropicProvider.php:97
+#, php-format
 msgid "Anthropic API error: %s"
 msgstr "Anthropic API-feil: %s"
 
-#: src/php/AI/AnthropicProvider.php
+#: src/php/AI/AnthropicProvider.php:116
 msgid "Anthropic API key is required."
 msgstr "Anthropic API-nøkkel er påkrevd."
 
-#: src/php/AI/GeminiProvider.php
+#: src/php/AI/GeminiProvider.php:33
 msgid "Google Gemini"
 msgstr "Google Gemini"
 
-#: src/php/AI/GeminiProvider.php
+#: src/php/AI/GeminiProvider.php:53
 msgid "Gemini API key not configured."
 msgstr "Gemini API-nøkkel er ikke konfigurert."
 
-#: src/php/AI/GeminiProvider.php
+#. translators: %s: error message
+#: src/php/AI/GeminiProvider.php:91
+#, php-format
 msgid "Gemini API error: %s"
 msgstr "Gemini API-feil: %s"
 
-#: src/php/AI/GeminiProvider.php
+#: src/php/AI/GeminiProvider.php:110
 msgid "Gemini API key is required."
 msgstr "Gemini API-nøkkel er påkrevd."
 
-#: src/php/AI/OllamaProvider.php
+#: src/php/AI/OllamaProvider.php:53
 msgid "Ollama is not configured or not running."
 msgstr "Ollama er ikke konfigurert eller kjører ikke."
 
-#: src/php/AI/OllamaProvider.php
+#. translators: %s: error message
+#: src/php/AI/OllamaProvider.php:99
+#, php-format
 msgid "Ollama error: %s"
 msgstr "Ollama-feil: %s"
 
-#: src/php/AI/OllamaProvider.php
+#. translators: %s: Ollama URL
+#: src/php/AI/OllamaProvider.php:126
+#, php-format
 msgid "Cannot connect to Ollama at %s. Is it running?"
 msgstr "Kan ikke koble til Ollama på %s. Kjører den?"
 
-#: src/php/AI/OllamaProvider.php
+#: src/php/AI/OllamaProvider.php:133
 msgid "Ollama is not responding correctly."
 msgstr "Ollama svarer ikke riktig."
 
-#: src/php/AI/OllamaProvider.php
+#. translators: 1: Model name, 2: Available models
+#: src/php/AI/OllamaProvider.php:153
+#, php-format
 msgid "Model \"%1$s\" not found. Available models: %2$s"
 msgstr "Modell «%1$s» ikke funnet. Tilgjengelige modeller: %2$s"
 
-#: src/php/AI/GrokProvider.php
+#: src/php/AI/GrokProvider.php:33
 msgid "Grok (xAI)"
 msgstr "Grok (xAI)"
 
-#: src/php/AI/GrokProvider.php
+#: src/php/AI/GrokProvider.php:53
 msgid "Grok API key not configured."
 msgstr "Grok API-nøkkel er ikke konfigurert."
 
-#: src/php/AI/GrokProvider.php
+#. translators: %s: error message
+#: src/php/AI/GrokProvider.php:109
+#, php-format
 msgid "Grok API error: %s"
 msgstr "Grok API-feil: %s"
 
-#: src/php/AI/GrokProvider.php
+#: src/php/AI/GrokProvider.php:128
 msgid "Grok API key is required."
 msgstr "Grok API-nøkkel er påkrevd."
 
-#: src/php/AI/ExoProvider.php
+#: src/php/AI/ExoProvider.php:33
 msgid "Exo (Distributed Local)"
 msgstr "Exo (distribuert lokal)"
 
-#: src/php/AI/ExoProvider.php
+#: src/php/AI/ExoProvider.php:53
 msgid "Exo is not configured or not running."
 msgstr "Exo er ikke konfigurert eller kjører ikke."
 
-#: src/php/AI/ExoProvider.php
+#. translators: %s: error message
+#: src/php/AI/ExoProvider.php:107
+#, php-format
 msgid "Exo error: %s"
 msgstr "Exo-feil: %s"
 
-#: src/php/AI/ExoProvider.php
+#. translators: %s: Exo URL
+#: src/php/AI/ExoProvider.php:133
+#, php-format
 msgid "Cannot connect to Exo at %s. Is it running?"
 msgstr "Kan ikke koble til Exo på %s. Kjører den?"
 
-#: src/php/AI/ExoProvider.php
+#: src/php/AI/ExoProvider.php:140
 msgid "Exo is not responding correctly."
 msgstr "Exo svarer ikke riktig."
 
-#: src/php/Services/AIAnalysisService.php
+#: src/php/Services/AIAnalysisService.php:153
 msgid "No AI provider configured. Please configure an AI provider in settings."
 msgstr "Ingen AI-leverandør konfigurert. Vennligst konfigurer en AI-leverandør i innstillingene."
 
-#: src/php/Services/AIAnalysisService.php
+#: src/php/Services/AIAnalysisService.php:164
 msgid "AI provider is not properly configured. Please check your API settings."
 msgstr "AI-leverandøren er ikke riktig konfigurert. Vennligst sjekk API-innstillingene dine."
 
-#: src/php/Services/AIAnalysisService.php
+#. translators: %s: folder name
+#: src/php/Services/AIAnalysisService.php:219
+#, php-format
 msgid "File type automatically assigned to %s folder."
 msgstr "Filtype automatisk tilordnet til %s-mappen."
 
-#: src/php/Services/AIAnalysisService.php
+#. translators: %s: folder name
+#: src/php/Services/AIAnalysisService.php:239
+#, php-format
 msgid "File type requires %s folder (will be created)."
 msgstr "Filtype krever %s-mappe (vil bli opprettet)."
 
-#: src/php/Services/AIAnalysisService.php
+#. translators: %s: folder name
+#: src/php/Services/AIAnalysisService.php:256
+#, php-format
 msgid "%s folder does not exist and new folder creation is disabled."
 msgstr "%s-mappen eksisterer ikke og opprettelse av nye mapper er deaktivert."
 
-#: src/php/Services/BackupService.php
+#: src/php/Services/BackupService.php:140
 msgid "No backup found."
 msgstr "Ingen sikkerhetskopi funnet."
 
-#: src/php/Services/MediaScannerService.php
+#: src/php/Services/MediaScannerService.php:80
 msgid "No AI provider configured. Please configure an AI provider in the AI Provider settings tab before scanning."
 msgstr "Ingen AI-leverandør konfigurert. Vennligst konfigurer en AI-leverandør i AI-leverandør-fanen før skanning."
 
-#: src/php/Services/MediaScannerService.php
+#: src/php/Services/MediaScannerService.php:89
+#: src/php/Services/MediaScannerService.php:396
 msgid "A scan is already in progress. Please wait for it to complete or cancel it."
 msgstr "En skanning pågår allerede. Vennligst vent til den er fullført eller avbryt den."
 
-#: src/php/Services/MediaScannerService.php
+#: src/php/Services/MediaScannerService.php:98
 msgid "Invalid scan mode."
 msgstr "Ugyldig skanningsmodus."
 
-#: src/php/Services/MediaScannerService.php
+#: src/php/Services/MediaScannerService.php:112
 msgid "No media files found to process."
 msgstr "Ingen mediefiler funnet å behandle."
 
-#: src/php/Services/MediaScannerService.php
+#. translators: %d: number of media files
+#: src/php/Services/MediaScannerService.php:177
+#, php-format
 msgid "Started scanning %d media files."
 msgstr "Startet skanning av %d mediefiler."
 
-#: src/php/Services/MediaScannerService.php
+#: src/php/Services/MediaScannerService.php:387
 msgid "No cached dry-run results found. Please run a preview first."
 msgstr "Ingen bufrede forhåndsvisningsresultater funnet. Vennligst kjør en forhåndsvisning først."
 
-#: src/php/Services/MediaScannerService.php
+#. translators: 1: applied count, 2: failed count
+#: src/php/Services/MediaScannerService.php:499
+#, php-format
 msgid "Applied %1$d assignments (%2$d failed)."
 msgstr "Utførte %1$d tilordninger (%2$d mislyktes)."
 
-#: src/php/Services/MediaScannerService.php
+#: src/php/Services/MediaScannerService.php:568
 msgid "No scan is currently running."
 msgstr "Ingen skanning kjører for øyeblikket."
 
-#: src/php/Services/MediaScannerService.php
+#: src/php/Services/MediaScannerService.php:592
 msgid "Scan cancelled successfully."
 msgstr "Skanning avbrutt."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:83
 msgid "Scan mode."
 msgstr "Skanningsmodus."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:90
 msgid "Whether to run in preview mode without making changes."
 msgstr "Om skanningen skal kjøres i forhåndsvisningsmodus uten å gjøre endringer."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:150
 msgid "Original scan mode."
 msgstr "Opprinnelig skanningsmodus."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:197
+#: src/php/REST/AnalysisController.php:218
 msgid "Attachment ID."
 msgstr "Vedleggs-ID."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:224
 msgid "Folder ID to assign."
 msgstr "Mappe-ID å tilordne."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:230
 msgid "New folder path to create."
 msgstr "Ny mappebane å opprette."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:292
 msgid "You do not have permission to perform this action."
 msgstr "Du har ikke tillatelse til å utføre denne handlingen."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:401
 msgid "Scan progress reset."
 msgstr "Skanningsfremdrift tilbakestilt."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:485
+#: src/php/REST/AnalysisController.php:510
 msgid "Invalid attachment ID."
 msgstr "Ugyldig vedleggs-ID."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:528
 msgid "Either folder_id or new_folder_path is required."
 msgstr "Enten folder_id eller new_folder_path er påkrevd."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:536
 msgid "Failed to apply folder assignment."
 msgstr "Kunne ikke utføre mappetilordning."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:544
 msgid "Folder assignment applied."
 msgstr "Mappetilordning utført."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:572
+#: src/js/components/RestorePanel.jsx:121
 msgid "Backup deleted."
 msgstr "Sikkerhetskopi slettet."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:587
 msgid "No backup available to restore."
 msgstr "Ingen sikkerhetskopi tilgjengelig for gjenoppretting."
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:605
 msgid "Backup restored successfully."
 msgstr "Sikkerhetskopi gjenopprettet."
 
-#. JavaScript strings
-
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:219
 msgid "Media Library Statistics"
 msgstr "Mediebibliotekstatistikk"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:225
 msgid "Total Media"
 msgstr "Totalt antall medier"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:229
 msgid "In Folders"
 msgstr "I mapper"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:233
 msgid "Unassigned"
 msgstr "Ikke tilordnet"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:237
 msgid "Folders"
 msgstr "Mapper"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:248
 msgid "Scan Options"
 msgstr "Skannealternativer"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:252
 msgid "Scan Mode"
 msgstr "Skanningsmodus"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:184
+#: src/js/components/ScanProgress.jsx:68
 msgid "Organize Unassigned"
 msgstr "Organiser ikke-tilordnede"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:188
+#: src/js/components/ScanProgress.jsx:69
 msgid "Re-analyze All"
 msgstr "Analyser alle på nytt"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:192
 msgid "Reorganize All (Reset & Rebuild)"
 msgstr "Reorganiser alle (tilbakestill og bygg på nytt)"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:332
 msgid "Only process media files that are not already in a folder."
 msgstr "Behandle kun mediefiler som ikke allerede er i en mappe."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:334
 msgid "Re-analyze all media and suggest new folder assignments."
 msgstr "Analyser alle medier på nytt og foreslå nye mappetilordninger."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:336
 msgid "Remove all folders and assignments, then create a new AI-optimized structure."
 msgstr "Fjern alle mapper og tilordninger, og opprett deretter en ny AI-optimalisert struktur."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:261
 msgid "Warning: This will remove all existing folder assignments and reorganize from scratch. A backup will be created automatically."
 msgstr "Advarsel: Dette vil fjerne alle eksisterende mappetilordninger og reorganisere fra bunnen av. En sikkerhetskopi opprettes automatisk."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:266
 msgid "Preview mode (dry run)"
 msgstr "Forhåndsvisningsmodus (testkjøring)"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:267
 msgid "Show proposed changes without applying them."
 msgstr "Vis foreslåtte endringer uten å utføre dem."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:279
+#: src/js/components/PreviewModal.jsx:44
 msgid "Preview Changes"
 msgstr "Forhåndsvis endringer"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:280
 msgid "Start Organizing"
 msgstr "Start organisering"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:290
 msgid "Reset"
 msgstr "Tilbakestill"
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:109
 msgid "Preview scan started. Results will be shown when complete."
 msgstr "Forhåndsvisningsskanning startet. Resultater vises når den er fullført."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:110
 msgid "Scan started. Media files are being organized."
 msgstr "Skanning startet. Mediefiler blir organisert."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:115
 msgid "Failed to start scan."
 msgstr "Kunne ikke starte skanning."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:128
 msgid "Scan cancelled."
 msgstr "Skanning avbrutt."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:133
 msgid "Failed to cancel scan."
 msgstr "Kunne ikke avbryte skanning."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:149
 msgid "Failed to reset."
 msgstr "Kunne ikke tilbakestille."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:162
 msgid "Applying cached preview results..."
 msgstr "Bruker bufrede forhåndsvisningsresultater..."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:168
 msgid "Preview results applied successfully."
 msgstr "Forhåndsvisningsresultater brukt."
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:173
 msgid "Failed to apply preview results."
 msgstr "Kunne ikke bruke forhåndsvisningsresultater."
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:47
 msgid "Initializing..."
 msgstr "Initialiserer..."
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:51
 msgid "Ready"
 msgstr "Klar"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:52
 msgid "Processing..."
 msgstr "Behandler..."
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:53
 msgid "Completed"
 msgstr "Fullført"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:54
 msgid "Cancelled"
 msgstr "Avbrutt"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:55
 msgid "Failed"
 msgstr "Mislyktes"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:97
 msgid "Preview"
 msgstr "Forhåndsvisning"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:106
 msgid "Mode:"
 msgstr "Modus:"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:115
 msgid "Progress:"
 msgstr "Fremdrift:"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:141
 msgid "Elapsed:"
 msgstr "Forløpt:"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:153
 msgid "Applied:"
 msgstr "Utført:"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:162
 msgid "Failed:"
 msgstr "Mislyktes:"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:187
 msgid "Cancel Scan"
 msgstr "Avbryt skanning"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:197
 msgid "Start New Scan"
 msgstr "Start ny skanning"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:233
 msgid "Recent Results"
 msgstr "Nylige resultater"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:52
 msgid "Summary"
 msgstr "Sammendrag"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:57
 msgid "Will be assigned to existing folders"
 msgstr "Vil bli tilordnet eksisterende mapper"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:63
 msgid "Will create new folders"
 msgstr "Vil opprette nye mapper"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:69
 msgid "No suitable folder found"
 msgstr "Ingen passende mappe funnet"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:78
 msgid "New Folders to Create"
 msgstr "Nye mapper som skal opprettes"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:93
 msgid "Folder Assignments"
 msgstr "Mappetilordninger"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:98
 msgid "Media ID"
 msgstr "Medie-ID"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:99
 msgid "Folder"
 msgstr "Mappe"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:100
 msgid "Confidence"
 msgstr "Konfidens"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:101
 msgid "Reason"
 msgstr "Begrunnelse"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:133
 msgid "Skipped Items"
 msgstr "Hoppede elementer"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:135
 msgid "These items could not be matched to any folder."
 msgstr "Disse elementene kunne ikke matches til noen mappe."
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:162
+#: src/js/components/RestorePanel.jsx:195
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:159
 msgid "Apply Changes"
 msgstr "Bruk endringer"
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:139
 msgid "Backup & Restore"
 msgstr "Sikkerhetskopi og gjenoppretting"
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:154
 msgid "Backup Available"
 msgstr "Sikkerhetskopi tilgjengelig"
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:159
 msgid "Created:"
 msgstr "Opprettet:"
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:167
 msgid "Folders:"
 msgstr "Mapper:"
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:175
 msgid "Assignments:"
 msgstr "Tilordninger:"
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:187
 msgid "This will replace all current folders and assignments with the backup. Are you sure?"
 msgstr "Dette vil erstatte alle gjeldende mapper og tilordninger med sikkerhetskopien. Er du sikker?"
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:204
 msgid "Yes, Restore Backup"
 msgstr "Ja, gjenopprett sikkerhetskopi"
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:214
 msgid "Restore Backup"
 msgstr "Gjenopprett sikkerhetskopi"
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:221
 msgid "Delete Backup"
 msgstr "Slett sikkerhetskopi"
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:101
 msgid "Failed to restore backup."
 msgstr "Kunne ikke gjenopprette sikkerhetskopi."
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:126
 msgid "Failed to delete backup."
 msgstr "Kunne ikke slette sikkerhetskopi."
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:267
 msgid "Attachment ID:"
 msgstr "Vedleggs-ID:"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:270
 msgid "Action:"
 msgstr "Handling:"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:282
 msgid "New Folder:"
 msgstr "Ny mappe:"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:330
 msgid "Assign to existing folder"
 msgstr "Tilordne til eksisterende mappe"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:332
 msgid "Create new folder"
 msgstr "Opprett ny mappe"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:334
 msgid "Skipped"
 msgstr "Hoppet over"
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:291
 msgid "No reason provided"
 msgstr "Ingen begrunnelse oppgitt"
+
+#. Plugin URI of the plugin
+#: vmfa-ai-organizer.php
+msgid "https://github.com/soderlind/vmfa-ai-organizer"
+msgstr ""
+
+#. Description of the plugin
+#: vmfa-ai-organizer.php
+msgid "AI-powered media organization add-on for Virtual Media Folders. Scans the WordPress Media Library and uses AI to place media in suitable virtual folders."
+msgstr ""
+
+#. Author of the plugin
+#: vmfa-ai-organizer.php
+msgid "Per Soderlind"
+msgstr ""
+
+#. Author URI of the plugin
+#: vmfa-ai-organizer.php
+msgid "https://soderlind.no"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:487
+msgid "Organization Settings"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:494
+msgid "Maximum Folder Depth"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:508
+msgid "Allow AI to suggest creating new folders when no suitable existing folder is found."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:540
+msgid "Configure the AI provider to use for analyzing and organizing media files."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:553
+msgid "Configure how media files should be organized into folders."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:638
+msgid "For OpenAI: model name (e.g., gpt-4o-mini, gpt-4o). For Azure: deployment name."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:728
+msgid "Maximum depth for folder hierarchy (1-5). Higher values allow more nested folders."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:786
+msgid "Number of media files to process in each batch (10-100). Lower values are safer for shared hosting."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:818
+msgid "Select OpenAI or Azure OpenAI as your provider."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:846
+msgid "Your Azure OpenAI resource endpoint URL."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:874
+msgid "Azure OpenAI API version (e.g., 2024-02-15-preview)."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:891
+msgid "This setting is overridden"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:894
+msgid "🔒 Constant"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:896
+msgid "🔒 Environment"
+msgstr ""
+
+#. translators: %s: error message
+#: src/php/Admin/SettingsPage.php:1066
+#, php-format
+msgid "AI Configuration Warning: %s"
+msgstr "AI-konfigurasjonsadvarsel: %s"
+
+#: src/js/components/ScanProgress.jsx:46
+msgid "Preparing preview..."
+msgstr "Forbereder forhåndsvisning..."
+
+#: src/js/components/ScanProgress.jsx:70
+msgid "Reorganize All"
+msgstr "Reorganiser alle"
+
+#: src/js/components/ScanProgress.jsx:119
+msgid "Starting..."
+msgstr "Starter..."
+
+#: src/js/components/ScanProgress.jsx:134
+msgid "Connecting to AI provider and analyzing first batch..."
+msgstr "Kobler til AI-leverandør og analyserer første gruppe..."
+
+#: src/js/components/ScanProgress.jsx:275
+msgid "Folder:"
+msgstr "Mappe:"
+
+#: src/js/components/ScanProgress.jsx:287
+msgid "Confidence:"
+msgstr "Sikkerhet:"
+
+#: src/js/components/ScanProgress.jsx:290
+msgid "Reason:"
+msgstr "Årsak:"

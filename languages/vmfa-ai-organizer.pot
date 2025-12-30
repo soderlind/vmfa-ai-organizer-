@@ -1,740 +1,836 @@
-# Virtual Media Folders AI Organizer
 # Copyright (C) 2025 Per Soderlind
-# This file is distributed under the GPL v2 or later.
+# This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
 "Project-Id-Version: Virtual Media Folders AI Organizer 0.1.0\n"
-"Report-Msgid-Bugs-To: https://developer.suspended.suspended.suspended.no\n"
-"POT-Creation-Date: 2025-12-30 00:00:00+00:00\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/vmfa-ai-organizer\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-12-30T17:14:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: WP-CLI\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: vmfa-ai-organizer\n"
 
 #. Plugin Name of the plugin
+#: vmfa-ai-organizer.php
 msgid "Virtual Media Folders AI Organizer"
 msgstr ""
 
-#. Description of the plugin
-msgid "AI-powered media organization add-on for Virtual Media Folders"
-msgstr ""
-
+#. Plugin URI of the plugin
 #: vmfa-ai-organizer.php
-msgid "%s requires Virtual Media Folders to be installed and activated."
+msgid "https://github.com/soderlind/vmfa-ai-organizer"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#. Description of the plugin
+#: vmfa-ai-organizer.php
+msgid "AI-powered media organization add-on for Virtual Media Folders. Scans the WordPress Media Library and uses AI to place media in suitable virtual folders."
+msgstr ""
+
+#. Author of the plugin
+#: vmfa-ai-organizer.php
+msgid "Per Soderlind"
+msgstr ""
+
+#. Author URI of the plugin
+#: vmfa-ai-organizer.php
+msgid "https://soderlind.no"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:155
 msgid "AI Organizer Settings"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:156
+#: src/php/Admin/SettingsPage.php:528
 msgid "AI Organizer"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:224
 msgid "Settings saved."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:239
 msgid "Media Scanner"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:243
+#: src/php/Admin/SettingsPage.php:288
 msgid "AI Provider"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:252
 msgid "JavaScript is required for the media scanner."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:260
 msgid "Save AI Settings"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:295
 msgid "Provider"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
-msgid "Select the AI provider to use for media analysis."
-msgstr ""
-
-#: src/php/Admin/SettingsPage.php
-msgid "OpenAI"
-msgstr ""
-
-#: src/php/Admin/SettingsPage.php
-msgid "Anthropic"
-msgstr ""
-
-#: src/php/Admin/SettingsPage.php
-msgid "Gemini"
-msgstr ""
-
-#: src/php/Admin/SettingsPage.php
-msgid "Ollama (Local)"
-msgstr ""
-
-#: src/php/Admin/SettingsPage.php
-msgid "Grok"
-msgstr ""
-
-#: src/php/Admin/SettingsPage.php
-msgid "Exo (Local)"
-msgstr ""
-
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:304
 msgid "OpenAI Type"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:315
 msgid "API Key"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
-msgid "Enter your API key."
-msgstr ""
-
-#: src/php/Admin/SettingsPage.php
-msgid "Model"
-msgstr ""
-
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:327
 msgid "Model / Deployment"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
-msgid "Enter the model to use."
-msgstr ""
-
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:339
 msgid "Azure Endpoint"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:350
 msgid "Azure API Version"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:362
 msgid "Anthropic API Key"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:374
 msgid "Anthropic Model"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:387
 msgid "Gemini API Key"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:399
 msgid "Gemini Model"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:412
 msgid "Ollama URL"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:424
 msgid "Ollama Model"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:437
 msgid "Grok API Key"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:449
 msgid "Grok Model"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:462
 msgid "Exo URL"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:474
 msgid "Exo Model"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
-msgid "Max Folder Depth"
+#: src/php/Admin/SettingsPage.php:487
+msgid "Organization Settings"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
-msgid "Maximum folder hierarchy depth (1-5)."
+#: src/php/Admin/SettingsPage.php:494
+msgid "Maximum Folder Depth"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:502
 msgid "Allow New Folders"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
-msgid "Allow AI to suggest creating new folders."
+#: src/php/Admin/SettingsPage.php:508
+msgid "Allow AI to suggest creating new folders when no suitable existing folder is found."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
+#: src/php/Admin/SettingsPage.php:514
 msgid "Batch Size"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
-msgid "Number of media items to process per batch (10-100)."
+#: src/php/Admin/SettingsPage.php:540
+msgid "Configure the AI provider to use for analyzing and organizing media files."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php
-msgid "Locked by constant or environment variable"
+#: src/php/Admin/SettingsPage.php:553
+msgid "Configure how media files should be organized into folders."
 msgstr ""
 
-#: src/php/AI/AbstractProvider.php
-msgid "AI returned empty response."
+#: src/php/Admin/SettingsPage.php:638
+msgid "For OpenAI: model name (e.g., gpt-4o-mini, gpt-4o). For Azure: deployment name."
 msgstr ""
 
-#: src/php/AI/AbstractProvider.php
-msgid "JSON parse error: %1$s. Response: %2$s"
+#: src/php/Admin/SettingsPage.php:728
+msgid "Maximum depth for folder hierarchy (1-5). Higher values allow more nested folders."
 msgstr ""
 
-#: src/php/AI/AbstractProvider.php
-msgid "AI response is not a valid JSON object."
+#: src/php/Admin/SettingsPage.php:786
+msgid "Number of media files to process in each batch (10-100). Lower values are safer for shared hosting."
 msgstr ""
 
-#: src/php/AI/AbstractProvider.php
-msgid "AI did not suggest a folder. %s"
+#: src/php/Admin/SettingsPage.php:811
+#: src/php/AI/OpenAIProvider.php:75
+msgid "OpenAI"
 msgstr ""
 
-#: src/php/AI/OpenAIProvider.php
+#: src/php/Admin/SettingsPage.php:814
+#: src/php/AI/OpenAIProvider.php:74
 msgid "Azure OpenAI"
 msgstr ""
 
-#: src/php/AI/OpenAIProvider.php
-msgid "OpenAI API key not configured."
+#: src/php/Admin/SettingsPage.php:818
+msgid "Select OpenAI or Azure OpenAI as your provider."
 msgstr ""
 
-#: src/php/AI/OpenAIProvider.php
-msgid "OpenAI API error: %s"
+#: src/php/Admin/SettingsPage.php:846
+msgid "Your Azure OpenAI resource endpoint URL."
 msgstr ""
 
-#: src/php/AI/OpenAIProvider.php
-msgid "API key is required."
+#: src/php/Admin/SettingsPage.php:874
+msgid "Azure OpenAI API version (e.g., 2024-02-15-preview)."
 msgstr ""
 
-#: src/php/AI/OpenAIProvider.php
-msgid "Azure endpoint is required."
+#: src/php/Admin/SettingsPage.php:891
+msgid "This setting is overridden"
 msgstr ""
 
-#: src/php/AI/OpenAIProvider.php
-msgid "Azure deployment name is required."
+#: src/php/Admin/SettingsPage.php:894
+msgid "🔒 Constant"
 msgstr ""
 
-#: src/php/AI/AnthropicProvider.php
+#: src/php/Admin/SettingsPage.php:896
+msgid "🔒 Environment"
+msgstr ""
+
+#. translators: %s: error message
+#: src/php/Admin/SettingsPage.php:1066
+#, php-format
+msgid "AI Configuration Warning: %s"
+msgstr ""
+
+#: src/php/AI/AbstractProvider.php:338
+msgid "AI returned empty response."
+msgstr ""
+
+#. translators: 1: JSON error message, 2: truncated response
+#: src/php/AI/AbstractProvider.php:368
+#, php-format
+msgid "JSON parse error: %1$s. Response: %2$s"
+msgstr ""
+
+#: src/php/AI/AbstractProvider.php:381
+msgid "AI response is not a valid JSON object."
+msgstr ""
+
+#. translators: %s: AI's reason if provided
+#: src/php/AI/AbstractProvider.php:399
+#, php-format
+msgid "AI did not suggest a folder. %s"
+msgstr ""
+
+#: src/php/AI/AnthropicProvider.php:38
 msgid "Anthropic Claude"
 msgstr ""
 
-#: src/php/AI/AnthropicProvider.php
+#: src/php/AI/AnthropicProvider.php:58
 msgid "Anthropic API key not configured."
 msgstr ""
 
-#: src/php/AI/AnthropicProvider.php
+#. translators: %s: error message
+#: src/php/AI/AnthropicProvider.php:97
+#, php-format
 msgid "Anthropic API error: %s"
 msgstr ""
 
-#: src/php/AI/AnthropicProvider.php
+#: src/php/AI/AnthropicProvider.php:116
 msgid "Anthropic API key is required."
 msgstr ""
 
-#: src/php/AI/GeminiProvider.php
-msgid "Google Gemini"
-msgstr ""
-
-#: src/php/AI/GeminiProvider.php
-msgid "Gemini API key not configured."
-msgstr ""
-
-#: src/php/AI/GeminiProvider.php
-msgid "Gemini API error: %s"
-msgstr ""
-
-#: src/php/AI/GeminiProvider.php
-msgid "Gemini API key is required."
-msgstr ""
-
-#: src/php/AI/OllamaProvider.php
-msgid "Ollama is not configured or not running."
-msgstr ""
-
-#: src/php/AI/OllamaProvider.php
-msgid "Ollama error: %s"
-msgstr ""
-
-#: src/php/AI/OllamaProvider.php
-msgid "Cannot connect to Ollama at %s. Is it running?"
-msgstr ""
-
-#: src/php/AI/OllamaProvider.php
-msgid "Ollama is not responding correctly."
-msgstr ""
-
-#: src/php/AI/OllamaProvider.php
-msgid "Model \"%1$s\" not found. Available models: %2$s"
-msgstr ""
-
-#: src/php/AI/GrokProvider.php
-msgid "Grok (xAI)"
-msgstr ""
-
-#: src/php/AI/GrokProvider.php
-msgid "Grok API key not configured."
-msgstr ""
-
-#: src/php/AI/GrokProvider.php
-msgid "Grok API error: %s"
-msgstr ""
-
-#: src/php/AI/GrokProvider.php
-msgid "Grok API key is required."
-msgstr ""
-
-#: src/php/AI/ExoProvider.php
+#: src/php/AI/ExoProvider.php:33
 msgid "Exo (Distributed Local)"
 msgstr ""
 
-#: src/php/AI/ExoProvider.php
+#: src/php/AI/ExoProvider.php:53
 msgid "Exo is not configured or not running."
 msgstr ""
 
-#: src/php/AI/ExoProvider.php
+#. translators: %s: error message
+#: src/php/AI/ExoProvider.php:107
+#, php-format
 msgid "Exo error: %s"
 msgstr ""
 
-#: src/php/AI/ExoProvider.php
+#. translators: %s: Exo URL
+#: src/php/AI/ExoProvider.php:133
+#, php-format
 msgid "Cannot connect to Exo at %s. Is it running?"
 msgstr ""
 
-#: src/php/AI/ExoProvider.php
+#: src/php/AI/ExoProvider.php:140
 msgid "Exo is not responding correctly."
 msgstr ""
 
-#: src/php/Services/AIAnalysisService.php
-msgid "No AI provider configured. Please configure an AI provider in settings."
+#: src/php/AI/GeminiProvider.php:33
+msgid "Google Gemini"
 msgstr ""
 
-#: src/php/Services/AIAnalysisService.php
-msgid "AI provider is not properly configured. Please check your API settings."
+#: src/php/AI/GeminiProvider.php:53
+msgid "Gemini API key not configured."
 msgstr ""
 
-#: src/php/Services/AIAnalysisService.php
-msgid "File type automatically assigned to %s folder."
+#. translators: %s: error message
+#: src/php/AI/GeminiProvider.php:91
+#, php-format
+msgid "Gemini API error: %s"
 msgstr ""
 
-#: src/php/Services/AIAnalysisService.php
-msgid "File type requires %s folder (will be created)."
+#: src/php/AI/GeminiProvider.php:110
+msgid "Gemini API key is required."
 msgstr ""
 
-#: src/php/Services/AIAnalysisService.php
-msgid "%s folder does not exist and new folder creation is disabled."
+#: src/php/AI/GrokProvider.php:33
+msgid "Grok (xAI)"
 msgstr ""
 
-#: src/php/Services/BackupService.php
-msgid "No backup found."
+#: src/php/AI/GrokProvider.php:53
+msgid "Grok API key not configured."
 msgstr ""
 
-#: src/php/Services/MediaScannerService.php
-msgid "No AI provider configured. Please configure an AI provider in the AI Provider settings tab before scanning."
+#. translators: %s: error message
+#: src/php/AI/GrokProvider.php:109
+#, php-format
+msgid "Grok API error: %s"
 msgstr ""
 
-#: src/php/Services/MediaScannerService.php
-msgid "A scan is already in progress. Please wait for it to complete or cancel it."
+#: src/php/AI/GrokProvider.php:128
+msgid "Grok API key is required."
 msgstr ""
 
-#: src/php/Services/MediaScannerService.php
-msgid "Invalid scan mode."
+#: src/php/AI/OllamaProvider.php:33
+msgid "Ollama (Local)"
 msgstr ""
 
-#: src/php/Services/MediaScannerService.php
-msgid "No media files found to process."
+#: src/php/AI/OllamaProvider.php:53
+msgid "Ollama is not configured or not running."
 msgstr ""
 
-#: src/php/Services/MediaScannerService.php
-msgid "Started scanning %d media files."
+#. translators: %s: error message
+#: src/php/AI/OllamaProvider.php:99
+#, php-format
+msgid "Ollama error: %s"
 msgstr ""
 
-#: src/php/Services/MediaScannerService.php
-msgid "No cached dry-run results found. Please run a preview first."
+#. translators: %s: Ollama URL
+#: src/php/AI/OllamaProvider.php:126
+#, php-format
+msgid "Cannot connect to Ollama at %s. Is it running?"
 msgstr ""
 
-#: src/php/Services/MediaScannerService.php
-msgid "Applied %1$d assignments (%2$d failed)."
+#: src/php/AI/OllamaProvider.php:133
+msgid "Ollama is not responding correctly."
 msgstr ""
 
-#: src/php/Services/MediaScannerService.php
-msgid "No scan is currently running."
+#. translators: 1: Model name, 2: Available models
+#: src/php/AI/OllamaProvider.php:153
+#, php-format
+msgid "Model \"%1$s\" not found. Available models: %2$s"
 msgstr ""
 
-#: src/php/Services/MediaScannerService.php
-msgid "Scan cancelled successfully."
+#: src/php/AI/OpenAIProvider.php:95
+msgid "OpenAI API key not configured."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#. translators: %s: error message
+#: src/php/AI/OpenAIProvider.php:142
+#, php-format
+msgid "OpenAI API error: %s"
+msgstr ""
+
+#: src/php/AI/OpenAIProvider.php:196
+msgid "API key is required."
+msgstr ""
+
+#: src/php/AI/OpenAIProvider.php:202
+msgid "Azure endpoint is required."
+msgstr ""
+
+#: src/php/AI/OpenAIProvider.php:205
+msgid "Azure deployment name is required."
+msgstr ""
+
+#: src/php/REST/AnalysisController.php:83
 msgid "Scan mode."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:90
 msgid "Whether to run in preview mode without making changes."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:150
 msgid "Original scan mode."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:197
+#: src/php/REST/AnalysisController.php:218
 msgid "Attachment ID."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:224
 msgid "Folder ID to assign."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:230
 msgid "New folder path to create."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:292
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:401
 msgid "Scan progress reset."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:485
+#: src/php/REST/AnalysisController.php:510
 msgid "Invalid attachment ID."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:528
 msgid "Either folder_id or new_folder_path is required."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:536
 msgid "Failed to apply folder assignment."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:544
 msgid "Folder assignment applied."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:572
+#: src/js/components/RestorePanel.jsx:121
 msgid "Backup deleted."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:587
 msgid "No backup available to restore."
 msgstr ""
 
-#: src/php/REST/AnalysisController.php
+#: src/php/REST/AnalysisController.php:605
 msgid "Backup restored successfully."
 msgstr ""
 
-#. JavaScript strings
-
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Media Library Statistics"
+#: src/php/Services/AIAnalysisService.php:153
+msgid "No AI provider configured. Please configure an AI provider in settings."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Total Media"
+#: src/php/Services/AIAnalysisService.php:164
+msgid "AI provider is not properly configured. Please check your API settings."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "In Folders"
+#. translators: %s: folder name
+#: src/php/Services/AIAnalysisService.php:219
+#, php-format
+msgid "File type automatically assigned to %s folder."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Unassigned"
+#. translators: %s: folder name
+#: src/php/Services/AIAnalysisService.php:239
+#, php-format
+msgid "File type requires %s folder (will be created)."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Folders"
+#. translators: %s: folder name
+#: src/php/Services/AIAnalysisService.php:256
+#, php-format
+msgid "%s folder does not exist and new folder creation is disabled."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Scan Options"
+#: src/php/Services/BackupService.php:140
+msgid "No backup found."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Scan Mode"
+#: src/php/Services/MediaScannerService.php:80
+msgid "No AI provider configured. Please configure an AI provider in the AI Provider settings tab before scanning."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Organize Unassigned"
+#: src/php/Services/MediaScannerService.php:89
+#: src/php/Services/MediaScannerService.php:396
+msgid "A scan is already in progress. Please wait for it to complete or cancel it."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Re-analyze All"
+#: src/php/Services/MediaScannerService.php:98
+msgid "Invalid scan mode."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Reorganize All (Reset & Rebuild)"
+#: src/php/Services/MediaScannerService.php:112
+msgid "No media files found to process."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Only process media files that are not already in a folder."
+#. translators: %d: number of media files
+#: src/php/Services/MediaScannerService.php:177
+#, php-format
+msgid "Started scanning %d media files."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Re-analyze all media and suggest new folder assignments."
+#: src/php/Services/MediaScannerService.php:387
+msgid "No cached dry-run results found. Please run a preview first."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Remove all folders and assignments, then create a new AI-optimized structure."
+#. translators: 1: applied count, 2: failed count
+#: src/php/Services/MediaScannerService.php:499
+#, php-format
+msgid "Applied %1$d assignments (%2$d failed)."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Warning: This will remove all existing folder assignments and reorganize from scratch. A backup will be created automatically."
+#: src/php/Services/MediaScannerService.php:568
+msgid "No scan is currently running."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Preview mode (dry run)"
+#: src/php/Services/MediaScannerService.php:592
+msgid "Scan cancelled successfully."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Show proposed changes without applying them."
+#. translators: %s: Plugin name
+#: vmfa-ai-organizer.php:54
+#, php-format
+msgid "%s requires Virtual Media Folders to be installed and activated."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Preview Changes"
-msgstr ""
-
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Start Organizing"
-msgstr ""
-
-#: src/js/components/AiOrganizerPanel.jsx
-msgid "Reset"
-msgstr ""
-
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:109
 msgid "Preview scan started. Results will be shown when complete."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:110
 msgid "Scan started. Media files are being organized."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:115
 msgid "Failed to start scan."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:128
 msgid "Scan cancelled."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:133
 msgid "Failed to cancel scan."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:149
 msgid "Failed to reset."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:162
 msgid "Applying cached preview results..."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:168
 msgid "Preview results applied successfully."
 msgstr ""
 
-#: src/js/components/AiOrganizerPanel.jsx
+#: src/js/components/AiOrganizerPanel.jsx:173
 msgid "Failed to apply preview results."
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Initializing..."
+#: src/js/components/AiOrganizerPanel.jsx:184
+#: src/js/components/ScanProgress.jsx:68
+msgid "Organize Unassigned"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Ready"
+#: src/js/components/AiOrganizerPanel.jsx:188
+#: src/js/components/ScanProgress.jsx:69
+msgid "Re-analyze All"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Processing..."
+#: src/js/components/AiOrganizerPanel.jsx:192
+msgid "Reorganize All (Reset & Rebuild)"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Completed"
+#: src/js/components/AiOrganizerPanel.jsx:219
+msgid "Media Library Statistics"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Cancelled"
+#: src/js/components/AiOrganizerPanel.jsx:225
+msgid "Total Media"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Failed"
+#: src/js/components/AiOrganizerPanel.jsx:229
+msgid "In Folders"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Preview"
+#: src/js/components/AiOrganizerPanel.jsx:233
+msgid "Unassigned"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Mode:"
+#: src/js/components/AiOrganizerPanel.jsx:237
+msgid "Folders"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Progress:"
+#: src/js/components/AiOrganizerPanel.jsx:248
+msgid "Scan Options"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Elapsed:"
+#: src/js/components/AiOrganizerPanel.jsx:252
+msgid "Scan Mode"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Applied:"
+#: src/js/components/AiOrganizerPanel.jsx:261
+msgid "Warning: This will remove all existing folder assignments and reorganize from scratch. A backup will be created automatically."
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Failed:"
+#: src/js/components/AiOrganizerPanel.jsx:266
+msgid "Preview mode (dry run)"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Cancel Scan"
+#: src/js/components/AiOrganizerPanel.jsx:267
+msgid "Show proposed changes without applying them."
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Start New Scan"
+#: src/js/components/AiOrganizerPanel.jsx:279
+#: src/js/components/PreviewModal.jsx:44
+msgid "Preview Changes"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
-msgid "Recent Results"
+#: src/js/components/AiOrganizerPanel.jsx:280
+msgid "Start Organizing"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/AiOrganizerPanel.jsx:290
+msgid "Reset"
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx:332
+msgid "Only process media files that are not already in a folder."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx:334
+msgid "Re-analyze all media and suggest new folder assignments."
+msgstr ""
+
+#: src/js/components/AiOrganizerPanel.jsx:336
+msgid "Remove all folders and assignments, then create a new AI-optimized structure."
+msgstr ""
+
+#: src/js/components/PreviewModal.jsx:52
 msgid "Summary"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:57
 msgid "Will be assigned to existing folders"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:63
 msgid "Will create new folders"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:69
 msgid "No suitable folder found"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:78
 msgid "New Folders to Create"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:93
 msgid "Folder Assignments"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:98
 msgid "Media ID"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:99
 msgid "Folder"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:100
 msgid "Confidence"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:101
 msgid "Reason"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:133
 msgid "Skipped Items"
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:135
 msgid "These items could not be matched to any folder."
 msgstr ""
 
-#: src/js/components/PreviewModal.jsx
-msgid "Cancel"
-msgstr ""
-
-#: src/js/components/PreviewModal.jsx
+#: src/js/components/PreviewModal.jsx:159
 msgid "Apply Changes"
 msgstr ""
 
-#: src/js/components/RestorePanel.jsx
-msgid "Backup & Restore"
+#: src/js/components/PreviewModal.jsx:162
+#: src/js/components/RestorePanel.jsx:195
+msgid "Cancel"
 msgstr ""
 
-#: src/js/components/RestorePanel.jsx
-msgid "Backup Available"
-msgstr ""
-
-#: src/js/components/RestorePanel.jsx
-msgid "Created:"
-msgstr ""
-
-#: src/js/components/RestorePanel.jsx
-msgid "Folders:"
-msgstr ""
-
-#: src/js/components/RestorePanel.jsx
-msgid "Assignments:"
-msgstr ""
-
-#: src/js/components/RestorePanel.jsx
-msgid "This will replace all current folders and assignments with the backup. Are you sure?"
-msgstr ""
-
-#: src/js/components/RestorePanel.jsx
-msgid "Yes, Restore Backup"
-msgstr ""
-
-#: src/js/components/RestorePanel.jsx
-msgid "Restore Backup"
-msgstr ""
-
-#: src/js/components/RestorePanel.jsx
-msgid "Delete Backup"
-msgstr ""
-
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:101
 msgid "Failed to restore backup."
 msgstr ""
 
-#: src/js/components/RestorePanel.jsx
+#: src/js/components/RestorePanel.jsx:126
 msgid "Failed to delete backup."
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/RestorePanel.jsx:139
+msgid "Backup & Restore"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx:154
+msgid "Backup Available"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx:159
+msgid "Created:"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx:167
+msgid "Folders:"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx:175
+msgid "Assignments:"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx:187
+msgid "This will replace all current folders and assignments with the backup. Are you sure?"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx:204
+msgid "Yes, Restore Backup"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx:214
+msgid "Restore Backup"
+msgstr ""
+
+#: src/js/components/RestorePanel.jsx:221
+msgid "Delete Backup"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:46
+msgid "Preparing preview..."
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:47
+msgid "Initializing..."
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:51
+msgid "Ready"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:52
+msgid "Processing..."
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:53
+msgid "Completed"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:54
+msgid "Cancelled"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:55
+msgid "Failed"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:70
+msgid "Reorganize All"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:97
+msgid "Preview"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:106
+msgid "Mode:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:115
+msgid "Progress:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:119
+msgid "Starting..."
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:134
+msgid "Connecting to AI provider and analyzing first batch..."
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:141
+msgid "Elapsed:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:153
+msgid "Applied:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:162
+msgid "Failed:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:187
+msgid "Cancel Scan"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:197
+msgid "Start New Scan"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:233
+msgid "Recent Results"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:267
 msgid "Attachment ID:"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:270
 msgid "Action:"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:275
+msgid "Folder:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:282
 msgid "New Folder:"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:287
+msgid "Confidence:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:290
+msgid "Reason:"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:291
+msgid "No reason provided"
+msgstr ""
+
+#: src/js/components/ScanProgress.jsx:330
 msgid "Assign to existing folder"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:332
 msgid "Create new folder"
 msgstr ""
 
-#: src/js/components/ScanProgress.jsx
+#: src/js/components/ScanProgress.jsx:334
 msgid "Skipped"
-msgstr ""
-
-#: src/js/components/ScanProgress.jsx
-msgid "No reason provided"
 msgstr ""
