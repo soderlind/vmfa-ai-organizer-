@@ -5,8 +5,9 @@ AI-powered media organization add-on for the [Virtual Media Folders](https://wor
 ## Features
 
 - **Vision-Based AI Analysis**: Analyzes actual image content (objects, scenes, colors) - not just metadata
-- **Multiple AI Providers**: OpenAI/Azure, Anthropic Claude, Google Gemini, Ollama, Grok, Exo, and heuristic fallback
+- **Multiple AI Providers**: OpenAI/Azure, Anthropic Claude, Google Gemini, Ollama, Grok, Exo
 - **Azure OpenAI Support**: Full support for Azure-hosted OpenAI deployments
+- **Automatic File Handling**: Documents go to "Documents", videos go to "Videos" - no AI needed
 - **Three Scan Modes**:
   - **Organize Unassigned**: Only process media not already in a folder
   - **Re-analyze All**: Re-analyze all media and update assignments
@@ -15,6 +16,10 @@ AI-powered media organization add-on for the [Virtual Media Folders](https://wor
 - **Backup & Restore**: Automatic backup before reorganization with one-click restore
 - **Background Processing**: Uses Action Scheduler for efficient chunked processing
 - **Real-time Progress**: Live progress updates in the admin UI
+
+## Documentation
+
+- **[AI Provider Guide](docs/AI-PROVIDERS.md)** - Detailed guide on choosing and configuring AI providers, recommended models, and cost comparison
 
 ## Requirements
 
