@@ -334,10 +334,13 @@ class AnalysisController extends WP_REST_Controller {
 	public function get_scan_status(): WP_REST_Response {
 		$progress = $this->scanner_service->get_progress();
 
-		// Calculate percentage.
+		// Ensure processed never exceeds total (safety cap).
+		$processed = min( $progress['processed'], $progress['total'] );
+
+		// Calculate percentage (capped at 100%).
 		$percentage = 0;
 		if ( $progress['total'] > 0 ) {
-			$percentage = round( ( $progress['processed'] / $progress['total'] ) * 100, 1 );
+			$percentage = min( 100, round( ( $processed / $progress['total'] ) * 100, 1 ) );
 		}
 
 		return new WP_REST_Response(
@@ -346,7 +349,7 @@ class AnalysisController extends WP_REST_Controller {
 				'mode'         => $progress['mode'],
 				'dry_run'      => $progress['dry_run'],
 				'total'        => $progress['total'],
-				'processed'    => $progress['processed'],
+				'processed'    => $processed,
 				'percentage'   => $percentage,
 				'applied'      => $progress['applied'] ?? 0,
 				'failed'       => $progress['failed'] ?? 0,

@@ -216,9 +216,30 @@ class MediaScannerService {
 			return;
 		}
 
-		// Get batch of IDs.
-		$offset    = $batch_number * $batch_size;
-		$batch_ids = array_slice( $attachment_ids, $offset, $batch_size );
+		// Safety check: if already processed all items, finalize.
+		$total = count( $attachment_ids );
+		if ( $progress['processed'] >= $total ) {
+			if ( ! $dry_run ) {
+				as_schedule_single_action(
+					time(),
+					'vmfa_apply_assignments',
+					array(),
+					'vmfa-ai-organizer'
+				);
+			} else {
+				as_schedule_single_action(
+					time(),
+					'vmfa_finalize_scan',
+					array(),
+					'vmfa-ai-organizer'
+				);
+			}
+			return;
+		}
+
+		// Get batch of IDs based on what's already processed, not batch number.
+		// This prevents issues with duplicate action scheduler runs.
+		$batch_ids = array_slice( $attachment_ids, $progress['processed'], $batch_size );
 
 		if ( empty( $batch_ids ) ) {
 			// No more batches, finalize.
