@@ -193,15 +193,9 @@
 		margin-top: 20px;
 		padding-top: 20px;
 		border-top: 1px solid #e0e0e0;
-		max-height: 400px;
-		overflow-y: auto;
 
 		h4 {
 			margin: 0 0 12px 0;
-			position: sticky;
-			top: 0;
-			background: #fff;
-			padding-bottom: 8px;
 		}
 	}
 
@@ -209,6 +203,8 @@
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		max-height: 360px;
+		overflow-y: auto;
 	}
 
 	.vmfa-result-item {

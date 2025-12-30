@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Norwegian Translations**: Complete Norwegian Bokmål (nb_NO) translation
+  - All formats: .po, .mo, .l10n.php (WP 6.5+), and JSON for JavaScript
+  - Updated .pot template with all translatable strings
+
+- **Expandable Scan Results**: Recent Results now shows all processed files in an expandable accordion
+  - Click any result to see details: Attachment ID, Action, Folder, Confidence, Reason
+  - Color-coded by action type (blue=assign, green=create, gray=skip)
+  - Scrollable list with fixed header
+
 - **Session Folder Tracking**: AI remembers folders suggested during the current scan session
   - Prevents duplicate/synonymous folders like "Nature/Flowers" vs "Nature/Plants/Flowers"
   - Session is cleared when a new scan starts
