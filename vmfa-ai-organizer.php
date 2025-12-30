@@ -41,7 +41,7 @@ if ( file_exists( VMFA_AI_ORGANIZER_PATH . 'vendor/autoload.php' ) ) {
  */
 function init(): void {
 	// Verify Virtual Media Folders is active.
-	if ( ! class_exists( 'VirtualMediaFolders\\Plugin' ) ) {
+	if ( ! defined( 'VMFO_VERSION' ) ) {
 		add_action(
 			'admin_notices',
 			function (): void {

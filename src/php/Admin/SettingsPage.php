@@ -121,14 +121,123 @@ class SettingsPage {
 	 * @return void
 	 */
 	public function init(): void {
+		add_action( 'admin_menu', array( $this, 'add_menu_page' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-
-		// Hook into VMF settings page to add our tab.
-		add_filter( 'vmfo_settings_tabs', array( $this, 'add_settings_tab' ) );
-		add_action( 'vmfo_settings_content_ai_organizer', array( $this, 'render_settings_content' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
 		// Add admin notices for validation.
 		add_action( 'admin_notices', array( $this, 'show_admin_notices' ) );
+	}
+
+	/**
+	 * Add settings page to admin menu.
+	 *
+	 * @return void
+	 */
+	public function add_menu_page(): void {
+		add_submenu_page(
+			'upload.php',
+			__( 'AI Organizer Settings', 'vmfa-ai-organizer' ),
+			__( 'AI Organizer', 'vmfa-ai-organizer' ),
+			'manage_options',
+			'vmfa-ai-organizer',
+			array( $this, 'render_settings_page' )
+		);
+	}
+
+	/**
+	 * Enqueue admin scripts and styles.
+	 *
+	 * @param string $hook_suffix The current admin page.
+	 * @return void
+	 */
+	public function enqueue_admin_scripts( string $hook_suffix ): void {
+		if ( 'media_page_vmfa-ai-organizer' !== $hook_suffix ) {
+			return;
+		}
+
+		$asset_file = VMFA_AI_ORGANIZER_PATH . 'build/index.asset.php';
+		if ( ! file_exists( $asset_file ) ) {
+			return;
+		}
+
+		$asset = require $asset_file;
+
+		wp_enqueue_script(
+			'vmfa-ai-organizer-admin',
+			VMFA_AI_ORGANIZER_URL . 'build/index.js',
+			$asset['dependencies'],
+			$asset['version'],
+			true
+		);
+
+		wp_enqueue_style(
+			'vmfa-ai-organizer-admin',
+			VMFA_AI_ORGANIZER_URL . 'build/index.css',
+			array( 'wp-components' ),
+			$asset['version']
+		);
+
+		wp_localize_script(
+			'vmfa-ai-organizer-admin',
+			'vmfaAiOrganizer',
+			array(
+				'restUrl'   => rest_url( 'vmfa/v1/' ),
+				'nonce'     => wp_create_nonce( 'wp_rest' ),
+				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+				'providers' => ProviderFactory::get_available_providers(),
+			)
+		);
+	}
+
+	/**
+	 * Render the settings page.
+	 *
+	 * @return void
+	 */
+	public function render_settings_page(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// Show save confirmation.
+		if ( isset( $_GET['settings-updated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			add_settings_error(
+				'vmfa_messages',
+				'vmfa_message',
+				__( 'Settings saved.', 'vmfa-ai-organizer' ),
+				'updated'
+			);
+		}
+
+		?>
+		<div class="wrap">
+			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<?php settings_errors( 'vmfa_messages' ); ?>
+
+			<form method="post" action="options.php" id="vmfa-ai-organizer-settings">
+				<?php
+				settings_fields( self::SETTINGS_GROUP );
+				do_settings_sections( 'vmfa-ai-organizer' );
+				submit_button( __( 'Save AI Settings', 'vmfa-ai-organizer' ) );
+				?>
+			</form>
+
+			<hr>
+
+			<h2><?php esc_html_e( 'Media Scanner', 'vmfa-ai-organizer' ); ?></h2>
+			<p class="description">
+				<?php esc_html_e( 'Use the scanner to organize your media library with AI suggestions.', 'vmfa-ai-organizer' ); ?>
+			</p>
+
+			<div id="vmfa-ai-organizer-scanner">
+				<!-- React component will mount here -->
+				<noscript>
+					<?php esc_html_e( 'JavaScript is required for the media scanner.', 'vmfa-ai-organizer' ); ?>
+				</noscript>
+			</div>
+		</div>
+		<?php
 	}
 
 	/**
