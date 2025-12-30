@@ -4,6 +4,15 @@
  * @package VmfaAiOrganizer
  */
 
+/* Provider-specific field visibility */
+.vmfa-provider-row {
+	display: none;
+
+	&.vmfa-provider-active {
+		display: table-row;
+	}
+}
+
 .vmfa-ai-organizer-panel {
 	max-width: 800px;
 
