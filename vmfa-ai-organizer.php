@@ -85,7 +85,7 @@ function activate(): void {
 		update_option(
 			'vmfa_ai_organizer_settings',
 			array(
-				'ai_provider'       => 'heuristic',
+				'ai_provider'       => '',
 				'max_folder_depth'  => 3,
 				'allow_new_folders' => false,
 				'batch_size'        => 20,

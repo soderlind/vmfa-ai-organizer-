@@ -22,7 +22,6 @@ class ProviderFactory {
 	 * @var array<string, class-string<ProviderInterface>>
 	 */
 	private static array $providers = array(
-		'heuristic' => HeuristicProvider::class,
 		'openai'    => OpenAIProvider::class,
 		'anthropic' => AnthropicProvider::class,
 		'gemini'    => GeminiProvider::class,
@@ -34,10 +33,13 @@ class ProviderFactory {
 	/**
 	 * Get the currently configured provider.
 	 *
-	 * @return ProviderInterface
+	 * @return ProviderInterface|null Null if no provider configured.
 	 */
-	public static function get_current_provider(): ProviderInterface {
-		$provider_name = Plugin::get_instance()->get_setting( 'ai_provider', 'heuristic' );
+	public static function get_current_provider(): ?ProviderInterface {
+		$provider_name = Plugin::get_instance()->get_setting( 'ai_provider', '' );
+		if ( empty( $provider_name ) || ! isset( self::$providers[ $provider_name ] ) ) {
+			return null;
+		}
 		return self::get_provider( $provider_name );
 	}
 
@@ -45,10 +47,13 @@ class ProviderFactory {
 	 * Get a provider by name.
 	 *
 	 * @param string $name Provider name.
-	 * @return ProviderInterface
+	 * @return ProviderInterface|null
 	 */
-	public static function get_provider( string $name ): ProviderInterface {
-		$class = self::$providers[ $name ] ?? self::$providers['heuristic'];
+	public static function get_provider( string $name ): ?ProviderInterface {
+		if ( ! isset( self::$providers[ $name ] ) ) {
+			return null;
+		}
+		$class = self::$providers[ $name ];
 		return new $class();
 	}
 

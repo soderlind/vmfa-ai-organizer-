@@ -41,7 +41,8 @@ class OllamaProvider extends AbstractProvider {
 		array $folder_paths,
 		int $max_depth,
 		bool $allow_new_folders,
-		?array $image_data = null
+		?array $image_data = null,
+		array $suggested_folders = array()
 	): array {
 		if ( ! $this->is_configured() ) {
 			return array(
@@ -56,7 +57,7 @@ class OllamaProvider extends AbstractProvider {
 		$base_url = $this->get_setting( 'ollama_url' ) ?: self::DEFAULT_URL;
 		$model    = $this->get_setting( 'ollama_model' ) ?: 'llama3.2';
 
-		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders );
+		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders, $suggested_folders );
 
 		// Build user message - Ollama vision uses 'images' array.
 		$user_message = array(

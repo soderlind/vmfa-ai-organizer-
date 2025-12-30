@@ -182,7 +182,7 @@ final class Plugin {
 	 */
 	public function get_settings(): array {
 		$defaults = array(
-			'ai_provider'       => 'heuristic',
+			'ai_provider'       => '',
 			'openai_key'        => '',
 			'openai_model'      => 'gpt-4o-mini',
 			'anthropic_key'     => '',

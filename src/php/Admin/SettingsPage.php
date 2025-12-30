@@ -36,7 +36,7 @@ class SettingsPage {
 		'ai_provider'       => array(
 			'env'     => 'VMFA_AI_PROVIDER',
 			'const'   => 'VMFA_AI_PROVIDER',
-			'default' => 'heuristic',
+			'default' => '',
 		),
 		'openai_type'       => array(
 			'env'     => 'VMFA_AI_OPENAI_TYPE',
@@ -973,7 +973,7 @@ class SettingsPage {
 		if ( isset( $input['ai_provider'] ) ) {
 			$sanitized['ai_provider'] = sanitize_key( $input['ai_provider'] );
 			if ( ! ProviderFactory::provider_exists( $sanitized['ai_provider'] ) ) {
-				$sanitized['ai_provider'] = 'heuristic';
+				$sanitized['ai_provider'] = '';
 			}
 		}
 
@@ -1030,8 +1030,8 @@ class SettingsPage {
 		// Checkbox.
 		$sanitized['allow_new_folders'] = ! empty( $input['allow_new_folders'] );
 
-		// Validate AI configuration if not heuristic.
-		if ( isset( $sanitized['ai_provider'] ) && 'heuristic' !== $sanitized['ai_provider'] ) {
+		// Validate AI configuration if provider is set.
+		if ( ! empty( $sanitized['ai_provider'] ) ) {
 			$this->validate_ai_configuration( $sanitized );
 		}
 
@@ -1045,14 +1045,17 @@ class SettingsPage {
 	 * @return void
 	 */
 	private function validate_ai_configuration( array $settings ): void {
-		$provider_name = $settings['ai_provider'] ?? 'heuristic';
+		$provider_name = $settings['ai_provider'] ?? '';
 
-		if ( 'heuristic' === $provider_name ) {
+		if ( empty( $provider_name ) ) {
 			return;
 		}
 
 		$provider = ProviderFactory::get_provider( $provider_name );
-		$error    = $provider->test( $settings );
+		if ( null === $provider ) {
+			return;
+		}
+		$error = $provider->test( $settings );
 
 		if ( null !== $error ) {
 			add_settings_error(

@@ -41,7 +41,8 @@ class GrokProvider extends AbstractProvider {
 		array $folder_paths,
 		int $max_depth,
 		bool $allow_new_folders,
-		?array $image_data = null
+		?array $image_data = null,
+		array $suggested_folders = array()
 	): array {
 		if ( ! $this->is_configured() ) {
 			return array(
@@ -56,7 +57,7 @@ class GrokProvider extends AbstractProvider {
 		$api_key = $this->get_setting( 'grok_key' );
 		$model   = $this->get_setting( 'grok_model' ) ?: 'grok-beta';
 
-		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders );
+		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders, $suggested_folders );
 
 		// Note: Grok vision API format is OpenAI-compatible.
 		$user_content = $user_prompt;

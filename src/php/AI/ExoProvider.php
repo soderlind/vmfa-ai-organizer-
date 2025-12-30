@@ -41,7 +41,8 @@ class ExoProvider extends AbstractProvider {
 		array $folder_paths,
 		int $max_depth,
 		bool $allow_new_folders,
-		?array $image_data = null
+		?array $image_data = null,
+		array $suggested_folders = array()
 	): array {
 		if ( ! $this->is_configured() ) {
 			return array(
@@ -56,7 +57,7 @@ class ExoProvider extends AbstractProvider {
 		$base_url = $this->get_setting( 'exo_url' ) ?: self::DEFAULT_URL;
 		$model    = $this->get_setting( 'exo_model' ) ?: 'llama-3.2-3b';
 
-		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders );
+		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders, $suggested_folders );
 
 		// Exo uses OpenAI-compatible API.
 		// Note: Vision support depends on the model being used.

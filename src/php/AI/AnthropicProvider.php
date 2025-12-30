@@ -46,7 +46,8 @@ class AnthropicProvider extends AbstractProvider {
 		array $folder_paths,
 		int $max_depth,
 		bool $allow_new_folders,
-		?array $image_data = null
+		?array $image_data = null,
+		array $suggested_folders = array()
 	): array {
 		if ( ! $this->is_configured() ) {
 			return array(
@@ -61,7 +62,7 @@ class AnthropicProvider extends AbstractProvider {
 		$api_key = $this->get_setting( 'anthropic_key' );
 		$model   = $this->get_setting( 'anthropic_model' ) ?: 'claude-3-haiku-20240307';
 
-		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders );
+		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders, $suggested_folders );
 
 		// Build user content - with or without image.
 		$user_content = $this->build_user_content( $user_prompt, $image_data );

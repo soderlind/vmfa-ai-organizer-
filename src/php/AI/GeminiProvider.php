@@ -41,7 +41,8 @@ class GeminiProvider extends AbstractProvider {
 		array $folder_paths,
 		int $max_depth,
 		bool $allow_new_folders,
-		?array $image_data = null
+		?array $image_data = null,
+		array $suggested_folders = array()
 	): array {
 		if ( ! $this->is_configured() ) {
 			return array(
@@ -56,7 +57,7 @@ class GeminiProvider extends AbstractProvider {
 		$api_key = $this->get_setting( 'gemini_key' );
 		$model   = $this->get_setting( 'gemini_model' ) ?: 'gemini-1.5-flash';
 
-		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders );
+		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders, $suggested_folders );
 		$full_prompt = $this->get_system_prompt() . "\n\n" . $user_prompt;
 
 		$url = sprintf( '%s/%s:generateContent?key=%s', self::API_BASE_URL, $model, $api_key );

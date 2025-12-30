@@ -34,11 +34,12 @@ interface ProviderInterface {
 	 * Vision-capable providers should prioritize analyzing the image content
 	 * when image_data is provided, using metadata as supplementary context.
 	 *
-	 * @param array<string, mixed> $media_metadata   Media metadata (filename, alt, caption, description, mime_type, exif).
-	 * @param array<string, int>   $folder_paths     Available folder paths mapped to term IDs.
-	 * @param int                  $max_depth        Maximum folder depth allowed.
-	 * @param bool                 $allow_new_folders Whether new folders can be proposed.
-	 * @param array<string, mixed>|null $image_data  Image data for vision analysis (url, base64, mime_type).
+	 * @param array<string, mixed> $media_metadata     Media metadata (filename, alt, caption, description, mime_type, exif).
+	 * @param array<string, int>   $folder_paths       Available folder paths mapped to term IDs.
+	 * @param int                  $max_depth          Maximum folder depth allowed.
+	 * @param bool                 $allow_new_folders  Whether new folders can be proposed.
+	 * @param array<string, mixed>|null $image_data   Image data for vision analysis (url, base64, mime_type).
+	 * @param array<string>        $suggested_folders  Folders already suggested in this scan session.
 	 * @return array{
 	 *     action: string,
 	 *     folder_id: int|null,
@@ -53,7 +54,8 @@ interface ProviderInterface {
 		array $folder_paths,
 		int $max_depth,
 		bool $allow_new_folders,
-		?array $image_data = null
+		?array $image_data = null,
+		array $suggested_folders = array()
 	): array;
 
 	/**

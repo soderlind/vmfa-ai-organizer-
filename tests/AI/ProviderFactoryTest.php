@@ -35,7 +35,8 @@ class ProviderFactoryTest extends BrainMonkeyTestCase {
 		$this->assertArrayHasKey( 'ollama', $providers );
 		$this->assertArrayHasKey( 'grok', $providers );
 		$this->assertArrayHasKey( 'exo', $providers );
-		$this->assertArrayHasKey( 'heuristic', $providers );
+		// Heuristic provider removed - AI provider now required.
+		$this->assertArrayNotHasKey( 'heuristic', $providers );
 	}
 
 	/**

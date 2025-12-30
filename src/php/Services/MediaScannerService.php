@@ -73,6 +73,14 @@ class MediaScannerService {
 	 * @return array{success: bool, message: string, total?: int}
 	 */
 	public function start_scan( string $mode, bool $dry_run = false ): array {
+		// Check if AI provider is configured.
+		if ( ! $this->analysis_service->is_provider_configured() ) {
+			return array(
+				'success' => false,
+				'message' => __( 'No AI provider configured. Please configure an AI provider in the AI Provider settings tab before scanning.', 'vmfa-ai-organizer' ),
+			);
+		}
+
 		// Check if a scan is already running.
 		$progress = $this->get_progress();
 		if ( 'running' === $progress['status'] ) {
@@ -126,6 +134,9 @@ class MediaScannerService {
 
 		// Store attachment IDs for processing.
 		update_option( 'vmfa_scan_attachment_ids', $attachment_ids, false );
+
+		// Clear session suggested folders for fresh consistency.
+		$this->analysis_service->clear_session_suggested_folders();
 
 		// Clear pending results.
 		delete_option( self::PENDING_RESULTS_OPTION );

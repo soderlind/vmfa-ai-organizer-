@@ -209,17 +209,19 @@ PROMPT;
 	/**
 	 * Build the user prompt for media analysis.
 	 *
-	 * @param array<string, mixed> $media_metadata   Media metadata.
-	 * @param array<string, int>   $folder_paths     Available folder paths.
-	 * @param int                  $max_depth        Maximum folder depth.
-	 * @param bool                 $allow_new_folders Whether new folders are allowed.
+	 * @param array<string, mixed> $media_metadata     Media metadata.
+	 * @param array<string, int>   $folder_paths       Available folder paths.
+	 * @param int                  $max_depth          Maximum folder depth.
+	 * @param bool                 $allow_new_folders  Whether new folders are allowed.
+	 * @param array<string>        $suggested_folders  Folders already suggested in this session.
 	 * @return string
 	 */
 	protected function build_user_prompt(
 		array $media_metadata,
 		array $folder_paths,
 		int $max_depth,
-		bool $allow_new_folders
+		bool $allow_new_folders,
+		array $suggested_folders = array()
 	): string {
 		$folders_list = empty( $folder_paths )
 			? 'No existing folders.'
@@ -231,6 +233,18 @@ PROMPT;
 			? "You MAY suggest creating a new folder (max depth: {$max_depth})."
 			: 'You must ONLY use existing folders. Do not suggest new folders.';
 
+		// Add session suggested folders section.
+		$suggested_folders_text = '';
+		if ( ! empty( $suggested_folders ) ) {
+			$suggested_list = implode( "\n", array_map( fn( $path ) => "- {$path}", $suggested_folders ) );
+			$suggested_folders_text = <<<TEXT
+
+## Folders Already Suggested in This Session (MUST REUSE if applicable)
+The following folders have already been suggested during this scan. You MUST use one of these if the media fits the same category. Do NOT create a similar or synonymous folder.
+{$suggested_list}
+TEXT;
+		}
+
 		return <<<PROMPT
 Analyze this media file and suggest a folder.
 
@@ -241,6 +255,7 @@ Analyze this media file and suggest a folder.
 
 ## Available Folders
 {$folders_list}
+{$suggested_folders_text}
 
 ## Constraints
 {$new_folders_text}

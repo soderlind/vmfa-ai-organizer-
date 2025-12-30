@@ -24,6 +24,49 @@ class AIAnalysisService {
 	private const TAXONOMY = 'vmfo_folder';
 
 	/**
+	 * Option key for session-suggested folders.
+	 */
+	private const SESSION_FOLDERS_OPTION = 'vmfa_session_suggested_folders';
+
+	/**
+	 * Document MIME types that go to Documents folder.
+	 *
+	 * @var array<string>
+	 */
+	private const DOCUMENT_MIME_TYPES = array(
+		'application/pdf',
+		'application/msword',
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+		'application/vnd.ms-excel',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+		'application/vnd.ms-powerpoint',
+		'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+		'application/rtf',
+		'text/plain',
+		'text/csv',
+		'application/zip',
+		'application/x-rar-compressed',
+		'application/x-7z-compressed',
+	);
+
+	/**
+	 * Video MIME types that go to Videos folder.
+	 *
+	 * @var array<string>
+	 */
+	private const VIDEO_MIME_TYPES = array(
+		'video/mp4',
+		'video/webm',
+		'video/ogg',
+		'video/quicktime',
+		'video/x-msvideo',
+		'video/x-ms-wmv',
+		'video/mpeg',
+		'video/3gpp',
+		'video/x-flv',
+	);
+
+	/**
 	 * AI provider instance.
 	 *
 	 * @var ProviderInterface|null
@@ -40,13 +83,23 @@ class AIAnalysisService {
 	/**
 	 * Get the AI provider.
 	 *
-	 * @return ProviderInterface
+	 * @return ProviderInterface|null Null if no provider configured.
 	 */
-	public function get_provider(): ProviderInterface {
+	public function get_provider(): ?ProviderInterface {
 		if ( null === $this->provider ) {
 			$this->provider = ProviderFactory::get_current_provider();
 		}
 		return $this->provider;
+	}
+
+	/**
+	 * Check if an AI provider is configured.
+	 *
+	 * @return bool
+	 */
+	public function is_provider_configured(): bool {
+		$provider = $this->get_provider();
+		return null !== $provider && $provider->is_configured();
 	}
 
 	/**
@@ -73,19 +126,158 @@ class AIAnalysisService {
 	 * }
 	 */
 	public function analyze_media( int $attachment_id ): array {
-		$metadata      = $this->get_media_metadata( $attachment_id );
-		$folder_paths  = $this->get_folder_paths();
-		$max_depth     = (int) Plugin::get_instance()->get_setting( 'max_folder_depth', 3 );
-		$allow_new     = (bool) Plugin::get_instance()->get_setting( 'allow_new_folders', false );
+		$metadata     = $this->get_media_metadata( $attachment_id );
+		$folder_paths = $this->get_folder_paths();
+		$mime_type    = $metadata['mime_type'] ?? '';
+
+		// Handle documents - assign to Documents folder.
+		if ( in_array( $mime_type, self::DOCUMENT_MIME_TYPES, true ) ) {
+			return $this->assign_to_type_folder( $attachment_id, 'Documents', $folder_paths );
+		}
+
+		// Handle videos - assign to Videos folder.
+		if ( in_array( $mime_type, self::VIDEO_MIME_TYPES, true ) || str_starts_with( $mime_type, 'video/' ) ) {
+			return $this->assign_to_type_folder( $attachment_id, 'Videos', $folder_paths );
+		}
+
+		// For images, require an AI provider.
+		$provider = $this->get_provider();
+		if ( null === $provider ) {
+			return array(
+				'action'          => 'skip',
+				'folder_id'       => null,
+				'new_folder_path' => null,
+				'confidence'      => 0.0,
+				'reason'          => __( 'No AI provider configured. Please configure an AI provider in settings.', 'vmfa-ai-organizer' ),
+				'attachment_id'   => $attachment_id,
+			);
+		}
+
+		if ( ! $provider->is_configured() ) {
+			return array(
+				'action'          => 'skip',
+				'folder_id'       => null,
+				'new_folder_path' => null,
+				'confidence'      => 0.0,
+				'reason'          => __( 'AI provider is not properly configured. Please check your API settings.', 'vmfa-ai-organizer' ),
+				'attachment_id'   => $attachment_id,
+			);
+		}
+
+		$max_depth         = (int) Plugin::get_instance()->get_setting( 'max_folder_depth', 3 );
+		$allow_new         = (bool) Plugin::get_instance()->get_setting( 'allow_new_folders', false );
+		$suggested_folders = $this->get_session_suggested_folders();
 
 		// Get image data for vision-capable providers.
 		$image_data = $this->get_image_data( $attachment_id );
 
-		$result = $this->get_provider()->analyze( $metadata, $folder_paths, $max_depth, $allow_new, $image_data );
+		$result = $provider->analyze( $metadata, $folder_paths, $max_depth, $allow_new, $image_data, $suggested_folders );
+
+		// Track the suggested folder for consistency in this scan session.
+		if ( ! empty( $result['new_folder_path'] ) ) {
+			$this->add_session_suggested_folder( $result['new_folder_path'] );
+		}
 
 		$result['attachment_id'] = $attachment_id;
 
 		return $result;
+	}
+
+	/**
+	 * Assign media to a type-based folder (Documents, Videos).
+	 *
+	 * @param int                $attachment_id Attachment ID.
+	 * @param string             $folder_name   Folder name (e.g., 'Documents', 'Videos').
+	 * @param array<string, int> $folder_paths  Existing folder paths.
+	 * @return array{
+	 *     action: string,
+	 *     folder_id: int|null,
+	 *     new_folder_path: string|null,
+	 *     confidence: float,
+	 *     reason: string,
+	 *     attachment_id: int
+	 * }
+	 */
+	private function assign_to_type_folder( int $attachment_id, string $folder_name, array $folder_paths ): array {
+		// Check if folder already exists.
+		if ( isset( $folder_paths[ $folder_name ] ) ) {
+			return array(
+				'action'          => 'assign',
+				'folder_id'       => $folder_paths[ $folder_name ],
+				'new_folder_path' => null,
+				'confidence'      => 1.0,
+				'reason'          => sprintf(
+					/* translators: %s: folder name */
+					__( 'File type automatically assigned to %s folder.', 'vmfa-ai-organizer' ),
+					$folder_name
+				),
+				'attachment_id'   => $attachment_id,
+			);
+		}
+
+		// Folder doesn't exist, suggest creating it.
+		$allow_new = (bool) Plugin::get_instance()->get_setting( 'allow_new_folders', false );
+
+		if ( $allow_new ) {
+			return array(
+				'action'          => 'create',
+				'folder_id'       => null,
+				'new_folder_path' => $folder_name,
+				'confidence'      => 1.0,
+				'reason'          => sprintf(
+					/* translators: %s: folder name */
+					__( 'File type requires %s folder (will be created).', 'vmfa-ai-organizer' ),
+					$folder_name
+				),
+				'attachment_id'   => $attachment_id,
+			);
+		}
+
+		// Cannot create folder, skip.
+		return array(
+			'action'          => 'skip',
+			'folder_id'       => null,
+			'new_folder_path' => null,
+			'confidence'      => 0.0,
+			'reason'          => sprintf(
+				/* translators: %s: folder name */
+				__( '%s folder does not exist and new folder creation is disabled.', 'vmfa-ai-organizer' ),
+				$folder_name
+			),
+			'attachment_id'   => $attachment_id,
+		);
+	}
+
+	/**
+	 * Get folders suggested during this scan session.
+	 *
+	 * @return array<string> List of folder paths suggested in the current session.
+	 */
+	public function get_session_suggested_folders(): array {
+		return get_option( self::SESSION_FOLDERS_OPTION, array() );
+	}
+
+	/**
+	 * Add a folder to the session suggested list.
+	 *
+	 * @param string $folder_path The folder path that was suggested.
+	 * @return void
+	 */
+	public function add_session_suggested_folder( string $folder_path ): void {
+		$folders = $this->get_session_suggested_folders();
+		if ( ! in_array( $folder_path, $folders, true ) ) {
+			$folders[] = $folder_path;
+			update_option( self::SESSION_FOLDERS_OPTION, $folders, false );
+		}
+	}
+
+	/**
+	 * Clear session suggested folders (called when a new scan starts).
+	 *
+	 * @return void
+	 */
+	public function clear_session_suggested_folders(): void {
+		delete_option( self::SESSION_FOLDERS_OPTION );
 	}
 
 	/**
