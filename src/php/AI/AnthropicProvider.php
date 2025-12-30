@@ -71,7 +71,7 @@ class AnthropicProvider extends AbstractProvider {
 			array(
 				'model'      => $model,
 				'max_tokens' => 500,
-				'system'     => self::SYSTEM_PROMPT,
+				'system'     => $this->get_system_prompt(),
 				'messages'   => array(
 					array(
 						'role'    => 'user',

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Localized Folder Names**: AI providers now return folder names in the WordPress site language
+  - Automatically detects WordPress locale (e.g., nb_NO, de_DE, fr_FR)
+  - Supports 35+ languages with human-readable names
+  - Falls back to locale code for unsupported languages
+
 - **Dry-Run Result Caching**: Preview results are now cached so applying them doesn't require re-running AI analysis
   - Saves time and API costs by reusing cached analysis when accepting preview results
   - Cache is automatically cleared when starting a new preview scan

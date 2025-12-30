@@ -57,7 +57,7 @@ class GeminiProvider extends AbstractProvider {
 		$model   = $this->get_setting( 'gemini_model' ) ?: 'gemini-1.5-flash';
 
 		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders );
-		$full_prompt = self::SYSTEM_PROMPT . "\n\n" . $user_prompt;
+		$full_prompt = $this->get_system_prompt() . "\n\n" . $user_prompt;
 
 		$url = sprintf( '%s/%s:generateContent?key=%s', self::API_BASE_URL, $model, $api_key );
 

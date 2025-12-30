@@ -83,7 +83,7 @@ class ExoProvider extends AbstractProvider {
 				'messages'    => array(
 					array(
 						'role'    => 'system',
-						'content' => self::SYSTEM_PROMPT,
+						'content' => $this->get_system_prompt(),
 					),
 					array(
 						'role'    => 'user',

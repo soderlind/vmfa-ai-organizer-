@@ -22,10 +22,19 @@ abstract class AbstractProvider implements ProviderInterface {
 	protected const REQUEST_TIMEOUT = 30;
 
 	/**
-	 * System prompt for folder organization with vision capabilities.
+	 * Get the system prompt for folder organization with vision capabilities.
+	 *
+	 * @return string The system prompt with language instruction.
 	 */
-	protected const SYSTEM_PROMPT = <<<'PROMPT'
+	protected function get_system_prompt(): string {
+		$locale        = get_locale();
+		$language_name = $this->get_language_name( $locale );
+
+		return <<<PROMPT
 You are a media organization assistant with vision capabilities. Your PRIMARY task is to ANALYZE THE IMAGE CONTENT to determine the most appropriate folder.
+
+## LANGUAGE REQUIREMENT
+You MUST respond with folder names in {$language_name}. All folder_path values in your response must use {$language_name} words.
 
 ## Analysis Priority (highest to lowest):
 1. **IMAGE CONTENT**: What objects, scenes, people, activities, colors, or subjects are visible?
@@ -38,18 +47,91 @@ You are a media organization assistant with vision capabilities. Your PRIMARY ta
 - Base your folder decision primarily on visual content
 - Use metadata only to supplement or confirm your visual analysis
 - Prefer existing folders when there's a good match
-- Keep folder names concise and descriptive (Title Case)
-- If no existing folder fits and new folders are allowed, suggest a new path
+- Keep folder names concise and descriptive (Title Case in {$language_name})
+- If no existing folder fits and new folders are allowed, suggest a new path in {$language_name}
 
 Respond with valid JSON only, no markdown formatting:
 {
     "visual_description": "Brief description of what is visible in the image",
     "action": "assign" or "create",
-    "folder_path": "path/to/folder",
+    "folder_path": "path/to/folder (in {$language_name})",
     "confidence": 0.0 to 1.0,
     "reason": "Why this folder based on visual content"
 }
 PROMPT;
+	}
+
+	/**
+	 * Get human-readable language name from WordPress locale.
+	 *
+	 * @param string $locale WordPress locale code (e.g., 'nb_NO', 'en_US').
+	 * @return string Human-readable language name.
+	 */
+	protected function get_language_name( string $locale ): string {
+		// Map of common locale codes to language names.
+		$language_map = array(
+			'en_US' => 'English',
+			'en_GB' => 'English',
+			'en_AU' => 'English',
+			'en_CA' => 'English',
+			'nb_NO' => 'Norwegian (Bokmål)',
+			'nn_NO' => 'Norwegian (Nynorsk)',
+			'sv_SE' => 'Swedish',
+			'da_DK' => 'Danish',
+			'fi'    => 'Finnish',
+			'de_DE' => 'German',
+			'de_AT' => 'German',
+			'de_CH' => 'German',
+			'fr_FR' => 'French',
+			'fr_CA' => 'French',
+			'fr_BE' => 'French',
+			'es_ES' => 'Spanish',
+			'es_MX' => 'Spanish',
+			'es_AR' => 'Spanish',
+			'it_IT' => 'Italian',
+			'pt_BR' => 'Portuguese',
+			'pt_PT' => 'Portuguese',
+			'nl_NL' => 'Dutch',
+			'nl_BE' => 'Dutch',
+			'pl_PL' => 'Polish',
+			'ru_RU' => 'Russian',
+			'uk'    => 'Ukrainian',
+			'cs_CZ' => 'Czech',
+			'sk_SK' => 'Slovak',
+			'hu_HU' => 'Hungarian',
+			'ro_RO' => 'Romanian',
+			'bg_BG' => 'Bulgarian',
+			'el'    => 'Greek',
+			'tr_TR' => 'Turkish',
+			'ar'    => 'Arabic',
+			'he_IL' => 'Hebrew',
+			'ja'    => 'Japanese',
+			'ko_KR' => 'Korean',
+			'zh_CN' => 'Chinese (Simplified)',
+			'zh_TW' => 'Chinese (Traditional)',
+			'th'    => 'Thai',
+			'vi'    => 'Vietnamese',
+			'id_ID' => 'Indonesian',
+			'ms_MY' => 'Malay',
+			'hi_IN' => 'Hindi',
+		);
+
+		// Check for exact match.
+		if ( isset( $language_map[ $locale ] ) ) {
+			return $language_map[ $locale ];
+		}
+
+		// Try matching just the language code (before underscore).
+		$lang_code = explode( '_', $locale )[0];
+		foreach ( $language_map as $code => $name ) {
+			if ( str_starts_with( $code, $lang_code . '_' ) || $code === $lang_code ) {
+				return $name;
+			}
+		}
+
+		// Fallback: use the locale code itself.
+		return $locale;
+	}
 
 	/**
 	 * Make an HTTP POST request.
