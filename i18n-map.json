@@ -1,0 +1,9 @@
+{
+	"src/js/index.js": "build/index.js",
+	"src/js/components/AiOrganizerPanel.jsx": "build/index.js",
+	"src/js/components/ScanProgress.jsx": "build/index.js",
+	"src/js/components/PreviewModal.jsx": "build/index.js",
+	"src/js/components/BackupRestore.jsx": "build/index.js",
+	"src/js/hooks/useScanStatus.js": "build/index.js",
+	"src/js/utils/api.js": "build/index.js"
+}

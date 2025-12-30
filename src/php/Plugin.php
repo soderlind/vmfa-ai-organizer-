@@ -69,9 +69,11 @@ final class Plugin {
 	 * @return void
 	 */
 	public function init(): void {
-		$this->load_textdomain();
 		$this->init_services();
 		$this->init_hooks();
+
+		// Load textdomain on init hook when locale is set.
+		add_action( 'init', array( $this, 'load_textdomain' ) );
 	}
 
 	/**
@@ -79,7 +81,7 @@ final class Plugin {
 	 *
 	 * @return void
 	 */
-	private function load_textdomain(): void {
+	public function load_textdomain(): void {
 		load_plugin_textdomain(
 			'vmfa-ai-organizer',
 			false,
@@ -126,8 +128,8 @@ final class Plugin {
 	 * @return void
 	 */
 	public function enqueue_admin_assets( string $hook_suffix ): void {
-		// Only load on VMF settings page.
-		if ( 'media_page_virtual-media-folders' !== $hook_suffix && 'settings_page_virtual-media-folders' !== $hook_suffix ) {
+		// Only load on AI Organizer settings page.
+		if ( 'media_page_vmfa-ai-organizer' !== $hook_suffix ) {
 			return;
 		}
 

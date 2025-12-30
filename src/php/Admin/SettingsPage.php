@@ -204,6 +204,12 @@ class SettingsPage {
 				'providers'  => ProviderFactory::get_available_providers(),
 			)
 		);
+
+		wp_set_script_translations(
+			'vmfa-ai-organizer-admin',
+			'vmfa-ai-organizer',
+			VMFA_AI_ORGANIZER_PATH . 'languages'
+		);
 	}
 
 	/**
