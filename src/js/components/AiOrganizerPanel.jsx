@@ -32,6 +32,7 @@ export function AiOrganizerPanel() {
 	const [ dryRun, setDryRun ] = useState( true );
 	const [ stats, setStats ] = useState( null );
 	const [ showPreview, setShowPreview ] = useState( false );
+	const [ previewResults, setPreviewResults ] = useState( [] );
 	const [ notice, setNotice ] = useState( null );
 
 	const {
@@ -53,13 +54,32 @@ export function AiOrganizerPanel() {
 	}, [] );
 
 	/**
-	 * Show preview modal when dry run completes.
+	 * Fetch cached results and show preview modal when dry run completes.
 	 */
 	useEffect( () => {
 		if ( status.status === 'completed' && status.dry_run ) {
-			setShowPreview( true );
+			fetchCachedResults();
 		}
 	}, [ status.status, status.dry_run ] );
+
+	/**
+	 * Fetch cached dry-run results for preview.
+	 */
+	const fetchCachedResults = async () => {
+		try {
+			const response = await apiFetch( {
+				path: '/vmfa/v1/scan/cached-results',
+				method: 'GET',
+			} );
+			setPreviewResults( response.results || [] );
+			setShowPreview( true );
+		} catch ( err ) {
+			console.error( 'Failed to fetch cached results:', err );
+			// Fallback to status.results if cached results fail.
+			setPreviewResults( status.results || [] );
+			setShowPreview( true );
+		}
+	};
 
 	/**
 	 * Fetch media statistics.
@@ -291,7 +311,7 @@ export function AiOrganizerPanel() {
 			{ /* Preview Modal */ }
 			{ showPreview && (
 				<PreviewModal
-					results={ status.results }
+					results={ previewResults }
 					onClose={ () => setShowPreview( false ) }
 					onApply={ handleApplyPreview }
 				/>

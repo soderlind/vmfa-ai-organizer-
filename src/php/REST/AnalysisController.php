@@ -168,6 +168,19 @@ class AnalysisController extends WP_REST_Controller {
 			)
 		);
 
+		// Get cached dry-run results.
+		register_rest_route(
+			$this->namespace,
+			'/scan/cached-results',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_cached_results' ),
+					'permission_callback' => array( $this, 'check_permission' ),
+				),
+			)
+		);
+
 		// Analyze single media.
 		register_rest_route(
 			$this->namespace,
@@ -430,6 +443,24 @@ class AnalysisController extends WP_REST_Controller {
 			array(
 				'success' => true,
 				'count'   => $count,
+			),
+			200
+		);
+	}
+
+	/**
+	 * Get cached dry-run results.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function get_cached_results(): WP_REST_Response {
+		$results = $this->scanner_service->get_cached_results();
+
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+				'results' => $results,
+				'count'   => count( $results ),
 			),
 			200
 		);

@@ -484,6 +484,15 @@ class MediaScannerService {
 	}
 
 	/**
+	 * Get all cached dry-run results.
+	 *
+	 * @return array
+	 */
+	public function get_cached_results(): array {
+		return get_option( self::DRYRUN_CACHE_OPTION, array() );
+	}
+
+	/**
 	 * Finalize the scan.
 	 *
 	 * @return void
