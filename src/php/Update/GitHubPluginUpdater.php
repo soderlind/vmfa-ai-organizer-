@@ -1,5 +1,7 @@
 <?php
-namespace ContentPoll\Update;
+declare(strict_types=1);
+
+namespace VmfaAiOrganizer;
 
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 

@@ -17,6 +17,8 @@ AI-powered media organization add-on for the [Virtual Media Folders](https://wor
 - **Background Processing**: Uses Action Scheduler for efficient chunked processing
 - **Real-time Progress**: Live progress updates in the admin UI
 
+https://www.youtube.com/watch?v=Rn7otDZ1RxM
+
 ## Documentation
 
 - **[AI Provider Guide](docs/AI-PROVIDERS.md)** - Detailed guide on choosing and configuring AI providers, recommended models, and cost comparison
