@@ -413,7 +413,9 @@ PROMPT;
 			);
 		}
 
-		if ( 'create' === $action && ! empty( $folder_path ) ) {
+		// If action is "create" OR action is "assign" but folder doesn't exist,
+		// treat it as a create action (the folder path was suggested but doesn't exist).
+		if ( ! empty( $folder_path ) && ( 'create' === $action || ! isset( $folder_paths[ $folder_path ] ) ) ) {
 			return array(
 				'action'          => 'create',
 				'folder_id'       => null,
@@ -436,18 +438,13 @@ PROMPT;
 			}
 		}
 
-		// No match found - provide detailed reason.
+		// Should not reach here, but if we do, suggest creating the folder.
 		return array(
-			'action'          => 'skip',
+			'action'          => 'create',
 			'folder_id'       => null,
-			'new_folder_path' => null,
-			'confidence'      => 0.0,
-			'reason'          => sprintf(
-				/* translators: 1: folder path suggested, 2: AI's reason */
-				__( 'Folder "%1$s" not found and new folder creation not enabled. %2$s', 'vmfa-ai-organizer' ),
-				$folder_path,
-				$reason
-			),
+			'new_folder_path' => $folder_path,
+			'confidence'      => $confidence,
+			'reason'          => $reason,
 		);
 	}
 
