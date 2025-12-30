@@ -322,29 +322,85 @@ PROMPT;
 	 * }
 	 */
 	protected function parse_response( string $response, array $folder_paths ): array {
-		$default = array(
-			'action'          => 'skip',
-			'folder_id'       => null,
-			'new_folder_path' => null,
-			'confidence'      => 0.0,
-			'reason'          => 'Failed to parse AI response',
-		);
-
 		// Clean up response - remove markdown code blocks if present.
-		$response = preg_replace( '/^```(?:json)?\s*/m', '', $response );
-		$response = preg_replace( '/```\s*$/m', '', $response );
-		$response = trim( $response );
+		$original_response = $response;
+		$response          = preg_replace( '/^```(?:json)?\s*/m', '', $response );
+		$response          = preg_replace( '/```\s*$/m', '', $response );
+		$response          = trim( $response );
 
-		$data = json_decode( $response, true );
+		// Check for empty response.
+		if ( empty( $response ) ) {
+			return array(
+				'action'          => 'skip',
+				'folder_id'       => null,
+				'new_folder_path' => null,
+				'confidence'      => 0.0,
+				'reason'          => __( 'AI returned empty response.', 'vmfa-ai-organizer' ),
+			);
+		}
+
+		$data       = json_decode( $response, true );
+		$json_error = json_last_error();
+
+		// Check for JSON parsing errors.
+		if ( JSON_ERROR_NONE !== $json_error ) {
+			$error_messages = array(
+				JSON_ERROR_DEPTH          => 'Maximum stack depth exceeded',
+				JSON_ERROR_STATE_MISMATCH => 'Underflow or mode mismatch',
+				JSON_ERROR_CTRL_CHAR      => 'Unexpected control character',
+				JSON_ERROR_SYNTAX         => 'Syntax error, malformed JSON',
+				JSON_ERROR_UTF8           => 'Malformed UTF-8 characters',
+			);
+			$error_msg = $error_messages[ $json_error ] ?? "Unknown error (code: {$json_error})";
+
+			// Truncate response for error message.
+			$truncated = strlen( $original_response ) > 100
+				? substr( $original_response, 0, 100 ) . '...'
+				: $original_response;
+
+			return array(
+				'action'          => 'skip',
+				'folder_id'       => null,
+				'new_folder_path' => null,
+				'confidence'      => 0.0,
+				'reason'          => sprintf(
+					/* translators: 1: JSON error message, 2: truncated response */
+					__( 'JSON parse error: %1$s. Response: %2$s', 'vmfa-ai-organizer' ),
+					$error_msg,
+					$truncated
+				),
+			);
+		}
 
 		if ( ! is_array( $data ) ) {
-			return $default;
+			return array(
+				'action'          => 'skip',
+				'folder_id'       => null,
+				'new_folder_path' => null,
+				'confidence'      => 0.0,
+				'reason'          => __( 'AI response is not a valid JSON object.', 'vmfa-ai-organizer' ),
+			);
 		}
 
 		$action      = $data['action'] ?? 'assign';
 		$folder_path = $data['folder_path'] ?? '';
 		$confidence  = (float) ( $data['confidence'] ?? 0.5 );
 		$reason      = $data['reason'] ?? '';
+
+		// Check for missing folder_path.
+		if ( empty( $folder_path ) ) {
+			return array(
+				'action'          => 'skip',
+				'folder_id'       => null,
+				'new_folder_path' => null,
+				'confidence'      => 0.0,
+				'reason'          => sprintf(
+					/* translators: %s: AI's reason if provided */
+					__( 'AI did not suggest a folder. %s', 'vmfa-ai-organizer' ),
+					$reason
+				),
+			);
+		}
 
 		// Validate and map folder path to ID.
 		if ( 'assign' === $action && isset( $folder_paths[ $folder_path ] ) ) {
@@ -380,7 +436,19 @@ PROMPT;
 			}
 		}
 
-		return $default;
+		// No match found - provide detailed reason.
+		return array(
+			'action'          => 'skip',
+			'folder_id'       => null,
+			'new_folder_path' => null,
+			'confidence'      => 0.0,
+			'reason'          => sprintf(
+				/* translators: 1: folder path suggested, 2: AI's reason */
+				__( 'Folder "%1$s" not found and new folder creation not enabled. %2$s', 'vmfa-ai-organizer' ),
+				$folder_path,
+				$reason
+			),
+		);
 	}
 
 	/**
