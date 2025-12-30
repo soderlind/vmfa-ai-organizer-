@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -128,6 +128,11 @@ It depends on your media library size and AI provider speed. The plugin processe
 4. Backup and restore functionality
 
 == Changelog ==
+
+= 0.1.1 =
+* Fixed JavaScript translations not loading for non-English locales
+* Removed redundant dependency check (now handled by WordPress Requires Plugins header)
+* Added i18n build scripts for translation workflow
 
 = 0.1.0 =
 * Initial release
