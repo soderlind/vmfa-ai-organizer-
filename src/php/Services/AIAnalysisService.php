@@ -122,7 +122,9 @@ class AIAnalysisService {
 	 *     new_folder_path: string|null,
 	 *     confidence: float,
 	 *     reason: string,
-	 *     attachment_id: int
+	 *     attachment_id: int,
+	 *     filename: string,
+	 *     folder_name: string
 	 * }
 	 */
 	public function analyze_media( int $attachment_id ): array {
@@ -179,6 +181,8 @@ class AIAnalysisService {
 		}
 
 		$result['attachment_id'] = $attachment_id;
+		$result['filename']      = $metadata['filename'] ?? '';
+		$result['folder_name']   = $result['new_folder_path'] ?? $this->get_folder_name_by_id( $result['folder_id'] ?? null );
 
 		return $result;
 	}
@@ -195,10 +199,14 @@ class AIAnalysisService {
 	 *     new_folder_path: string|null,
 	 *     confidence: float,
 	 *     reason: string,
-	 *     attachment_id: int
+	 *     attachment_id: int,
+	 *     filename: string,
+	 *     folder_name: string
 	 * }
 	 */
 	private function assign_to_type_folder( int $attachment_id, string $folder_name, array $folder_paths ): array {
+		$filename = basename( get_attached_file( $attachment_id ) ?: '' );
+
 		// Check if folder already exists.
 		if ( isset( $folder_paths[ $folder_name ] ) ) {
 			return array(
@@ -212,6 +220,8 @@ class AIAnalysisService {
 					$folder_name
 				),
 				'attachment_id'   => $attachment_id,
+				'filename'        => $filename,
+				'folder_name'     => $folder_name,
 			);
 		}
 
@@ -230,6 +240,8 @@ class AIAnalysisService {
 					$folder_name
 				),
 				'attachment_id'   => $attachment_id,
+				'filename'        => $filename,
+				'folder_name'     => $folder_name,
 			);
 		}
 
@@ -245,6 +257,8 @@ class AIAnalysisService {
 				$folder_name
 			),
 			'attachment_id'   => $attachment_id,
+			'filename'        => $filename,
+			'folder_name'     => '',
 		);
 	}
 
@@ -469,6 +483,25 @@ class AIAnalysisService {
 		}
 
 		return $path;
+	}
+
+	/**
+	 * Get folder name by ID.
+	 *
+	 * @param int|null $folder_id Folder term ID.
+	 * @return string Folder name or empty string.
+	 */
+	private function get_folder_name_by_id( ?int $folder_id ): string {
+		if ( null === $folder_id ) {
+			return '';
+		}
+
+		$term = get_term( $folder_id, self::TAXONOMY );
+		if ( is_wp_error( $term ) || ! $term ) {
+			return '';
+		}
+
+		return $term->name;
 	}
 
 	/**

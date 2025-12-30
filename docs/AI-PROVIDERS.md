@@ -5,15 +5,15 @@ This guide explains how to configure and choose the right AI provider for the Vi
 ## Table of Contents
 
 - [Overview](#overview)
-- [Choosing a Provider](#choosing-a-provider)
-- [OpenAI](#openai)
-- [Azure OpenAI](#azure-openai)
-- [Anthropic Claude](#anthropic-claude)
-- [Google Gemini](#google-gemini)
-- [Ollama (Local)](#ollama-local)
-- [Grok (xAI)](#grok-xai)
-- [Exo (Distributed Local)](#exo-distributed-local)
-- [Cost Comparison](#cost-comparison)
+- [Choosing a Model](#choosing-a-model)
+- [Provider Setup](#provider-setup)
+  - [OpenAI](#openai)
+  - [Azure OpenAI](#azure-openai)
+  - [Anthropic Claude](#anthropic-claude)
+  - [Google Gemini](#google-gemini)
+  - [Ollama (Local)](#ollama-local)
+  - [Grok (xAI)](#grok-xai)
+  - [Exo (Distributed Local)](#exo-distributed-local)
 - [Troubleshooting](#troubleshooting)
 
 ## Overview
@@ -22,87 +22,139 @@ This plugin uses **vision-capable AI models** to analyze actual image content. T
 
 **Important**: You must configure an AI provider before scanning. Documents (PDF, Word, etc.) and videos are automatically assigned to "Documents" and "Videos" folders without requiring AI.
 
-## Choosing a Provider
+### Quick Provider Comparison
 
-| Use Case | Recommended Provider | Why |
-|----------|---------------------|-----|
-| **Best accuracy** | OpenAI GPT-4o or Claude 3.5 Sonnet | Most capable vision models |
-| **Best value** | OpenAI GPT-4o-mini or Gemini 1.5 Flash | Low cost, good quality |
-| **Enterprise/Compliance** | Azure OpenAI | Data residency, enterprise SLAs |
-| **Privacy-first** | Ollama (LLaVA) | Runs 100% locally |
-| **Free option** | Ollama or Gemini (free tier) | No API costs |
+| Provider | Type | Best For |
+|----------|------|----------|
+| **OpenAI** | Cloud | General use, easiest setup |
+| **Azure OpenAI** | Cloud | Enterprise, data residency, compliance |
+| **Anthropic** | Cloud | Nuanced understanding, detailed analysis |
+| **Gemini** | Cloud | Cost-effective, free tier available |
+| **Ollama** | Local | Privacy, no API costs, offline use |
+| **Grok** | Cloud | xAI ecosystem |
+| **Exo** | Local | Distributed computing across devices |
+
+## Choosing a Model
+
+### The Most Important Requirement: Vision Support
+
+This plugin requires a **vision-capable model**. Models without vision support cannot analyze images.
+
+How to identify vision-capable models:
+- Look for "vision" in the model name
+- Check for "multimodal" capabilities in documentation
+- Confirm the model accepts image input
+
+### Model Tiers Explained
+
+Most providers offer models in different tiers. Understanding these helps you choose wisely:
+
+| Tier | Characteristics | Best For |
+|------|-----------------|----------|
+| **Flagship** | Highest quality, more expensive, sometimes slower | Complex categorization needing nuanced understanding |
+| **Balanced** | Good quality at moderate cost | Most typical use cases |
+| **Fast/Mini** | Lower cost, faster, slightly reduced quality | Large media libraries, simple categorization |
+
+**Recommendation**: Start with a "balanced" or "mini/flash" tier model. You can upgrade later if needed.
+
+### What to Consider When Choosing
+
+#### 1. Cost vs. Quality
+
+- **Budget-conscious**: Use the provider's cheapest vision-capable model
+- **Quality-focused**: Use the flagship vision model
+- **Large libraries (1000s of images)**: Cheaper models keep costs manageable
+
+#### 2. Speed
+
+- Mini/Flash models process faster
+- Flagship models may be slower but more accurate
+- Local models (Ollama) depend entirely on your hardware
+
+#### 3. Privacy
+
+- **Cloud providers**: Images are sent to external servers
+- **Local providers (Ollama, Exo)**: All processing stays on your infrastructure
+
+#### 4. Reliability
+
+- Major cloud providers (OpenAI, Anthropic, Google) offer high availability
+- Local solutions require your server to be capable and running
+
+### Finding Current Models
+
+Model offerings change frequently. Always check your provider's official documentation for the latest vision-capable models:
+
+| Provider | Documentation |
+|----------|--------------|
+| OpenAI | [platform.openai.com/docs/models](https://platform.openai.com/docs/models) |
+| Anthropic | [docs.anthropic.com/en/docs/models](https://docs.anthropic.com/en/docs/about-claude/models) |
+| Google Gemini | [ai.google.dev/gemini-api/docs/models](https://ai.google.dev/gemini-api/docs/models/gemini) |
+| Ollama | [ollama.com/library](https://ollama.com/library) (filter for "vision") |
+| Grok/xAI | [docs.x.ai](https://docs.x.ai/) |
+
+**Tip**: When reviewing model lists, look for terms like "vision", "multimodal", "image input", or "visual understanding".
 
 ---
 
-## OpenAI
+## Provider Setup
 
-OpenAI provides the most widely-used vision AI models.
+### OpenAI
 
-### Recommended Models
+OpenAI is the most popular choice and easiest to set up.
 
-| Model | Best For | Vision | Cost | Speed |
-|-------|----------|--------|------|-------|
-| **gpt-4o-mini** ⭐ | General use, best value | ✅ | $0.15/1M input | Fast |
-| **gpt-4o** | Maximum accuracy | ✅ | $2.50/1M input | Fast |
-| **gpt-4-turbo** | Complex analysis | ✅ | $10/1M input | Medium |
+#### Getting Started
 
-### Setup
+1. Create an account at [platform.openai.com](https://platform.openai.com/)
+2. Generate an API key at [API Keys](https://platform.openai.com/api-keys)
+3. Check [Models documentation](https://platform.openai.com/docs/models) for current vision-capable models
 
-1. Get an API key from [OpenAI Platform](https://platform.openai.com/api-keys)
-2. In **Media → AI Organizer → AI Provider**:
-   - Set **AI Provider** to "OpenAI"
-   - Set **OpenAI Type** to "OpenAI"
-   - Enter your **API Key**
-   - Set **Model** to `gpt-4o-mini` (recommended)
+#### Configuration (Admin UI)
 
-### Configuration
+In **Media → AI Organizer → AI Provider**:
+- Set **AI Provider** to "OpenAI"
+- Set **OpenAI Type** to "OpenAI"
+- Enter your **API Key**
+- Set **Model** to a current vision-capable model
+
+#### Configuration (wp-config.php)
 
 ```php
 define( 'VMFA_AI_PROVIDER', 'openai' );
-define( 'VMFA_AI_OPENAI_TYPE', 'openai' );
 define( 'VMFA_AI_OPENAI_KEY', 'sk-...' );
-define( 'VMFA_AI_OPENAI_MODEL', 'gpt-4o-mini' );
+define( 'VMFA_AI_OPENAI_MODEL', 'your-chosen-model' );
 ```
 
-### Tips
+#### Tips
 
-- **gpt-4o-mini** offers excellent vision capabilities at 1/16th the cost of gpt-4o
-- Set a [usage limit](https://platform.openai.com/account/limits) to avoid unexpected charges
-- The plugin automatically resizes images to reduce token usage
+- Start with a "mini" or budget-tier model for testing
+- Upgrade to flagship models if you need better accuracy
+- Check OpenAI's pricing page for current costs
 
 ---
 
-## Azure OpenAI
+### Azure OpenAI
 
-Azure OpenAI is ideal for enterprise deployments with compliance requirements.
+Azure OpenAI is ideal for enterprises needing data residency, compliance, and Azure integration.
 
-### Prerequisites
+#### Getting Started
 
-1. Azure subscription with Azure OpenAI access approved
-2. Create an Azure OpenAI resource
-3. Deploy a vision-capable model (GPT-4o or GPT-4-turbo)
+1. Have an Azure subscription
+2. Request access to Azure OpenAI Service
+3. Create an Azure OpenAI resource in Azure Portal
+4. Deploy a vision-capable model with a deployment name
+5. Note your endpoint URL and key
 
-### Recommended Deployments
+#### Configuration (Admin UI)
 
-| Deployment Model | Best For |
-|------------------|----------|
-| **gpt-4o** | Best balance of speed and accuracy |
-| **gpt-4o-mini** | Cost-effective option |
-| **gpt-4-turbo** | Complex image analysis |
+In **Media → AI Organizer → AI Provider**:
+- Set **AI Provider** to "OpenAI"
+- Set **OpenAI Type** to "Azure"
+- Enter your **Azure Endpoint** (e.g., `https://your-resource.openai.azure.com`)
+- Enter your **API Key**
+- Set **Model/Deployment** to your deployment name (not the model name)
 
-### Setup
-
-1. In Azure Portal, find your OpenAI resource endpoint (e.g., `https://your-resource.openai.azure.com`)
-2. Get an API key from "Keys and Endpoint"
-3. Note your deployment name (the name you gave when deploying the model)
-4. In **Media → AI Organizer → AI Provider**:
-   - Set **AI Provider** to "OpenAI"
-   - Set **OpenAI Type** to "Azure"
-   - Enter your **Azure Endpoint**
-   - Enter your **API Key**
-   - Set **Model/Deployment** to your deployment name (e.g., `my-gpt4o-deployment`)
-
-### Configuration
+#### Configuration (wp-config.php)
 
 ```php
 define( 'VMFA_AI_PROVIDER', 'openai' );
@@ -113,208 +165,178 @@ define( 'VMFA_AI_AZURE_ENDPOINT', 'https://your-resource.openai.azure.com' );
 define( 'VMFA_AI_AZURE_API_VERSION', '2024-02-15-preview' );
 ```
 
-### Tips
+#### Tips
 
-- The **Model** field should be your **deployment name**, not the model name
-- Use API version `2024-02-15-preview` or later for vision support
-- Azure pricing varies by region and commitment tier
+- The **Model** field must be your **deployment name**, not the underlying model name
+- Use a recent API version for vision support (check Azure docs for current versions)
+- Deploy a vision-capable model in your Azure OpenAI resource
 
 ---
 
-## Anthropic Claude
+### Anthropic Claude
 
-Anthropic's Claude models excel at nuanced image understanding.
+Anthropic's Claude models are known for nuanced understanding and detailed analysis.
 
-### Recommended Models
+#### Getting Started
 
-| Model | Best For | Vision | Cost | Speed |
-|-------|----------|--------|------|-------|
-| **claude-3-5-sonnet-20241022** ⭐ | Best overall | ✅ | $3/1M input | Fast |
-| **claude-3-haiku-20240307** | Budget option | ✅ | $0.25/1M input | Fastest |
-| **claude-3-opus-20240229** | Maximum capability | ✅ | $15/1M input | Slower |
-| **claude-3-sonnet-20240229** | Balanced | ✅ | $3/1M input | Fast |
+1. Create an account at [console.anthropic.com](https://console.anthropic.com/)
+2. Generate an API key
+3. Check [Models documentation](https://docs.anthropic.com/en/docs/about-claude/models) for current vision-capable models
 
-### Setup
+#### Configuration (Admin UI)
 
-1. Get an API key from [Anthropic Console](https://console.anthropic.com/)
-2. In **Media → AI Organizer → AI Provider**:
-   - Set **AI Provider** to "Anthropic"
-   - Enter your **API Key**
-   - Set **Model** to `claude-3-5-sonnet-20241022` (recommended)
+In **Media → AI Organizer → AI Provider**:
+- Set **AI Provider** to "Anthropic"
+- Enter your **API Key**
+- Set **Model** to a current vision-capable model (Claude 3+ models support vision)
 
-### Configuration
+#### Configuration (wp-config.php)
 
 ```php
 define( 'VMFA_AI_PROVIDER', 'anthropic' );
 define( 'VMFA_AI_ANTHROPIC_KEY', 'sk-ant-...' );
-define( 'VMFA_AI_ANTHROPIC_MODEL', 'claude-3-5-sonnet-20241022' );
+define( 'VMFA_AI_ANTHROPIC_MODEL', 'your-chosen-model' );
 ```
 
-### Tips
+#### Tips
 
-- Claude 3.5 Sonnet is currently the best Claude model for vision tasks
-- Haiku is extremely fast and cost-effective for simpler categorization
-- All Claude 3+ models support vision
+- All Claude 3 and later models support vision
+- Sonnet models offer a good balance of quality and cost
+- Haiku models are faster and cheaper for high-volume use
 
 ---
 
-## Google Gemini
+### Google Gemini
 
 Google Gemini offers competitive vision capabilities with a generous free tier.
 
-### Recommended Models
-
-| Model | Best For | Vision | Cost | Speed |
-|-------|----------|--------|------|-------|
-| **gemini-2.0-flash** ⭐ | Latest, fastest | ✅ | $0.10/1M input | Very fast |
-| **gemini-1.5-flash** | Cost-effective | ✅ | $0.075/1M input | Fast |
-| **gemini-1.5-pro** | Complex analysis | ✅ | $1.25/1M input | Medium |
-
-### Setup
+#### Getting Started
 
 1. Get an API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
-2. In **Media → AI Organizer → AI Provider**:
-   - Set **AI Provider** to "Gemini"
-   - Enter your **API Key**
-   - Set **Model** to `gemini-2.0-flash` (recommended)
+2. Check [Models documentation](https://ai.google.dev/gemini-api/docs/models/gemini) for current options
 
-### Configuration
+#### Configuration (Admin UI)
+
+In **Media → AI Organizer → AI Provider**:
+- Set **AI Provider** to "Gemini"
+- Enter your **API Key**
+- Set **Model** to a current vision-capable model (Flash models recommended for cost)
+
+#### Configuration (wp-config.php)
 
 ```php
 define( 'VMFA_AI_PROVIDER', 'gemini' );
 define( 'VMFA_AI_GEMINI_KEY', 'your-api-key' );
-define( 'VMFA_AI_GEMINI_MODEL', 'gemini-2.0-flash' );
+define( 'VMFA_AI_GEMINI_MODEL', 'your-chosen-model' );
 ```
 
-### Tips
+#### Tips
 
 - Gemini has a **free tier** with rate limits - great for testing
 - Flash models are optimized for speed and cost
-- Gemini 2.0 Flash is newer and generally better than 1.5 Flash
+- Pro models offer higher capability for complex tasks
 
 ---
 
-## Ollama (Local)
+### Ollama (Local)
 
 Ollama runs AI models entirely on your own hardware - completely free and private.
 
-### Prerequisites
+#### Prerequisites
 
-1. Install [Ollama](https://ollama.com/)
-2. Pull a vision-capable model
+1. A server with sufficient RAM (8GB+ recommended) and ideally a GPU
+2. [Ollama](https://ollama.com/) installed
 
-### Recommended Models
-
-| Model | Best For | Vision | VRAM Required |
-|-------|----------|--------|---------------|
-| **llava:13b** ⭐ | Best local vision | ✅ | ~10GB |
-| **llava:7b** | Lighter option | ✅ | ~6GB |
-| **bakllava** | Alternative | ✅ | ~6GB |
-
-### Setup
+#### Getting Started
 
 ```bash
 # Install Ollama (macOS/Linux)
 curl -fsSL https://ollama.com/install.sh | sh
 
-# Pull a vision model
-ollama pull llava:13b
+# Browse available models at ollama.com/library
+# Look for vision-capable models (e.g., models with "llava" or "vision")
 
-# Verify it's running
+# Pull a vision model
+ollama pull <model-name>
+
+# Verify Ollama is running
 curl http://localhost:11434/api/tags
 ```
 
-Then in **Media → AI Organizer → AI Provider**:
+#### Configuration (Admin UI)
+
+In **Media → AI Organizer → AI Provider**:
 - Set **AI Provider** to "Ollama"
 - Set **Ollama URL** to `http://localhost:11434`
-- Set **Model** to `llava:13b`
+- Set **Model** to the name of your pulled vision model
 
-### Configuration
+#### Configuration (wp-config.php)
 
 ```php
 define( 'VMFA_AI_PROVIDER', 'ollama' );
 define( 'VMFA_AI_OLLAMA_URL', 'http://localhost:11434' );
-define( 'VMFA_AI_OLLAMA_MODEL', 'llava:13b' );
+define( 'VMFA_AI_OLLAMA_MODEL', 'your-vision-model' );
 ```
 
-### Tips
+#### Tips
 
-- **LLaVA** is the most popular local vision model
-- Requires a decent GPU (or patience with CPU-only)
+- Search the [Ollama library](https://ollama.com/library) for "vision" to find compatible models
+- Larger models need more VRAM/RAM but produce better results
 - If WordPress is in Docker, use `http://host.docker.internal:11434`
-- Processing is slower than cloud APIs but completely free
+- Processing is slower than cloud APIs but completely free and private
 
 ---
 
-## Grok (xAI)
+### Grok (xAI)
 
 Grok is xAI's AI assistant with vision capabilities.
 
-### Recommended Models
-
-| Model | Best For | Vision |
-|-------|----------|--------|
-| **grok-2-vision-1212** ⭐ | Best vision | ✅ |
-| **grok-2-1212** | Text analysis | ❌ |
-| **grok-beta** | Older version | ✅ |
-
-### Setup
+#### Getting Started
 
 1. Get an API key from [xAI Console](https://console.x.ai/)
-2. In **Media → AI Organizer → AI Provider**:
-   - Set **AI Provider** to "Grok"
-   - Enter your **API Key**
-   - Set **Model** to `grok-2-vision-1212`
+2. Check their documentation for current vision-capable models
 
-### Configuration
+#### Configuration (Admin UI)
+
+In **Media → AI Organizer → AI Provider**:
+- Set **AI Provider** to "Grok"
+- Enter your **API Key**
+- Set **Model** to a vision-capable Grok model
+
+#### Configuration (wp-config.php)
 
 ```php
 define( 'VMFA_AI_PROVIDER', 'grok' );
 define( 'VMFA_AI_GROK_KEY', 'your-api-key' );
-define( 'VMFA_AI_GROK_MODEL', 'grok-2-vision-1212' );
+define( 'VMFA_AI_GROK_MODEL', 'your-chosen-model' );
 ```
 
 ---
 
-## Exo (Distributed Local)
+### Exo (Distributed Local)
 
-Exo allows running AI models across multiple local devices.
+Exo allows running AI models across multiple local devices, pooling their compute power.
 
-### Setup
+#### Getting Started
 
 1. Install [Exo](https://github.com/exo-explore/exo)
 2. Start the Exo cluster
-3. In **Media → AI Organizer → AI Provider**:
-   - Set **AI Provider** to "Exo"
-   - Set **Exo URL** to `http://localhost:52415`
-   - Set **Model** based on your cluster capabilities
+3. Note the API endpoint (default: `http://localhost:52415`)
 
-### Configuration
+#### Configuration (Admin UI)
+
+In **Media → AI Organizer → AI Provider**:
+- Set **AI Provider** to "Exo"
+- Set **Exo URL** to your cluster endpoint
+- Set **Model** based on your cluster's capabilities
+
+#### Configuration (wp-config.php)
 
 ```php
 define( 'VMFA_AI_PROVIDER', 'exo' );
 define( 'VMFA_AI_EXO_URL', 'http://localhost:52415' );
-define( 'VMFA_AI_EXO_MODEL', 'llama-3.2-3b' );
+define( 'VMFA_AI_EXO_MODEL', 'your-model' );
 ```
-
----
-
-## Cost Comparison
-
-Estimated cost to organize 1,000 images (assuming ~500 tokens per image):
-
-| Provider | Model | Est. Cost | Notes |
-|----------|-------|-----------|-------|
-| Ollama | LLaVA | **$0** | Free, runs locally |
-| Gemini | 1.5 Flash | **~$0.04** | Free tier available |
-| OpenAI | GPT-4o-mini | **~$0.08** | Best value cloud |
-| Anthropic | Haiku | **~$0.13** | Fast and capable |
-| Gemini | 2.0 Flash | **~$0.05** | Latest, fast |
-| OpenAI | GPT-4o | **~$1.25** | Premium quality |
-| Anthropic | Claude 3.5 Sonnet | **~$1.50** | Premium quality |
-| Anthropic | Opus | **~$7.50** | Maximum capability |
-
-*Costs are approximate and may vary based on image complexity and response length.*
 
 ---
 
@@ -324,23 +346,25 @@ Estimated cost to organize 1,000 images (assuming ~500 tokens per image):
 
 You must select and configure an AI provider in **Media → AI Organizer → AI Provider**.
 
-### "API key not configured" or similar
+### "API key not configured" or authentication errors
 
-1. Check that your API key is entered correctly
-2. For Azure, ensure you're using the correct endpoint format
-3. Try the "Test Connection" if available
+1. Verify your API key is entered correctly
+2. For Azure, ensure the endpoint URL format is correct
+3. Check that your API key has the necessary permissions
 
 ### Empty responses or parse errors
 
 1. Ensure you're using a **vision-capable** model
 2. Check that images are in a supported format (JPEG, PNG, GIF, WebP)
 3. Try a different model - some handle certain images better
+4. Check your provider's status page for outages
 
 ### Ollama connection refused
 
 1. Ensure Ollama is running: `ollama serve`
-2. Check the URL is correct (default: `http://localhost:11434`)
+2. Verify the URL is correct (default: `http://localhost:11434`)
 3. If WordPress is in Docker, use `http://host.docker.internal:11434`
+4. Check firewall settings if accessing remotely
 
 ### Rate limiting
 
@@ -350,24 +374,14 @@ You must select and configure an AI provider in **Media → AI Organizer → AI 
 
 ### High costs
 
-1. Switch to a cheaper model (GPT-4o-mini, Gemini Flash, Haiku)
+1. Switch to a cheaper/mini model tier
 2. Use **Organize Unassigned** mode instead of re-analyzing everything
 3. Use **Preview Mode** first to verify results before applying
 4. Consider Ollama for free local processing
 
----
+### Model not found
 
-## Model Comparison Matrix
-
-| Provider | Model | Vision | Quality | Speed | Cost |
-|----------|-------|--------|---------|-------|------|
-| OpenAI | GPT-4o | ✅ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | $$ |
-| OpenAI | GPT-4o-mini | ✅ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | $ |
-| Anthropic | Claude 3.5 Sonnet | ✅ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | $$ |
-| Anthropic | Claude 3 Haiku | ✅ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | $ |
-| Gemini | 2.0 Flash | ✅ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | $ |
-| Gemini | 1.5 Pro | ✅ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | $$ |
-| Ollama | LLaVA 13B | ✅ | ⭐⭐⭐ | ⭐⭐ | Free |
-| Grok | grok-2-vision | ✅ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | $$ |
-
-**Legend**: $ = Low cost, $$ = Medium cost, $$$ = High cost
+1. Verify the model name is spelled correctly
+2. Check if the model is available in your region/account
+3. For Azure, ensure you're using the deployment name, not the model name
+4. Check the provider's documentation for current available models

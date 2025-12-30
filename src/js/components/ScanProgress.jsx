@@ -4,6 +4,7 @@
  * @package VmfaAiOrganizer
  */
 
+import { useState } from '@wordpress/element';
 import {
 	Button,
 	Card,
@@ -200,30 +201,101 @@ export function ScanProgress( { status, onCancel, onReset, isLoading } ) {
 
 				{ /* Recent Results */ }
 				{ status.results && status.results.length > 0 && (
-					<div className="vmfa-recent-results">
-						<h4>{ __( 'Recent Results', 'vmfa-ai-organizer' ) }</h4>
-						<ul className="vmfa-results-list">
-							{ status.results.slice( -5 ).reverse().map( ( result, index ) => (
-								<li key={ index } className={ `vmfa-result-item vmfa-result-${ result.action }` }>
-									<span className="vmfa-result-action">
-										{ getActionIcon( result.action ) }
-									</span>
-									<span className="vmfa-result-id">
-										#{ result.attachment_id }
-									</span>
-									<span className="vmfa-result-reason">
-										{ result.reason }
-									</span>
-									<span className="vmfa-result-confidence">
-										{ Math.round( result.confidence * 100 ) }%
-									</span>
-								</li>
-							) ) }
-						</ul>
-					</div>
+					<ResultsList results={ status.results } />
 				) }
 			</CardBody>
 		</Card>
+	);
+}
+
+/**
+ * Expandable Results List component.
+ *
+ * @param {Object} props - Component props.
+ * @param {Array}  props.results - Array of results.
+ * @return {JSX.Element} The results list.
+ */
+function ResultsList( { results } ) {
+	const [ expandedItems, setExpandedItems ] = useState( {} );
+
+	const toggleItem = ( index ) => {
+		setExpandedItems( ( prev ) => ( {
+			...prev,
+			[ index ]: ! prev[ index ],
+		} ) );
+	};
+
+	// Reverse to show most recent first.
+	const sortedResults = [ ...results ].reverse();
+
+	return (
+		<div className="vmfa-recent-results">
+			<h4>{ __( 'Recent Results', 'vmfa-ai-organizer' ) } ({ results.length })</h4>
+			<div className="vmfa-results-list">
+				{ sortedResults.map( ( result, index ) => (
+					<div
+						key={ index }
+						className={ `vmfa-result-item vmfa-result-${ result.action }${ expandedItems[ index ] ? ' is-expanded' : '' }` }
+					>
+						<button
+							type="button"
+							className="vmfa-result-header"
+							onClick={ () => toggleItem( index ) }
+							aria-expanded={ expandedItems[ index ] }
+						>
+							<span className="vmfa-result-action">
+								{ getActionIcon( result.action ) }
+							</span>
+							<span className="vmfa-result-filename" title={ result.filename || `#${ result.attachment_id }` }>
+								{ result.filename || `#${ result.attachment_id }` }
+							</span>
+							{ result.folder_name && (
+								<span className="vmfa-result-folder">
+									→ { result.folder_name }
+								</span>
+							) }
+							<span className="vmfa-result-confidence">
+								{ Math.round( ( result.confidence || 0 ) * 100 ) }%
+							</span>
+							<span className="vmfa-result-toggle">
+								{ expandedItems[ index ] ? '▲' : '▼' }
+							</span>
+						</button>
+						{ expandedItems[ index ] && (
+							<div className="vmfa-result-details">
+								<dl>
+									<dt>{ __( 'Attachment ID:', 'vmfa-ai-organizer' ) }</dt>
+									<dd>#{ result.attachment_id }</dd>
+
+									<dt>{ __( 'Action:', 'vmfa-ai-organizer' ) }</dt>
+									<dd>{ getActionLabel( result.action ) }</dd>
+
+									{ result.folder_name && (
+										<>
+											<dt>{ __( 'Folder:', 'vmfa-ai-organizer' ) }</dt>
+											<dd>{ result.folder_name }</dd>
+										</>
+									) }
+
+									{ result.new_folder_path && (
+										<>
+											<dt>{ __( 'New Folder:', 'vmfa-ai-organizer' ) }</dt>
+											<dd>{ result.new_folder_path }</dd>
+										</>
+									) }
+
+									<dt>{ __( 'Confidence:', 'vmfa-ai-organizer' ) }</dt>
+									<dd>{ Math.round( ( result.confidence || 0 ) * 100 ) }%</dd>
+
+									<dt>{ __( 'Reason:', 'vmfa-ai-organizer' ) }</dt>
+									<dd className="vmfa-result-reason-text">{ result.reason || __( 'No reason provided', 'vmfa-ai-organizer' ) }</dd>
+								</dl>
+							</div>
+						) }
+					</div>
+				) ) }
+			</div>
+		</div>
 	);
 }
 
@@ -243,6 +315,25 @@ function getActionIcon( action ) {
 			return '⏭️';
 		default:
 			return '❓';
+	}
+}
+
+/**
+ * Get human-readable label for action type.
+ *
+ * @param {string} action - Action type.
+ * @return {string} Action label.
+ */
+function getActionLabel( action ) {
+	switch ( action ) {
+		case 'assign':
+			return __( 'Assign to existing folder', 'vmfa-ai-organizer' );
+		case 'create':
+			return __( 'Create new folder', 'vmfa-ai-organizer' );
+		case 'skip':
+			return __( 'Skipped', 'vmfa-ai-organizer' );
+		default:
+			return action;
 	}
 }
 

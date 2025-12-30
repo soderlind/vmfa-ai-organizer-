@@ -1,4 +1,4 @@
-# Virtual Media Folders AI Organizer
+# Norwegian Bokmål translation for Virtual Media Folders AI Organizer
 # Copyright (C) 2025 Per Soderlind
 # This file is distributed under the GPL v2 or later.
 msgid ""
@@ -6,735 +6,735 @@ msgstr ""
 "Project-Id-Version: Virtual Media Folders AI Organizer 0.1.0\n"
 "Report-Msgid-Bugs-To: https://developer.suspended.suspended.suspended.no\n"
 "POT-Creation-Date: 2025-12-30 00:00:00+00:00\n"
+"PO-Revision-Date: 2025-12-30 00:00:00+00:00\n"
+"Last-Translator: Per Soderlind <per@soderlind.no>\n"
+"Language-Team: Norwegian Bokmål\n"
+"Language: nb_NO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: WP-CLI\n"
 "X-Domain: vmfa-ai-organizer\n"
 
 #. Plugin Name of the plugin
 msgid "Virtual Media Folders AI Organizer"
-msgstr ""
+msgstr "Virtuelle mediemapper AI-organisator"
 
 #. Description of the plugin
 msgid "AI-powered media organization add-on for Virtual Media Folders"
-msgstr ""
+msgstr "AI-drevet medieorganisering for Virtuelle mediemapper"
 
 #: vmfa-ai-organizer.php
 msgid "%s requires Virtual Media Folders to be installed and activated."
-msgstr ""
+msgstr "%s krever at Virtuelle mediemapper er installert og aktivert."
 
 #: src/php/Admin/SettingsPage.php
 msgid "AI Organizer Settings"
-msgstr ""
+msgstr "AI-organisator innstillinger"
 
 #: src/php/Admin/SettingsPage.php
 msgid "AI Organizer"
-msgstr ""
+msgstr "AI-organisator"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Settings saved."
-msgstr ""
+msgstr "Innstillinger lagret."
 
 #: src/php/Admin/SettingsPage.php
 msgid "Media Scanner"
-msgstr ""
+msgstr "Medieskanner"
 
 #: src/php/Admin/SettingsPage.php
 msgid "AI Provider"
-msgstr ""
+msgstr "AI-leverandør"
 
 #: src/php/Admin/SettingsPage.php
 msgid "JavaScript is required for the media scanner."
-msgstr ""
+msgstr "JavaScript er påkrevd for medieskanneren."
 
 #: src/php/Admin/SettingsPage.php
 msgid "Save AI Settings"
-msgstr ""
+msgstr "Lagre AI-innstillinger"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Provider"
-msgstr ""
+msgstr "Leverandør"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Select the AI provider to use for media analysis."
-msgstr ""
+msgstr "Velg AI-leverandøren som skal brukes for medieanalyse."
 
 #: src/php/Admin/SettingsPage.php
 msgid "OpenAI"
-msgstr ""
+msgstr "OpenAI"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Anthropic"
-msgstr ""
+msgstr "Anthropic"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Gemini"
-msgstr ""
+msgstr "Gemini"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Ollama (Local)"
-msgstr ""
+msgstr "Ollama (lokal)"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Grok"
-msgstr ""
+msgstr "Grok"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Exo (Local)"
-msgstr ""
+msgstr "Exo (lokal)"
 
 #: src/php/Admin/SettingsPage.php
 msgid "OpenAI Type"
-msgstr ""
+msgstr "OpenAI-type"
 
 #: src/php/Admin/SettingsPage.php
 msgid "API Key"
-msgstr ""
+msgstr "API-nøkkel"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Enter your API key."
-msgstr ""
+msgstr "Skriv inn din API-nøkkel."
 
 #: src/php/Admin/SettingsPage.php
 msgid "Model"
-msgstr ""
+msgstr "Modell"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Model / Deployment"
-msgstr ""
+msgstr "Modell / Distribusjon"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Enter the model to use."
-msgstr ""
+msgstr "Skriv inn modellen som skal brukes."
 
 #: src/php/Admin/SettingsPage.php
 msgid "Azure Endpoint"
-msgstr ""
+msgstr "Azure-endepunkt"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Azure API Version"
-msgstr ""
+msgstr "Azure API-versjon"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Anthropic API Key"
-msgstr ""
+msgstr "Anthropic API-nøkkel"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Anthropic Model"
-msgstr ""
+msgstr "Anthropic-modell"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Gemini API Key"
-msgstr ""
+msgstr "Gemini API-nøkkel"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Gemini Model"
-msgstr ""
+msgstr "Gemini-modell"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Ollama URL"
-msgstr ""
+msgstr "Ollama URL"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Ollama Model"
-msgstr ""
+msgstr "Ollama-modell"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Grok API Key"
-msgstr ""
+msgstr "Grok API-nøkkel"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Grok Model"
-msgstr ""
+msgstr "Grok-modell"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Exo URL"
-msgstr ""
+msgstr "Exo URL"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Exo Model"
-msgstr ""
+msgstr "Exo-modell"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Max Folder Depth"
-msgstr ""
+msgstr "Maks mappedybde"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Maximum folder hierarchy depth (1-5)."
-msgstr ""
+msgstr "Maksimal mappehierarkidybde (1-5)."
 
 #: src/php/Admin/SettingsPage.php
 msgid "Allow New Folders"
-msgstr ""
+msgstr "Tillat nye mapper"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Allow AI to suggest creating new folders."
-msgstr ""
+msgstr "Tillat AI å foreslå opprettelse av nye mapper."
 
 #: src/php/Admin/SettingsPage.php
 msgid "Batch Size"
-msgstr ""
+msgstr "Batchstørrelse"
 
 #: src/php/Admin/SettingsPage.php
 msgid "Number of media items to process per batch (10-100)."
-msgstr ""
+msgstr "Antall medieelementer som skal behandles per batch (10-100)."
 
 #: src/php/Admin/SettingsPage.php
 msgid "Locked by constant or environment variable"
-msgstr ""
+msgstr "Låst av konstant eller miljøvariabel"
 
 #: src/php/AI/AbstractProvider.php
 msgid "AI returned empty response."
-msgstr ""
+msgstr "AI returnerte tomt svar."
 
 #: src/php/AI/AbstractProvider.php
 msgid "JSON parse error: %1$s. Response: %2$s"
-msgstr ""
+msgstr "JSON-parsefeil: %1$s. Svar: %2$s"
 
 #: src/php/AI/AbstractProvider.php
 msgid "AI response is not a valid JSON object."
-msgstr ""
+msgstr "AI-svaret er ikke et gyldig JSON-objekt."
 
 #: src/php/AI/AbstractProvider.php
 msgid "AI did not suggest a folder. %s"
-msgstr ""
+msgstr "AI foreslo ikke en mappe. %s"
 
 #: src/php/AI/OpenAIProvider.php
 msgid "Azure OpenAI"
-msgstr ""
+msgstr "Azure OpenAI"
 
 #: src/php/AI/OpenAIProvider.php
 msgid "OpenAI API key not configured."
-msgstr ""
+msgstr "OpenAI API-nøkkel er ikke konfigurert."
 
 #: src/php/AI/OpenAIProvider.php
 msgid "OpenAI API error: %s"
-msgstr ""
+msgstr "OpenAI API-feil: %s"
 
 #: src/php/AI/OpenAIProvider.php
 msgid "API key is required."
-msgstr ""
+msgstr "API-nøkkel er påkrevd."
 
 #: src/php/AI/OpenAIProvider.php
 msgid "Azure endpoint is required."
-msgstr ""
+msgstr "Azure-endepunkt er påkrevd."
 
 #: src/php/AI/OpenAIProvider.php
 msgid "Azure deployment name is required."
-msgstr ""
+msgstr "Azure-distribusjonsnavn er påkrevd."
 
 #: src/php/AI/AnthropicProvider.php
 msgid "Anthropic Claude"
-msgstr ""
+msgstr "Anthropic Claude"
 
 #: src/php/AI/AnthropicProvider.php
 msgid "Anthropic API key not configured."
-msgstr ""
+msgstr "Anthropic API-nøkkel er ikke konfigurert."
 
 #: src/php/AI/AnthropicProvider.php
 msgid "Anthropic API error: %s"
-msgstr ""
+msgstr "Anthropic API-feil: %s"
 
 #: src/php/AI/AnthropicProvider.php
 msgid "Anthropic API key is required."
-msgstr ""
+msgstr "Anthropic API-nøkkel er påkrevd."
 
 #: src/php/AI/GeminiProvider.php
 msgid "Google Gemini"
-msgstr ""
+msgstr "Google Gemini"
 
 #: src/php/AI/GeminiProvider.php
 msgid "Gemini API key not configured."
-msgstr ""
+msgstr "Gemini API-nøkkel er ikke konfigurert."
 
 #: src/php/AI/GeminiProvider.php
 msgid "Gemini API error: %s"
-msgstr ""
+msgstr "Gemini API-feil: %s"
 
 #: src/php/AI/GeminiProvider.php
 msgid "Gemini API key is required."
-msgstr ""
+msgstr "Gemini API-nøkkel er påkrevd."
 
 #: src/php/AI/OllamaProvider.php
 msgid "Ollama is not configured or not running."
-msgstr ""
+msgstr "Ollama er ikke konfigurert eller kjører ikke."
 
 #: src/php/AI/OllamaProvider.php
 msgid "Ollama error: %s"
-msgstr ""
+msgstr "Ollama-feil: %s"
 
 #: src/php/AI/OllamaProvider.php
 msgid "Cannot connect to Ollama at %s. Is it running?"
-msgstr ""
+msgstr "Kan ikke koble til Ollama på %s. Kjører den?"
 
 #: src/php/AI/OllamaProvider.php
 msgid "Ollama is not responding correctly."
-msgstr ""
+msgstr "Ollama svarer ikke riktig."
 
 #: src/php/AI/OllamaProvider.php
 msgid "Model \"%1$s\" not found. Available models: %2$s"
-msgstr ""
+msgstr "Modell «%1$s» ikke funnet. Tilgjengelige modeller: %2$s"
 
 #: src/php/AI/GrokProvider.php
 msgid "Grok (xAI)"
-msgstr ""
+msgstr "Grok (xAI)"
 
 #: src/php/AI/GrokProvider.php
 msgid "Grok API key not configured."
-msgstr ""
+msgstr "Grok API-nøkkel er ikke konfigurert."
 
 #: src/php/AI/GrokProvider.php
 msgid "Grok API error: %s"
-msgstr ""
+msgstr "Grok API-feil: %s"
 
 #: src/php/AI/GrokProvider.php
 msgid "Grok API key is required."
-msgstr ""
+msgstr "Grok API-nøkkel er påkrevd."
 
 #: src/php/AI/ExoProvider.php
 msgid "Exo (Distributed Local)"
-msgstr ""
+msgstr "Exo (distribuert lokal)"
 
 #: src/php/AI/ExoProvider.php
 msgid "Exo is not configured or not running."
-msgstr ""
+msgstr "Exo er ikke konfigurert eller kjører ikke."
 
 #: src/php/AI/ExoProvider.php
 msgid "Exo error: %s"
-msgstr ""
+msgstr "Exo-feil: %s"
 
 #: src/php/AI/ExoProvider.php
 msgid "Cannot connect to Exo at %s. Is it running?"
-msgstr ""
+msgstr "Kan ikke koble til Exo på %s. Kjører den?"
 
 #: src/php/AI/ExoProvider.php
 msgid "Exo is not responding correctly."
-msgstr ""
+msgstr "Exo svarer ikke riktig."
 
 #: src/php/Services/AIAnalysisService.php
 msgid "No AI provider configured. Please configure an AI provider in settings."
-msgstr ""
+msgstr "Ingen AI-leverandør konfigurert. Vennligst konfigurer en AI-leverandør i innstillingene."
 
 #: src/php/Services/AIAnalysisService.php
 msgid "AI provider is not properly configured. Please check your API settings."
-msgstr ""
+msgstr "AI-leverandøren er ikke riktig konfigurert. Vennligst sjekk API-innstillingene dine."
 
 #: src/php/Services/AIAnalysisService.php
 msgid "File type automatically assigned to %s folder."
-msgstr ""
+msgstr "Filtype automatisk tilordnet til %s-mappen."
 
 #: src/php/Services/AIAnalysisService.php
 msgid "File type requires %s folder (will be created)."
-msgstr ""
+msgstr "Filtype krever %s-mappe (vil bli opprettet)."
 
 #: src/php/Services/AIAnalysisService.php
 msgid "%s folder does not exist and new folder creation is disabled."
-msgstr ""
+msgstr "%s-mappen eksisterer ikke og opprettelse av nye mapper er deaktivert."
 
 #: src/php/Services/BackupService.php
 msgid "No backup found."
-msgstr ""
+msgstr "Ingen sikkerhetskopi funnet."
 
 #: src/php/Services/MediaScannerService.php
 msgid "No AI provider configured. Please configure an AI provider in the AI Provider settings tab before scanning."
-msgstr ""
+msgstr "Ingen AI-leverandør konfigurert. Vennligst konfigurer en AI-leverandør i AI-leverandør-fanen før skanning."
 
 #: src/php/Services/MediaScannerService.php
 msgid "A scan is already in progress. Please wait for it to complete or cancel it."
-msgstr ""
+msgstr "En skanning pågår allerede. Vennligst vent til den er fullført eller avbryt den."
 
 #: src/php/Services/MediaScannerService.php
 msgid "Invalid scan mode."
-msgstr ""
+msgstr "Ugyldig skanningsmodus."
 
 #: src/php/Services/MediaScannerService.php
 msgid "No media files found to process."
-msgstr ""
+msgstr "Ingen mediefiler funnet å behandle."
 
 #: src/php/Services/MediaScannerService.php
 msgid "Started scanning %d media files."
-msgstr ""
+msgstr "Startet skanning av %d mediefiler."
 
 #: src/php/Services/MediaScannerService.php
 msgid "No cached dry-run results found. Please run a preview first."
-msgstr ""
+msgstr "Ingen bufrede forhåndsvisningsresultater funnet. Vennligst kjør en forhåndsvisning først."
 
 #: src/php/Services/MediaScannerService.php
 msgid "Applied %1$d assignments (%2$d failed)."
-msgstr ""
+msgstr "Utførte %1$d tilordninger (%2$d mislyktes)."
 
 #: src/php/Services/MediaScannerService.php
 msgid "No scan is currently running."
-msgstr ""
+msgstr "Ingen skanning kjører for øyeblikket."
 
 #: src/php/Services/MediaScannerService.php
 msgid "Scan cancelled successfully."
-msgstr ""
+msgstr "Skanning avbrutt."
 
 #: src/php/REST/AnalysisController.php
 msgid "Scan mode."
-msgstr ""
+msgstr "Skanningsmodus."
 
 #: src/php/REST/AnalysisController.php
 msgid "Whether to run in preview mode without making changes."
-msgstr ""
+msgstr "Om skanningen skal kjøres i forhåndsvisningsmodus uten å gjøre endringer."
 
 #: src/php/REST/AnalysisController.php
 msgid "Original scan mode."
-msgstr ""
+msgstr "Opprinnelig skanningsmodus."
 
 #: src/php/REST/AnalysisController.php
 msgid "Attachment ID."
-msgstr ""
+msgstr "Vedleggs-ID."
 
 #: src/php/REST/AnalysisController.php
 msgid "Folder ID to assign."
-msgstr ""
+msgstr "Mappe-ID å tilordne."
 
 #: src/php/REST/AnalysisController.php
 msgid "New folder path to create."
-msgstr ""
+msgstr "Ny mappebane å opprette."
 
 #: src/php/REST/AnalysisController.php
 msgid "You do not have permission to perform this action."
-msgstr ""
+msgstr "Du har ikke tillatelse til å utføre denne handlingen."
 
 #: src/php/REST/AnalysisController.php
 msgid "Scan progress reset."
-msgstr ""
+msgstr "Skanningsfremdrift tilbakestilt."
 
 #: src/php/REST/AnalysisController.php
 msgid "Invalid attachment ID."
-msgstr ""
+msgstr "Ugyldig vedleggs-ID."
 
 #: src/php/REST/AnalysisController.php
 msgid "Either folder_id or new_folder_path is required."
-msgstr ""
+msgstr "Enten folder_id eller new_folder_path er påkrevd."
 
 #: src/php/REST/AnalysisController.php
 msgid "Failed to apply folder assignment."
-msgstr ""
+msgstr "Kunne ikke utføre mappetilordning."
 
 #: src/php/REST/AnalysisController.php
 msgid "Folder assignment applied."
-msgstr ""
+msgstr "Mappetilordning utført."
 
 #: src/php/REST/AnalysisController.php
 msgid "Backup deleted."
-msgstr ""
+msgstr "Sikkerhetskopi slettet."
 
 #: src/php/REST/AnalysisController.php
 msgid "No backup available to restore."
-msgstr ""
+msgstr "Ingen sikkerhetskopi tilgjengelig for gjenoppretting."
 
 #: src/php/REST/AnalysisController.php
 msgid "Backup restored successfully."
-msgstr ""
+msgstr "Sikkerhetskopi gjenopprettet."
 
 #. JavaScript strings
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Media Library Statistics"
-msgstr ""
+msgstr "Mediebibliotekstatistikk"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Total Media"
-msgstr ""
+msgstr "Totalt antall medier"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "In Folders"
-msgstr ""
+msgstr "I mapper"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Unassigned"
-msgstr ""
+msgstr "Ikke tilordnet"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Folders"
-msgstr ""
+msgstr "Mapper"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Scan Options"
-msgstr ""
+msgstr "Skannealternativer"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Scan Mode"
-msgstr ""
+msgstr "Skanningsmodus"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Organize Unassigned"
-msgstr ""
+msgstr "Organiser ikke-tilordnede"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Re-analyze All"
-msgstr ""
+msgstr "Analyser alle på nytt"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Reorganize All (Reset & Rebuild)"
-msgstr ""
+msgstr "Reorganiser alle (tilbakestill og bygg på nytt)"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Only process media files that are not already in a folder."
-msgstr ""
+msgstr "Behandle kun mediefiler som ikke allerede er i en mappe."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Re-analyze all media and suggest new folder assignments."
-msgstr ""
+msgstr "Analyser alle medier på nytt og foreslå nye mappetilordninger."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Remove all folders and assignments, then create a new AI-optimized structure."
-msgstr ""
+msgstr "Fjern alle mapper og tilordninger, og opprett deretter en ny AI-optimalisert struktur."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Warning: This will remove all existing folder assignments and reorganize from scratch. A backup will be created automatically."
-msgstr ""
+msgstr "Advarsel: Dette vil fjerne alle eksisterende mappetilordninger og reorganisere fra bunnen av. En sikkerhetskopi opprettes automatisk."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Preview mode (dry run)"
-msgstr ""
+msgstr "Forhåndsvisningsmodus (testkjøring)"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Show proposed changes without applying them."
-msgstr ""
+msgstr "Vis foreslåtte endringer uten å utføre dem."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Preview Changes"
-msgstr ""
+msgstr "Forhåndsvis endringer"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Start Organizing"
-msgstr ""
+msgstr "Start organisering"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Reset"
-msgstr ""
+msgstr "Tilbakestill"
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Preview scan started. Results will be shown when complete."
-msgstr ""
+msgstr "Forhåndsvisningsskanning startet. Resultater vises når den er fullført."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Scan started. Media files are being organized."
-msgstr ""
+msgstr "Skanning startet. Mediefiler blir organisert."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Failed to start scan."
-msgstr ""
+msgstr "Kunne ikke starte skanning."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Scan cancelled."
-msgstr ""
+msgstr "Skanning avbrutt."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Failed to cancel scan."
-msgstr ""
+msgstr "Kunne ikke avbryte skanning."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Failed to reset."
-msgstr ""
+msgstr "Kunne ikke tilbakestille."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Applying cached preview results..."
-msgstr ""
+msgstr "Bruker bufrede forhåndsvisningsresultater..."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Preview results applied successfully."
-msgstr ""
+msgstr "Forhåndsvisningsresultater brukt."
 
 #: src/js/components/AiOrganizerPanel.jsx
 msgid "Failed to apply preview results."
-msgstr ""
+msgstr "Kunne ikke bruke forhåndsvisningsresultater."
 
 #: src/js/components/ScanProgress.jsx
 msgid "Initializing..."
-msgstr ""
+msgstr "Initialiserer..."
 
 #: src/js/components/ScanProgress.jsx
 msgid "Ready"
-msgstr ""
+msgstr "Klar"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Processing..."
-msgstr ""
+msgstr "Behandler..."
 
 #: src/js/components/ScanProgress.jsx
 msgid "Completed"
-msgstr ""
+msgstr "Fullført"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Cancelled"
-msgstr ""
+msgstr "Avbrutt"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Failed"
-msgstr ""
+msgstr "Mislyktes"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Preview"
-msgstr ""
+msgstr "Forhåndsvisning"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Mode:"
-msgstr ""
+msgstr "Modus:"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Progress:"
-msgstr ""
+msgstr "Fremdrift:"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Elapsed:"
-msgstr ""
+msgstr "Forløpt:"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Applied:"
-msgstr ""
+msgstr "Utført:"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Failed:"
-msgstr ""
+msgstr "Mislyktes:"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Cancel Scan"
-msgstr ""
+msgstr "Avbryt skanning"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Start New Scan"
-msgstr ""
+msgstr "Start ny skanning"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Recent Results"
-msgstr ""
+msgstr "Nylige resultater"
 
 #: src/js/components/PreviewModal.jsx
 msgid "Summary"
-msgstr ""
+msgstr "Sammendrag"
 
 #: src/js/components/PreviewModal.jsx
 msgid "Will be assigned to existing folders"
-msgstr ""
+msgstr "Vil bli tilordnet eksisterende mapper"
 
 #: src/js/components/PreviewModal.jsx
 msgid "Will create new folders"
-msgstr ""
+msgstr "Vil opprette nye mapper"
 
 #: src/js/components/PreviewModal.jsx
 msgid "No suitable folder found"
-msgstr ""
+msgstr "Ingen passende mappe funnet"
 
 #: src/js/components/PreviewModal.jsx
 msgid "New Folders to Create"
-msgstr ""
+msgstr "Nye mapper som skal opprettes"
 
 #: src/js/components/PreviewModal.jsx
 msgid "Folder Assignments"
-msgstr ""
+msgstr "Mappetilordninger"
 
 #: src/js/components/PreviewModal.jsx
 msgid "Media ID"
-msgstr ""
+msgstr "Medie-ID"
 
 #: src/js/components/PreviewModal.jsx
 msgid "Folder"
-msgstr ""
+msgstr "Mappe"
 
 #: src/js/components/PreviewModal.jsx
 msgid "Confidence"
-msgstr ""
+msgstr "Konfidens"
 
 #: src/js/components/PreviewModal.jsx
 msgid "Reason"
-msgstr ""
+msgstr "Begrunnelse"
 
 #: src/js/components/PreviewModal.jsx
 msgid "Skipped Items"
-msgstr ""
+msgstr "Hoppede elementer"
 
 #: src/js/components/PreviewModal.jsx
 msgid "These items could not be matched to any folder."
-msgstr ""
+msgstr "Disse elementene kunne ikke matches til noen mappe."
 
 #: src/js/components/PreviewModal.jsx
 msgid "Cancel"
-msgstr ""
+msgstr "Avbryt"
 
 #: src/js/components/PreviewModal.jsx
 msgid "Apply Changes"
-msgstr ""
+msgstr "Bruk endringer"
 
 #: src/js/components/RestorePanel.jsx
 msgid "Backup & Restore"
-msgstr ""
+msgstr "Sikkerhetskopi og gjenoppretting"
 
 #: src/js/components/RestorePanel.jsx
 msgid "Backup Available"
-msgstr ""
+msgstr "Sikkerhetskopi tilgjengelig"
 
 #: src/js/components/RestorePanel.jsx
 msgid "Created:"
-msgstr ""
+msgstr "Opprettet:"
 
 #: src/js/components/RestorePanel.jsx
 msgid "Folders:"
-msgstr ""
+msgstr "Mapper:"
 
 #: src/js/components/RestorePanel.jsx
 msgid "Assignments:"
-msgstr ""
+msgstr "Tilordninger:"
 
 #: src/js/components/RestorePanel.jsx
 msgid "This will replace all current folders and assignments with the backup. Are you sure?"
-msgstr ""
+msgstr "Dette vil erstatte alle gjeldende mapper og tilordninger med sikkerhetskopien. Er du sikker?"
 
 #: src/js/components/RestorePanel.jsx
 msgid "Yes, Restore Backup"
-msgstr ""
+msgstr "Ja, gjenopprett sikkerhetskopi"
 
 #: src/js/components/RestorePanel.jsx
 msgid "Restore Backup"
-msgstr ""
+msgstr "Gjenopprett sikkerhetskopi"
 
 #: src/js/components/RestorePanel.jsx
 msgid "Delete Backup"
-msgstr ""
+msgstr "Slett sikkerhetskopi"
 
 #: src/js/components/RestorePanel.jsx
 msgid "Failed to restore backup."
-msgstr ""
+msgstr "Kunne ikke gjenopprette sikkerhetskopi."
 
 #: src/js/components/RestorePanel.jsx
 msgid "Failed to delete backup."
-msgstr ""
+msgstr "Kunne ikke slette sikkerhetskopi."
 
 #: src/js/components/ScanProgress.jsx
 msgid "Attachment ID:"
-msgstr ""
+msgstr "Vedleggs-ID:"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Action:"
-msgstr ""
+msgstr "Handling:"
 
 #: src/js/components/ScanProgress.jsx
 msgid "New Folder:"
-msgstr ""
+msgstr "Ny mappe:"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Assign to existing folder"
-msgstr ""
+msgstr "Tilordne til eksisterende mappe"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Create new folder"
-msgstr ""
+msgstr "Opprett ny mappe"
 
 #: src/js/components/ScanProgress.jsx
 msgid "Skipped"
-msgstr ""
+msgstr "Hoppet over"
 
 #: src/js/components/ScanProgress.jsx
 msgid "No reason provided"
-msgstr ""
+msgstr "Ingen begrunnelse oppgitt"
