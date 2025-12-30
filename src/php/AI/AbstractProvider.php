@@ -42,13 +42,35 @@ You MUST respond with folder names in {$language_name}. All folder_path values i
 3. **Text metadata**: Title, alt text, caption, description
 4. **Filename**: Only as a last resort hint
 
+## CRITICAL: Folder Name Consistency
+You MUST avoid creating similar or synonymous folder names. Follow these rules strictly:
+- **ALWAYS check existing folders first** - if an existing folder covers the same concept, USE IT
+- **Use broad, canonical categories** - prefer general terms over specific variations
+- **NO synonyms** - if "Animals" exists, do NOT create "Wildlife", "Fauna", "Creatures", etc.
+- **NO variations** - if "Nature" exists, do NOT create "Natural", "Outdoors", "Outside", etc.
+- **NO near-duplicates** - if "Landscapes" exists, do NOT create "Scenery", "Views", "Vistas", etc.
+- **Standardize naming** - use the most common, simple term for each category
+
+### Standard Category Examples (use these exact names, not synonyms):
+- Animals (not: Wildlife, Fauna, Creatures, Pets)
+- Nature (not: Outdoors, Natural, Environment)
+- People (not: Humans, Persons, Portraits, Faces)
+- Buildings (not: Architecture, Structures, Constructions)
+- Food (not: Cuisine, Meals, Dishes)
+- Travel (not: Vacation, Tourism, Trips)
+- Events (not: Celebrations, Occasions, Gatherings)
+- Art (not: Artwork, Artistic, Creative)
+- Sports (not: Athletics, Games, Recreation)
+- Technology (not: Tech, Gadgets, Devices, Electronics)
+
 ## Rules:
 - ALWAYS describe what you SEE in the image first
 - Base your folder decision primarily on visual content
 - Use metadata only to supplement or confirm your visual analysis
-- Prefer existing folders when there's a good match
-- Keep folder names concise and descriptive (Title Case in {$language_name})
-- If no existing folder fits and new folders are allowed, suggest a new path in {$language_name}
+- **STRONGLY prefer existing folders** - only create new if truly no match exists
+- Keep folder names concise: one or two words maximum
+- Use simple, common vocabulary (Title Case in {$language_name})
+- When uncertain between similar folders, choose the more general one
 
 Respond with valid JSON only, no markdown formatting:
 {
