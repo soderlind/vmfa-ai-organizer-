@@ -130,7 +130,7 @@ class AIAnalysisService {
 	public function analyze_media( int $attachment_id ): array {
 		$metadata     = $this->get_media_metadata( $attachment_id );
 		$folder_paths = $this->get_folder_paths();
-		$mime_type    = $metadata['mime_type'] ?? '';
+		$mime_type    = $metadata[ 'mime_type' ] ?? '';
 
 		// Handle documents - assign to Documents folder.
 		if ( in_array( $mime_type, self::DOCUMENT_MIME_TYPES, true ) ) {
@@ -176,13 +176,13 @@ class AIAnalysisService {
 		$result = $provider->analyze( $metadata, $folder_paths, $max_depth, $allow_new, $image_data, $suggested_folders );
 
 		// Track the suggested folder for consistency in this scan session.
-		if ( ! empty( $result['new_folder_path'] ) ) {
-			$this->add_session_suggested_folder( $result['new_folder_path'] );
+		if ( ! empty( $result[ 'new_folder_path' ] ) ) {
+			$this->add_session_suggested_folder( $result[ 'new_folder_path' ] );
 		}
 
-		$result['attachment_id'] = $attachment_id;
-		$result['filename']      = $metadata['filename'] ?? '';
-		$result['folder_name']   = $result['new_folder_path'] ?? $this->get_folder_name_by_id( $result['folder_id'] ?? null );
+		$result[ 'attachment_id' ] = $attachment_id;
+		$result[ 'filename' ]      = $metadata[ 'filename' ] ?? '';
+		$result[ 'folder_name' ]   = $result[ 'new_folder_path' ] ?? $this->get_folder_name_by_id( $result[ 'folder_id' ] ?? null );
 
 		return $result;
 	}
@@ -338,7 +338,7 @@ class AIAnalysisService {
 			if ( $image_src ) {
 				$sized_path = str_replace(
 					wp_basename( $file_path ),
-					wp_basename( $image_src[0] ),
+					wp_basename( $image_src[ 0 ] ),
 					$file_path
 				);
 				if ( file_exists( $sized_path ) ) {
@@ -390,31 +390,31 @@ class AIAnalysisService {
 		// Get EXIF data for images.
 		if ( str_starts_with( $attachment->post_mime_type, 'image/' ) ) {
 			$image_meta = wp_get_attachment_metadata( $attachment_id );
-			if ( ! empty( $image_meta['image_meta'] ) ) {
+			if ( ! empty( $image_meta[ 'image_meta' ] ) ) {
 				$exif = array();
 
-				if ( ! empty( $image_meta['image_meta']['camera'] ) ) {
-					$exif['camera'] = $image_meta['image_meta']['camera'];
+				if ( ! empty( $image_meta[ 'image_meta' ][ 'camera' ] ) ) {
+					$exif[ 'camera' ] = $image_meta[ 'image_meta' ][ 'camera' ];
 				}
 
-				if ( ! empty( $image_meta['image_meta']['created_timestamp'] ) ) {
-					$exif['date'] = gmdate( 'Y-m-d', (int) $image_meta['image_meta']['created_timestamp'] );
+				if ( ! empty( $image_meta[ 'image_meta' ][ 'created_timestamp' ] ) ) {
+					$exif[ 'date' ] = gmdate( 'Y-m-d', (int) $image_meta[ 'image_meta' ][ 'created_timestamp' ] );
 				}
 
-				if ( ! empty( $image_meta['image_meta']['keywords'] ) ) {
-					$exif['keywords'] = implode( ', ', (array) $image_meta['image_meta']['keywords'] );
+				if ( ! empty( $image_meta[ 'image_meta' ][ 'keywords' ] ) ) {
+					$exif[ 'keywords' ] = implode( ', ', (array) $image_meta[ 'image_meta' ][ 'keywords' ] );
 				}
 
-				if ( ! empty( $image_meta['image_meta']['title'] ) ) {
-					$exif['title'] = $image_meta['image_meta']['title'];
+				if ( ! empty( $image_meta[ 'image_meta' ][ 'title' ] ) ) {
+					$exif[ 'title' ] = $image_meta[ 'image_meta' ][ 'title' ];
 				}
 
-				$metadata['exif'] = $exif;
+				$metadata[ 'exif' ] = $exif;
 			}
 
 			// Add dimensions.
-			if ( ! empty( $image_meta['width'] ) && ! empty( $image_meta['height'] ) ) {
-				$metadata['dimensions'] = "{$image_meta['width']}x{$image_meta['height']}";
+			if ( ! empty( $image_meta[ 'width' ] ) && ! empty( $image_meta[ 'height' ] ) ) {
+				$metadata[ 'dimensions' ] = "{$image_meta[ 'width' ]}x{$image_meta[ 'height' ]}";
 			}
 		}
 
@@ -550,7 +550,7 @@ class AIAnalysisService {
 				return null;
 			}
 
-			$parent_id = $result['term_id'];
+			$parent_id = $result[ 'term_id' ];
 
 			// Set default order for new folder.
 			update_term_meta( $parent_id, 'vmfo_order', 0 );
@@ -581,7 +581,7 @@ class AIAnalysisService {
 		);
 
 		if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
-			return $terms[0];
+			return $terms[ 0 ];
 		}
 
 		return null;
@@ -646,18 +646,18 @@ class AIAnalysisService {
 	 * @return bool
 	 */
 	public function apply_result( array $result ): bool {
-		$attachment_id = $result['attachment_id'] ?? 0;
+		$attachment_id = $result[ 'attachment_id' ] ?? 0;
 
 		if ( empty( $attachment_id ) ) {
 			return false;
 		}
 
-		if ( 'assign' === $result['action'] && ! empty( $result['folder_id'] ) ) {
-			return $this->assign_to_folder( $attachment_id, $result['folder_id'] );
+		if ( 'assign' === $result[ 'action' ] && ! empty( $result[ 'folder_id' ] ) ) {
+			return $this->assign_to_folder( $attachment_id, $result[ 'folder_id' ] );
 		}
 
-		if ( 'create' === $result['action'] && ! empty( $result['new_folder_path'] ) ) {
-			$folder_id = $this->create_folder_from_path( $result['new_folder_path'] );
+		if ( 'create' === $result[ 'action' ] && ! empty( $result[ 'new_folder_path' ] ) ) {
+			$folder_id = $this->create_folder_from_path( $result[ 'new_folder_path' ] );
 			if ( $folder_id ) {
 				return $this->assign_to_folder( $attachment_id, $folder_id );
 			}

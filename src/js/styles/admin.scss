@@ -93,6 +93,10 @@
 
 /* Progress Display */
 .vmfa-scan-progress {
+	// Make full width
+	width: 100%;
+	max-width: 100% !important;
+
 	.components-card__header {
 		h3 {
 			display: flex;

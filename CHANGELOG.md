@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2025-12-31
+
+### Improved
+
+- **Alphabetical Folder Sorting**: Folders are now sorted alphabetically in the preview modal and when creating virtual folders
+- **Full-width Scan Progress**: The scan progress component now uses the full available width for better visibility
+
 ## [0.1.2] - 2025-12-31
 
 ### Fixed
