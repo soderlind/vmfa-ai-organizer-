@@ -458,6 +458,9 @@ class AIAnalysisService {
 			}
 		}
 
+		// Sort folder paths alphabetically.
+		uksort( $this->folder_paths, 'strcasecmp' );
+
 		return $this->folder_paths;
 	}
 

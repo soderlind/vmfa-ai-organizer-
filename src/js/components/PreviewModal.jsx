@@ -32,12 +32,19 @@ export function PreviewModal( { results, onClose, onApply } ) {
 	const createCount = grouped.create.length;
 	const skipCount = grouped.skip.length;
 
-	// Get unique new folders to create.
+	// Get unique new folders to create and sort alphabetically.
 	const newFolders = [ ...new Set(
 		grouped.create
 			.map( ( r ) => r.new_folder_path )
 			.filter( Boolean )
-	) ];
+	) ].sort( ( a, b ) => a.localeCompare( b ) );
+
+	// Sort assignments alphabetically by folder name.
+	const sortedAssignments = [ ...grouped.assign ].sort( ( a, b ) => {
+		const folderA = a.folder_name || a.new_folder_path || '';
+		const folderB = b.folder_name || b.new_folder_path || '';
+		return folderA.localeCompare( folderB );
+	} );
 
 	return (
 		<Modal
@@ -102,11 +109,11 @@ export function PreviewModal( { results, onClose, onApply } ) {
 									</tr>
 								</thead>
 								<tbody>
-									{ grouped.assign.slice( 0, 20 ).map( ( result, index ) => (
+									{ sortedAssignments.slice( 0, 20 ).map( ( result, index ) => (
 										<tr key={ index }>
 											<td>#{ result.attachment_id }</td>
 											<td>
-												{ result.folder_id || result.new_folder_path || '-' }
+												{ result.folder_name || result.new_folder_path || '-' }
 											</td>
 											<td>
 												<span className={ getConfidenceClass( result.confidence ) }>
@@ -118,9 +125,9 @@ export function PreviewModal( { results, onClose, onApply } ) {
 									) ) }
 								</tbody>
 							</table>
-							{ grouped.assign.length > 20 && (
+							{ sortedAssignments.length > 20 && (
 								<p className="vmfa-preview-more">
-									{ __( `And ${ grouped.assign.length - 20 } more...`, 'vmfa-ai-organizer' ) }
+									{ __( `And ${ sortedAssignments.length - 20 } more...`, 'vmfa-ai-organizer' ) }
 								</p>
 							) }
 						</div>
