@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+
+## [0.1.3] - 2025-12-31
+
+### Improved
+
+- **Alphabetical Folder Sorting**: Folders are now sorted alphabetically in the preview modal and when creating virtual folders
+- **Full-width Scan Progress**: The scan progress component now uses the full available width for better visibility
 
 ## [0.1.2] - 2025-12-31
 
@@ -128,4 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Requires Virtual Media Folders plugin
 - Bundles Action Scheduler 3.9.3 for background processing
 
+
+[0.1.3]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.2...v0.1.3
+[0.1.2]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/soderlind/vmfa-ai-organizer/releases/tag/v0.1.0
