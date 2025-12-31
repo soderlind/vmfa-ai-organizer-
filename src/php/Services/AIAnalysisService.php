@@ -134,12 +134,12 @@ class AIAnalysisService {
 
 		// Handle documents - assign to Documents folder.
 		if ( in_array( $mime_type, self::DOCUMENT_MIME_TYPES, true ) ) {
-			return $this->assign_to_type_folder( $attachment_id, 'Documents', $folder_paths );
+			return $this->assign_to_type_folder( $attachment_id, __( 'Documents', 'vmfa-ai-organizer' ), $folder_paths );
 		}
 
 		// Handle videos - assign to Videos folder.
 		if ( in_array( $mime_type, self::VIDEO_MIME_TYPES, true ) || str_starts_with( $mime_type, 'video/' ) ) {
-			return $this->assign_to_type_folder( $attachment_id, 'Videos', $folder_paths );
+			return $this->assign_to_type_folder( $attachment_id, __( 'Videos', 'vmfa-ai-organizer' ), $folder_paths );
 		}
 
 		// For images, require an AI provider.

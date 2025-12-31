@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2025-12-31
+
+### Fixed
+
+- **Namespace Fix**: Fixed `GitHubPluginUpdater` class namespace to match PSR-4 autoloading (`VmfaAiOrganizer\Update`)
+- **Translated Folder Names**: Documents and Videos folders are now translatable using gettext
+
 ### Added
 
 - **Norwegian Translations**: Complete Norwegian Bokmål (nb_NO) translation

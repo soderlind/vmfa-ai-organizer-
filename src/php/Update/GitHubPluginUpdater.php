@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace VmfaAiOrganizer;
+namespace VmfaAiOrganizer\Update;
 
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
