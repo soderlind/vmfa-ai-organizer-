@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -128,6 +128,10 @@ It depends on your media library size and AI provider speed. The plugin processe
 4. Backup and restore functionality
 
 == Changelog ==
+
+= 0.1.4 =
+* Improved user messaging: scan started notices now inform users they can leave the page and return later
+* Added initialization time hint when connecting to AI provider
 
 = 0.1.3 =
 * Folders are now sorted alphabetically in the preview modal and when creating virtual folders

@@ -131,7 +131,7 @@ export function ScanProgress( { status, onCancel, onReset, isLoading } ) {
 
 					{ isRunning && status.processed === 0 && (
 						<div className="vmfa-progress-hint">
-							{ __( 'Connecting to AI provider and analyzing first batch...', 'vmfa-ai-organizer' ) }
+							{ __( 'Connecting to AI provider and analyzing first batch... Initialization may take a couple of minutes.', 'vmfa-ai-organizer' ) }
 						</div>
 					) }
 

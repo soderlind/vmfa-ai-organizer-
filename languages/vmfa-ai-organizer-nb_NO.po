@@ -482,7 +482,7 @@ msgid "Show proposed changes without applying them."
 msgstr "Vis foreslåtte endringer uten å utføre dem."
 
 #: src/js/components/AiOrganizerPanel.jsx:279
-#: src/js/components/PreviewModal.jsx:44
+#: src/js/components/PreviewModal.jsx:51
 msgid "Preview Changes"
 msgstr "Forhåndsvis endringer"
 
@@ -493,14 +493,6 @@ msgstr "Start organisering"
 #: src/js/components/AiOrganizerPanel.jsx:290
 msgid "Reset"
 msgstr "Tilbakestill"
-
-#: src/js/components/AiOrganizerPanel.jsx:109
-msgid "Preview scan started. Results will be shown when complete."
-msgstr "Forhåndsvisningsskanning startet. Resultater vises når den er fullført."
-
-#: src/js/components/AiOrganizerPanel.jsx:110
-msgid "Scan started. Media files are being organized."
-msgstr "Skanning startet. Mediefiler blir organisert."
 
 #: src/js/components/AiOrganizerPanel.jsx:115
 msgid "Failed to start scan."
@@ -590,60 +582,60 @@ msgstr "Start ny skanning"
 msgid "Recent Results"
 msgstr "Nylige resultater"
 
-#: src/js/components/PreviewModal.jsx:52
+#: src/js/components/PreviewModal.jsx:59
 msgid "Summary"
 msgstr "Sammendrag"
 
-#: src/js/components/PreviewModal.jsx:57
+#: src/js/components/PreviewModal.jsx:64
 msgid "Will be assigned to existing folders"
 msgstr "Vil bli tilordnet eksisterende mapper"
 
-#: src/js/components/PreviewModal.jsx:63
+#: src/js/components/PreviewModal.jsx:70
 msgid "Will create new folders"
 msgstr "Vil opprette nye mapper"
 
-#: src/js/components/PreviewModal.jsx:69
+#: src/js/components/PreviewModal.jsx:76
 msgid "No suitable folder found"
 msgstr "Ingen passende mappe funnet"
 
-#: src/js/components/PreviewModal.jsx:78
+#: src/js/components/PreviewModal.jsx:85
 msgid "New Folders to Create"
 msgstr "Nye mapper som skal opprettes"
 
-#: src/js/components/PreviewModal.jsx:93
+#: src/js/components/PreviewModal.jsx:100
 msgid "Folder Assignments"
 msgstr "Mappetilordninger"
 
-#: src/js/components/PreviewModal.jsx:98
+#: src/js/components/PreviewModal.jsx:105
 msgid "Media ID"
 msgstr "Medie-ID"
 
-#: src/js/components/PreviewModal.jsx:99
+#: src/js/components/PreviewModal.jsx:106
 msgid "Folder"
 msgstr "Mappe"
 
-#: src/js/components/PreviewModal.jsx:100
+#: src/js/components/PreviewModal.jsx:107
 msgid "Confidence"
 msgstr "Konfidens"
 
-#: src/js/components/PreviewModal.jsx:101
+#: src/js/components/PreviewModal.jsx:108
 msgid "Reason"
 msgstr "Begrunnelse"
 
-#: src/js/components/PreviewModal.jsx:133
+#: src/js/components/PreviewModal.jsx:140
 msgid "Skipped Items"
 msgstr "Hoppede elementer"
 
-#: src/js/components/PreviewModal.jsx:135
+#: src/js/components/PreviewModal.jsx:142
 msgid "These items could not be matched to any folder."
 msgstr "Disse elementene kunne ikke matches til noen mappe."
 
-#: src/js/components/PreviewModal.jsx:162
+#: src/js/components/PreviewModal.jsx:169
 #: src/js/components/RestorePanel.jsx:195
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: src/js/components/PreviewModal.jsx:159
+#: src/js/components/PreviewModal.jsx:166
 msgid "Apply Changes"
 msgstr "Bruk endringer"
 
@@ -813,10 +805,6 @@ msgstr "Reorganiser alle"
 msgid "Starting..."
 msgstr "Starter..."
 
-#: src/js/components/ScanProgress.jsx:134
-msgid "Connecting to AI provider and analyzing first batch..."
-msgstr "Kobler til AI-leverandør og analyserer første gruppe..."
-
 #: src/js/components/ScanProgress.jsx:275
 msgid "Folder:"
 msgstr "Mappe:"
@@ -836,3 +824,15 @@ msgstr "Dokumenter"
 #: src/php/Services/AIAnalysisService.php:142
 msgid "Videos"
 msgstr "Videoer"
+
+#: src/js/components/AiOrganizerPanel.jsx:109
+msgid "Preview scan started. Results will be shown when complete. You can leave this page and return later."
+msgstr "Forhåndsvisningsskanning startet. Resultater vises når den er fullført. Du kan forlate denne siden og komme tilbake senere."
+
+#: src/js/components/AiOrganizerPanel.jsx:110
+msgid "Scan started. Media files are being organized. You can leave this page and return later."
+msgstr "Skanning startet. Mediefiler blir organisert. Du kan forlate denne siden og komme tilbake senere."
+
+#: src/js/components/ScanProgress.jsx:134
+msgid "Connecting to AI provider and analyzing first batch... Initialization may take a couple of minutes."
+msgstr "Kobler til AI-leverandør og analyserer første gruppe... Initialisering kan ta et par minutter."

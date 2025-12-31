@@ -106,8 +106,8 @@ export function AiOrganizerPanel() {
 			setNotice( {
 				type: 'success',
 				message: dryRun
-					? __( 'Preview scan started. Results will be shown when complete.', 'vmfa-ai-organizer' )
-					: __( 'Scan started. Media files are being organized.', 'vmfa-ai-organizer' ),
+					? __( 'Preview scan started. Results will be shown when complete. You can leave this page and return later.', 'vmfa-ai-organizer' )
+					: __( 'Scan started. Media files are being organized. You can leave this page and return later.', 'vmfa-ai-organizer' ),
 			} );
 		} catch ( err ) {
 			setNotice( {
