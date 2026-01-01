@@ -41,6 +41,8 @@ AI-powered media organization add-on for the [Virtual Media Folders](https://wor
 2. Upload via  `Plugins → Add New → Upload Plugin`
 3. Activate via `WordPress Admin → Plugins`
 
+Plugin [updates are handled automatically](https://github.com/soderlind/wordpress-plugin-github-updater#readme) via GitHub. No need to manually download and install updates.
+
 ## Configuration
 
 Navigate to **Media → AI Organizer** to configure:
