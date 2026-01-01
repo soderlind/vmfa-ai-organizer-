@@ -130,6 +130,9 @@ Supported image formats: JPEG, PNG, GIF, WebP (max 10MB per image).
 ### Building Assets
 
 ```bash
+# Install via Composer
+composer require soderlind/vmfa-ai-organizer
+
 # Install dependencies
 npm install
 composer install
