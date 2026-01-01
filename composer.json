@@ -9,6 +9,23 @@
 			"email": "per@soderlind.no"
 		}
 	],
+	"keywords": [
+		"wordpress",
+		"wordpress-plugin",
+		"media-library",
+		"ai",
+		"openai",
+		"azure-openai",
+		"anthropic",
+		"claude",
+		"gemini",
+		"ollama",
+		"grok",
+		"exo",
+		"image-recognition",
+		"media-organization",
+		"virtual-folders"
+	],
 	"require": {
 		"php": ">=8.3",
 		"woocommerce/action-scheduler": "^3.7",
