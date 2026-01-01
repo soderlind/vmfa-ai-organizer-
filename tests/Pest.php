@@ -5,7 +5,7 @@
  * @package VmfaAiOrganizer
  */
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
 use VmfaAiOrganizer\Tests\BrainMonkeyTestCase;
 
@@ -20,7 +20,7 @@ use VmfaAiOrganizer\Tests\BrainMonkeyTestCase;
 |
 */
 
-pest()->extend( BrainMonkeyTestCase::class )->in( 'AI', 'Services' );
+pest()->extend( BrainMonkeyTestCase::class)->in( 'AI', 'Services' );
 
 /*
 |--------------------------------------------------------------------------
