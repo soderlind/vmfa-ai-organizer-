@@ -19,7 +19,9 @@ AI-powered media organization add-on for the [Virtual Media Folders](https://wor
 
 
 
-https://github.com/user-attachments/assets/7512fec5-dd31-4615-940e-53dd124200f6
+<a href="https://www.youtube.com/watch?v=Rn7otDZ1RxM"><img src="assets/vmfa-order-in-chaos.png" alt="VMFA AI Organizer - Order in Chaos" style="max-width:100%;height:auto;"/></a>
+
+<p align="center"><em>Watch: See how VMFA AI Organizer brings order to your media library chaos.</em></p>
 
 
 
