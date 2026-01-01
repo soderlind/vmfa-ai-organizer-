@@ -244,6 +244,10 @@ class SettingsPage {
 				   class="nav-tab <?php echo 'scanner' === $active_tab ? 'nav-tab-active' : ''; ?>">
 					<?php esc_html_e( 'Media Scanner', 'vmfa-ai-organizer' ); ?>
 				</a>
+				<a href="<?php echo esc_url( add_query_arg( 'tab', 'settings', remove_query_arg( 'tab' ) ) ); ?>" 
+				   class="nav-tab <?php echo 'settings' === $active_tab ? 'nav-tab-active' : ''; ?>">
+					<?php esc_html_e( 'Settings', 'vmfa-ai-organizer' ); ?>
+				</a>
 				<a href="<?php echo esc_url( add_query_arg( 'tab', 'provider', remove_query_arg( 'tab' ) ) ); ?>" 
 				   class="nav-tab <?php echo 'provider' === $active_tab ? 'nav-tab-active' : ''; ?>">
 					<?php esc_html_e( 'AI Provider', 'vmfa-ai-organizer' ); ?>
@@ -258,11 +262,19 @@ class SettingsPage {
 							<?php esc_html_e( 'JavaScript is required for the media scanner.', 'vmfa-ai-organizer' ); ?>
 						</noscript>
 					</div>
-				<?php else : ?>
+				<?php elseif ( 'settings' === $active_tab ) : ?>
 					<form method="post" action="options.php" id="vmfa-ai-organizer-settings">
 						<?php
 						settings_fields( self::SETTINGS_GROUP );
-						do_settings_sections( 'vmfa-ai-organizer' );
+						do_settings_sections( 'vmfa-ai-organizer-settings' );
+						submit_button( __( 'Save Settings', 'vmfa-ai-organizer' ) );
+						?>
+					</form>
+				<?php else : ?>
+					<form method="post" action="options.php" id="vmfa-ai-organizer-provider">
+						<?php
+						settings_fields( self::SETTINGS_GROUP );
+						do_settings_sections( 'vmfa-ai-organizer-provider' );
 						submit_button( __( 'Save AI Settings', 'vmfa-ai-organizer' ) );
 						?>
 					</form>
@@ -293,14 +305,14 @@ class SettingsPage {
 			'vmfa_ai_provider_section',
 			__( 'AI Provider', 'vmfa-ai-organizer' ),
 			array( $this, 'render_provider_section' ),
-			'vmfa-ai-organizer'
+			'vmfa-ai-organizer-provider'
 		);
 
 		add_settings_field(
 			'ai_provider',
 			__( 'Provider', 'vmfa-ai-organizer' ),
 			array( $this, 'render_provider_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section'
 		);
 
@@ -309,7 +321,7 @@ class SettingsPage {
 			'openai_type',
 			__( 'OpenAI Type', 'vmfa-ai-organizer' ),
 			array( $this, 'render_openai_type_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'provider' => 'openai',
@@ -320,7 +332,7 @@ class SettingsPage {
 			'openai_key',
 			__( 'API Key', 'vmfa-ai-organizer' ),
 			array( $this, 'render_api_key_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'openai_key',
@@ -332,7 +344,7 @@ class SettingsPage {
 			'openai_model',
 			__( 'Model / Deployment', 'vmfa-ai-organizer' ),
 			array( $this, 'render_openai_model_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'openai_model',
@@ -344,7 +356,7 @@ class SettingsPage {
 			'azure_endpoint',
 			__( 'Azure Endpoint', 'vmfa-ai-organizer' ),
 			array( $this, 'render_azure_endpoint_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'provider' => 'openai',
@@ -355,7 +367,7 @@ class SettingsPage {
 			'azure_api_version',
 			__( 'Azure API Version', 'vmfa-ai-organizer' ),
 			array( $this, 'render_azure_api_version_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'provider' => 'openai',
@@ -367,7 +379,7 @@ class SettingsPage {
 			'anthropic_key',
 			__( 'Anthropic API Key', 'vmfa-ai-organizer' ),
 			array( $this, 'render_api_key_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'anthropic_key',
@@ -379,7 +391,7 @@ class SettingsPage {
 			'anthropic_model',
 			__( 'Anthropic Model', 'vmfa-ai-organizer' ),
 			array( $this, 'render_model_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'anthropic_model',
@@ -392,7 +404,7 @@ class SettingsPage {
 			'gemini_key',
 			__( 'Gemini API Key', 'vmfa-ai-organizer' ),
 			array( $this, 'render_api_key_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'gemini_key',
@@ -404,7 +416,7 @@ class SettingsPage {
 			'gemini_model',
 			__( 'Gemini Model', 'vmfa-ai-organizer' ),
 			array( $this, 'render_model_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'gemini_model',
@@ -417,7 +429,7 @@ class SettingsPage {
 			'ollama_url',
 			__( 'Ollama URL', 'vmfa-ai-organizer' ),
 			array( $this, 'render_url_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'ollama_url',
@@ -429,7 +441,7 @@ class SettingsPage {
 			'ollama_model',
 			__( 'Ollama Model', 'vmfa-ai-organizer' ),
 			array( $this, 'render_model_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'ollama_model',
@@ -442,7 +454,7 @@ class SettingsPage {
 			'grok_key',
 			__( 'Grok API Key', 'vmfa-ai-organizer' ),
 			array( $this, 'render_api_key_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'grok_key',
@@ -454,7 +466,7 @@ class SettingsPage {
 			'grok_model',
 			__( 'Grok Model', 'vmfa-ai-organizer' ),
 			array( $this, 'render_model_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'grok_model',
@@ -467,7 +479,7 @@ class SettingsPage {
 			'exo_url',
 			__( 'Exo URL', 'vmfa-ai-organizer' ),
 			array( $this, 'render_url_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'exo_url',
@@ -479,7 +491,7 @@ class SettingsPage {
 			'exo_model',
 			__( 'Exo Model', 'vmfa-ai-organizer' ),
 			array( $this, 'render_model_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'exo_model',
@@ -492,14 +504,14 @@ class SettingsPage {
 			'vmfa_organization_section',
 			__( 'Organization Settings', 'vmfa-ai-organizer' ),
 			array( $this, 'render_organization_section' ),
-			'vmfa-ai-organizer'
+			'vmfa-ai-organizer-settings'
 		);
 
 		add_settings_field(
 			'max_folder_depth',
 			__( 'Maximum Folder Depth', 'vmfa-ai-organizer' ),
 			array( $this, 'render_depth_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-settings',
 			'vmfa_organization_section'
 		);
 
@@ -507,7 +519,7 @@ class SettingsPage {
 			'allow_new_folders',
 			__( 'Allow New Folders', 'vmfa-ai-organizer' ),
 			array( $this, 'render_checkbox_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-settings',
 			'vmfa_organization_section',
 			array(
 				'key'         => 'allow_new_folders',
@@ -519,7 +531,7 @@ class SettingsPage {
 			'batch_size',
 			__( 'Batch Size', 'vmfa-ai-organizer' ),
 			array( $this, 'render_batch_size_field' ),
-			'vmfa-ai-organizer',
+			'vmfa-ai-organizer-settings',
 			'vmfa_organization_section'
 		);
 	}

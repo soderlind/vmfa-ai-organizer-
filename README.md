@@ -43,19 +43,19 @@ https://github.com/user-attachments/assets/7512fec5-dd31-4615-940e-53dd124200f6
 
 Navigate to **Media → AI Organizer** to configure:
 
-### AI Provider Tab
+### Media Scanner Tab
 
-- **AI Provider**: Select which AI service to use
-- **OpenAI Type**: Choose between OpenAI or Azure OpenAI
-- **API Keys**: Enter API keys for your chosen provider
-- **Model/Deployment**: Specify which model (or Azure deployment) to use
-- **Azure Endpoint**: Your Azure OpenAI resource endpoint (for Azure)
+Use this tab to scan and organize your media library. See scan modes and preview options.
 
-### Organization Settings
+### Settings Tab
 
 - **Max Folder Depth**: Limit folder hierarchy depth (1-5)
 - **Allow New Folders**: Enable AI to suggest new folder structures
 - **Batch Size**: Number of items to process per batch
+
+### AI Provider Tab
+
+Configure your AI provider for image analysis. See the **[AI Provider Guide](docs/AI-PROVIDERS.md)** for detailed setup instructions, model recommendations, and cost comparison.
 
 ### Configuration Priority
 
