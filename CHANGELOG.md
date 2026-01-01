@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.1.6] - 2026-01-02
+
+### Added
+
+- **Exo Settings Enhancements**: Improved Exo provider configuration inspired by content-poll
+  - Health check button with visual status indicator (✅/❌)
+  - Dynamic model dropdown populated from running Exo cluster
+  - "Refresh Models" button to fetch available models
+  - Renamed `exo_url` to `exo_endpoint` for consistency
+- **ExoController REST API**: New REST endpoints for Exo configuration
+  - `POST /vmfa/v1/exo-health` - Check connection to Exo cluster
+  - `POST /vmfa/v1/exo-models` - Fetch available models from Exo cluster
+
+### Changed
+
+- **Environment Variables**: `VMFA_AI_EXO_URL` renamed to `VMFA_AI_EXO_ENDPOINT`
+
 ## [0.1.5] - 2026-01-01
 
 ### Changed

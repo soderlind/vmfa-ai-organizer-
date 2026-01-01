@@ -54,7 +54,7 @@ class ExoProvider extends AbstractProvider {
 			);
 		}
 
-		$base_url = $this->get_setting( 'exo_url' ) ?: self::DEFAULT_URL;
+		$base_url = $this->get_setting( 'exo_endpoint' ) ?: self::DEFAULT_URL;
 		$model    = $this->get_setting( 'exo_model' ) ?: 'llama-3.2-3b';
 
 		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders, $suggested_folders );
@@ -119,7 +119,7 @@ class ExoProvider extends AbstractProvider {
 	 * {@inheritDoc}
 	 */
 	public function test( array $settings ): ?string {
-		$base_url = $settings['exo_url'] ?? self::DEFAULT_URL;
+		$base_url = $settings['exo_endpoint'] ?? self::DEFAULT_URL;
 
 		// Check if Exo is running.
 		$response = wp_remote_get(
@@ -147,7 +147,7 @@ class ExoProvider extends AbstractProvider {
 	 * {@inheritDoc}
 	 */
 	public function is_configured(): bool {
-		$base_url = $this->get_setting( 'exo_url' ) ?: self::DEFAULT_URL;
+		$base_url = $this->get_setting( 'exo_endpoint' ) ?: self::DEFAULT_URL;
 
 		// Quick check if Exo is running.
 		$response = wp_remote_get(

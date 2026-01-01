@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.1.5
+Stable tag: 0.1.6
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -128,6 +128,11 @@ It depends on your media library size and AI provider speed. The plugin processe
 4. Backup and restore functionality
 
 == Changelog ==
+
+= 0.1.6 =
+* Added Exo settings enhancements: health check button, dynamic model dropdown, refresh models button
+* Added ExoController REST API for Exo health check and model listing
+* Renamed VMFA_AI_EXO_URL to VMFA_AI_EXO_ENDPOINT for consistency
 
 = 0.1.5 =
 * Reorganized settings into three tabs: Media Scanner, Settings, and AI Provider

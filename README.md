@@ -99,7 +99,7 @@ define( 'VMFA_AI_OLLAMA_URL', 'http://localhost:11434' );
 define( 'VMFA_AI_OLLAMA_MODEL', 'llama3.2' );
 
 // Exo (Distributed Local)
-define( 'VMFA_AI_EXO_URL', 'http://localhost:52415' );
+define( 'VMFA_AI_EXO_ENDPOINT', 'http://localhost:52415' );
 define( 'VMFA_AI_EXO_MODEL', 'llama-3.2-3b' );
 
 // Organization Settings

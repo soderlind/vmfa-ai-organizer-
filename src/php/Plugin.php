@@ -11,6 +11,7 @@ namespace VmfaAiOrganizer;
 
 use VmfaAiOrganizer\Admin\SettingsPage;
 use VmfaAiOrganizer\REST\AnalysisController;
+use VmfaAiOrganizer\REST\ExoController;
 use VmfaAiOrganizer\Services\MediaScannerService;
 
 /**
@@ -38,6 +39,13 @@ final class Plugin {
 	 * @var AnalysisController|null
 	 */
 	private ?AnalysisController $rest_controller = null;
+
+	/**
+	 * Exo REST controller instance.
+	 *
+	 * @var ExoController|null
+	 */
+	private ?ExoController $exo_controller = null;
 
 	/**
 	 * Media scanner service instance.
@@ -97,6 +105,7 @@ final class Plugin {
 	private function init_services(): void {
 		$this->settings_page    = new SettingsPage();
 		$this->rest_controller  = new AnalysisController();
+		$this->exo_controller   = new ExoController();
 		$this->scanner_service  = new MediaScannerService();
 	}
 
@@ -113,6 +122,7 @@ final class Plugin {
 
 		// REST API hooks.
 		add_action( 'rest_api_init', array( $this->rest_controller, 'register_routes' ) );
+		$this->exo_controller->register();
 
 		// Action Scheduler hooks.
 		$this->scanner_service->register_hooks();
@@ -195,8 +205,8 @@ final class Plugin {
 			'ollama_model'      => 'llama3.2',
 			'grok_key'          => '',
 			'grok_model'        => 'grok-beta',
-			'exo_url'           => 'http://localhost:52415',
-			'exo_model'         => 'llama-3.2-3b',
+			'exo_endpoint'      => '',
+			'exo_model'         => '',
 			'max_folder_depth'  => 3,
 			'allow_new_folders' => false,
 			'batch_size'        => 20,

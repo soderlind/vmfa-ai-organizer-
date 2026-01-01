@@ -69,10 +69,7 @@ class OpenAIProvider extends AbstractProvider {
 	 * {@inheritDoc}
 	 */
 	public function get_label(): string {
-		$type = $this->get_setting( 'openai_type' ) ?: 'openai';
-		return 'azure' === $type
-			? __( 'Azure OpenAI', 'vmfa-ai-organizer' )
-			: __( 'OpenAI', 'vmfa-ai-organizer' );
+		return __( 'OpenAI', 'vmfa-ai-organizer' );
 	}
 
 	/**

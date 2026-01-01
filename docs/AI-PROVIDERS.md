@@ -315,28 +315,42 @@ define( 'VMFA_AI_GROK_MODEL', 'your-chosen-model' );
 
 ### Exo (Distributed Local)
 
-Exo allows running AI models across multiple local devices, pooling their compute power.
+Exo allows running AI models across multiple local devices, pooling their compute power. It exposes an OpenAI-compatible API locally.
 
 #### Getting Started
 
 1. Install [Exo](https://github.com/exo-explore/exo)
-2. Start the Exo cluster
+2. Start the Exo cluster on your device(s)
 3. Note the API endpoint (default: `http://localhost:52415`)
 
 #### Configuration (Admin UI)
 
 In **Media → AI Organizer → AI Provider**:
-- Set **AI Provider** to "Exo"
-- Set **Exo URL** to your cluster endpoint
-- Set **Model** based on your cluster's capabilities
+
+1. Set **AI Provider** to "Exo (Distributed Local)"
+2. Enter your **Exo Endpoint** (e.g., `http://localhost:52415`)
+3. Click **Check Connection** to verify connectivity (you'll see ✅ or ❌)
+4. Click **Refresh Models** to populate the model dropdown from your running cluster
+5. Select a model from the dropdown
+
+**Features**:
+- **Health Check Button**: Visual indicator (✅/❌) shows connection status
+- **Dynamic Model List**: Models are fetched directly from your running Exo cluster
+- **No API Key Required**: Exo runs locally on your network
 
 #### Configuration (wp-config.php)
 
 ```php
 define( 'VMFA_AI_PROVIDER', 'exo' );
-define( 'VMFA_AI_EXO_URL', 'http://localhost:52415' );
-define( 'VMFA_AI_EXO_MODEL', 'your-model' );
+define( 'VMFA_AI_EXO_ENDPOINT', 'http://localhost:52415' );
+define( 'VMFA_AI_EXO_MODEL', 'llama-3.2-3b' );
 ```
+
+#### Tips
+
+- Ensure at least one model is loaded in your Exo cluster before configuring
+- The timeout for Exo requests is 60 seconds (local inference can be slower)
+- Vision support depends on the model being used in your cluster
 
 ---
 
@@ -365,6 +379,16 @@ You must select and configure an AI provider in **Media → AI Organizer → AI 
 2. Verify the URL is correct (default: `http://localhost:11434`)
 3. If WordPress is in Docker, use `http://host.docker.internal:11434`
 4. Check firewall settings if accessing remotely
+
+### Exo connection issues
+
+1. Ensure your Exo cluster is running: check with `curl http://localhost:52415/v1/models`
+2. Verify the endpoint URL matches your Exo configuration (default port is 52415)
+3. Use the **Check Connection** button in settings to verify connectivity
+4. Click **Refresh Models** to see available models from your cluster
+5. Ensure at least one model is loaded in your Exo cluster
+6. Check firewall allows local connections on the configured port
+7. If WordPress is in Docker, use `http://host.docker.internal:52415`
 
 ### Rate limiting
 

@@ -103,10 +103,10 @@ class SettingsPage {
 			'const'   => 'VMFA_AI_GROK_MODEL',
 			'default' => 'grok-beta',
 		),
-		'exo_url'           => array(
-			'env'     => 'VMFA_AI_EXO_URL',
-			'const'   => 'VMFA_AI_EXO_URL',
-			'default' => 'http://localhost:52415',
+		'exo_endpoint'      => array(
+			'env'     => 'VMFA_AI_EXO_ENDPOINT',
+			'const'   => 'VMFA_AI_EXO_ENDPOINT',
+			'default' => '',
 		),
 		'exo_model'         => array(
 			'env'     => 'VMFA_AI_EXO_MODEL',
@@ -476,27 +476,19 @@ class SettingsPage {
 
 		// Exo settings.
 		add_settings_field(
-			'exo_url',
-			__( 'Exo URL', 'vmfa-ai-organizer' ),
-			array( $this, 'render_url_field' ),
+			'exo_endpoint',
+			__( 'Exo Endpoint', 'vmfa-ai-organizer' ),
+			array( $this, 'render_exo_endpoint_field' ),
 			'vmfa-ai-organizer-provider',
-			'vmfa_ai_provider_section',
-			array(
-				'key'      => 'exo_url',
-				'provider' => 'exo',
-			)
+			'vmfa_ai_provider_section'
 		);
 
 		add_settings_field(
 			'exo_model',
 			__( 'Exo Model', 'vmfa-ai-organizer' ),
-			array( $this, 'render_model_field' ),
+			array( $this, 'render_exo_model_field' ),
 			'vmfa-ai-organizer-provider',
-			'vmfa_ai_provider_section',
-			array(
-				'key'      => 'exo_model',
-				'provider' => 'exo',
-			)
+			'vmfa_ai_provider_section'
 		);
 
 		// Organization section.
@@ -719,6 +711,187 @@ class SettingsPage {
 		>
 		<?php
 		$this->render_locked_badge( $key );
+	}
+
+	/**
+	 * Render Exo endpoint field with health check button.
+	 *
+	 * @return void
+	 */
+	public function render_exo_endpoint_field(): void {
+		$settings  = $this->get_settings();
+		$value     = $settings['exo_endpoint'] ?? '';
+		$is_locked = $this->is_setting_locked( 'exo_endpoint' );
+
+		?>
+		<div style="display: flex; align-items: center; gap: 8px;">
+			<input 
+				type="url" 
+				name="<?php echo esc_attr( self::OPTION_NAME ); ?>[exo_endpoint]"
+				id="vmfa_exo_endpoint"
+				value="<?php echo esc_url( $value ); ?>"
+				class="regular-text vmfa-provider-field"
+				data-provider="exo"
+				placeholder="http://localhost:52415"
+				<?php disabled( $is_locked ); ?>
+			>
+			<span id="vmfa-exo-health-indicator" style="font-size: 18px;"
+				title="<?php esc_attr_e( 'Connection status', 'vmfa-ai-organizer' ); ?>"></span>
+			<button type="button" id="vmfa-exo-check-connection" class="button button-secondary">
+				<?php esc_html_e( 'Check Connection', 'vmfa-ai-organizer' ); ?>
+			</button>
+		</div>
+		<?php $this->render_locked_badge( 'exo_endpoint' ); ?>
+		<p class="description">
+			<?php esc_html_e( 'Your Exo cluster endpoint URL (e.g., http://localhost:52415). Exo is a distributed local LLM cluster.', 'vmfa-ai-organizer' ); ?>
+		</p>
+		<?php
+	}
+
+	/**
+	 * Render Exo model field with dynamic model refresh.
+	 *
+	 * @return void
+	 */
+	public function render_exo_model_field(): void {
+		$settings  = $this->get_settings();
+		$value     = $settings['exo_model'] ?? '';
+		$is_locked = $this->is_setting_locked( 'exo_model' );
+
+		?>
+		<select 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[exo_model]"
+			id="vmfa_exo_model"
+			class="vmfa-provider-field"
+			data-provider="exo"
+			<?php disabled( $is_locked ); ?>
+		>
+			<?php if ( ! empty( $value ) ) : ?>
+				<option value="<?php echo esc_attr( $value ); ?>" selected><?php echo esc_html( $value ); ?></option>
+			<?php else : ?>
+				<option value=""><?php esc_html_e( '— Select a model —', 'vmfa-ai-organizer' ); ?></option>
+			<?php endif; ?>
+		</select>
+		<button type="button" id="vmfa-exo-refresh-models" class="button button-secondary" style="margin-left: 4px;">
+			<?php esc_html_e( 'Refresh Models', 'vmfa-ai-organizer' ); ?>
+		</button>
+		<?php if ( $is_locked ) : ?>
+			<input type="hidden" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[exo_model]"
+				value="<?php echo esc_attr( $value ); ?>" />
+		<?php endif; ?>
+		<?php $this->render_locked_badge( 'exo_model' ); ?>
+		<p class="description">
+			<?php esc_html_e( 'Select a model from your running Exo cluster. Click "Refresh Models" after entering the endpoint.', 'vmfa-ai-organizer' ); ?>
+		</p>
+		<?php
+		$this->render_exo_scripts();
+	}
+
+	/**
+	 * Render Exo-specific JavaScript for health check and model refresh.
+	 *
+	 * @return void
+	 */
+	private function render_exo_scripts(): void {
+		?>
+		<script>
+			(function() {
+				const exoEndpointField = document.getElementById('vmfa_exo_endpoint');
+				const exoModelField = document.getElementById('vmfa_exo_model');
+				const exoHealthIndicator = document.getElementById('vmfa-exo-health-indicator');
+				const exoCheckBtn = document.getElementById('vmfa-exo-check-connection');
+				const exoRefreshBtn = document.getElementById('vmfa-exo-refresh-models');
+
+				async function checkExoHealth() {
+					const endpoint = exoEndpointField ? exoEndpointField.value.trim() : '';
+					if (!endpoint) {
+						if (exoHealthIndicator) exoHealthIndicator.textContent = '';
+						return;
+					}
+
+					if (exoHealthIndicator) exoHealthIndicator.textContent = '⏳';
+
+					try {
+						const response = await fetch('<?php echo esc_url( rest_url( 'vmfa/v1/exo-health' ) ); ?>', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								'X-WP-Nonce': '<?php echo esc_js( wp_create_nonce( 'wp_rest' ) ); ?>'
+							},
+							body: JSON.stringify({ endpoint: endpoint })
+						});
+						const data = await response.json();
+						if (exoHealthIndicator) {
+							exoHealthIndicator.textContent = data.status === 'ok' ? '✅' : '❌';
+							exoHealthIndicator.title = data.status === 'ok' ? 'Connected' : (data.message || 'Connection failed');
+						}
+					} catch (e) {
+						if (exoHealthIndicator) {
+							exoHealthIndicator.textContent = '❌';
+							exoHealthIndicator.title = 'Connection failed: ' + e.message;
+						}
+					}
+				}
+
+				async function refreshExoModels() {
+					const endpoint = exoEndpointField ? exoEndpointField.value.trim() : '';
+					if (!endpoint) {
+						alert('<?php echo esc_js( __( 'Please enter the Exo endpoint first.', 'vmfa-ai-organizer' ) ); ?>');
+						return;
+					}
+
+					if (exoRefreshBtn) exoRefreshBtn.disabled = true;
+
+					try {
+						const response = await fetch('<?php echo esc_url( rest_url( 'vmfa/v1/exo-models' ) ); ?>', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								'X-WP-Nonce': '<?php echo esc_js( wp_create_nonce( 'wp_rest' ) ); ?>'
+							},
+							body: JSON.stringify({ endpoint: endpoint })
+						});
+						const data = await response.json();
+
+						if (data.models && Array.isArray(data.models) && exoModelField) {
+							const currentValue = exoModelField.value;
+							exoModelField.innerHTML = '';
+
+							if (data.models.length === 0) {
+								const opt = document.createElement('option');
+								opt.value = '';
+								opt.textContent = '<?php echo esc_js( __( '— No models available —', 'vmfa-ai-organizer' ) ); ?>';
+								exoModelField.appendChild(opt);
+							} else {
+								data.models.forEach(model => {
+									const opt = document.createElement('option');
+									opt.value = model.id || model;
+									opt.textContent = model.name || model.id || model;
+									if (opt.value === currentValue) opt.selected = true;
+									exoModelField.appendChild(opt);
+								});
+							}
+
+							checkExoHealth();
+						} else if (data.error) {
+							alert('<?php echo esc_js( __( 'Failed to fetch models:', 'vmfa-ai-organizer' ) ); ?> ' + data.error);
+						}
+					} catch (e) {
+						alert('<?php echo esc_js( __( 'Failed to fetch models:', 'vmfa-ai-organizer' ) ); ?> ' + e.message);
+					} finally {
+						if (exoRefreshBtn) exoRefreshBtn.disabled = false;
+					}
+				}
+
+				if (exoCheckBtn) {
+					exoCheckBtn.addEventListener('click', checkExoHealth);
+				}
+				if (exoRefreshBtn) {
+					exoRefreshBtn.addEventListener('click', refreshExoModels);
+				}
+			})();
+		</script>
+		<?php
 	}
 
 	/**
@@ -1032,8 +1205,8 @@ class SettingsPage {
 		if ( isset( $input['ollama_url'] ) ) {
 			$sanitized['ollama_url'] = esc_url_raw( $input['ollama_url'] );
 		}
-		if ( isset( $input['exo_url'] ) ) {
-			$sanitized['exo_url'] = esc_url_raw( $input['exo_url'] );
+		if ( isset( $input['exo_endpoint'] ) ) {
+			$sanitized['exo_endpoint'] = esc_url_raw( $input['exo_endpoint'] );
 		}
 
 		// Numeric fields.
