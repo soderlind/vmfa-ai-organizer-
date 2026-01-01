@@ -54,7 +54,7 @@ class ExoProvider extends AbstractProvider {
 			);
 		}
 
-		$base_url = $this->get_setting( 'exo_url' ) ?: self::DEFAULT_URL;
+		$base_url = $this->get_setting( 'exo_endpoint' ) ?: self::DEFAULT_URL;
 		$model    = $this->get_setting( 'exo_model' ) ?: 'llama-3.2-3b';
 
 		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders, $suggested_folders );
@@ -62,7 +62,7 @@ class ExoProvider extends AbstractProvider {
 		// Exo uses OpenAI-compatible API.
 		// Note: Vision support depends on the model being used.
 		$user_content = $user_prompt;
-		if ( null !== $image_data && ! empty( $image_data['base64'] ) ) {
+		if ( null !== $image_data && ! empty( $image_data[ 'base64' ] ) ) {
 			$user_content = array(
 				array(
 					'type' => 'text',
@@ -71,7 +71,7 @@ class ExoProvider extends AbstractProvider {
 				array(
 					'type'      => 'image_url',
 					'image_url' => array(
-						'url' => 'data:' . $image_data['mime_type'] . ';base64,' . $image_data['base64'],
+						'url' => 'data:' . $image_data[ 'mime_type' ] . ';base64,' . $image_data[ 'base64' ],
 					),
 				),
 			);
@@ -96,7 +96,7 @@ class ExoProvider extends AbstractProvider {
 			)
 		);
 
-		if ( ! $response['success'] ) {
+		if ( ! $response[ 'success' ] ) {
 			return array(
 				'action'          => 'skip',
 				'folder_id'       => null,
@@ -105,12 +105,12 @@ class ExoProvider extends AbstractProvider {
 				'reason'          => sprintf(
 					/* translators: %s: error message */
 					__( 'Exo error: %s', 'vmfa-ai-organizer' ),
-					$response['error']
+					$response[ 'error' ]
 				),
 			);
 		}
 
-		$content = $response['data']['choices'][0]['message']['content'] ?? '';
+		$content = $response[ 'data' ][ 'choices' ][ 0 ][ 'message' ][ 'content' ] ?? '';
 
 		return $this->parse_response( $content, $folder_paths );
 	}
@@ -119,7 +119,7 @@ class ExoProvider extends AbstractProvider {
 	 * {@inheritDoc}
 	 */
 	public function test( array $settings ): ?string {
-		$base_url = $settings['exo_url'] ?? self::DEFAULT_URL;
+		$base_url = $settings[ 'exo_endpoint' ] ?? self::DEFAULT_URL;
 
 		// Check if Exo is running.
 		$response = wp_remote_get(
@@ -147,7 +147,7 @@ class ExoProvider extends AbstractProvider {
 	 * {@inheritDoc}
 	 */
 	public function is_configured(): bool {
-		$base_url = $this->get_setting( 'exo_url' ) ?: self::DEFAULT_URL;
+		$base_url = $this->get_setting( 'exo_endpoint' ) ?: self::DEFAULT_URL;
 
 		// Quick check if Exo is running.
 		$response = wp_remote_get(
@@ -163,11 +163,11 @@ class ExoProvider extends AbstractProvider {
 	 */
 	public function get_available_models(): array {
 		return array(
-			'llama-3.2-3b'  => 'Llama 3.2 (3B)',
-			'llama-3.2-1b'  => 'Llama 3.2 (1B)',
-			'llama-3.1-8b'  => 'Llama 3.1 (8B)',
-			'mistral-7b'    => 'Mistral (7B)',
-			'deepseek-r1'   => 'DeepSeek R1',
+			'llama-3.2-3b' => 'Llama 3.2 (3B)',
+			'llama-3.2-1b' => 'Llama 3.2 (1B)',
+			'llama-3.1-8b' => 'Llama 3.1 (8B)',
+			'mistral-7b'   => 'Mistral (7B)',
+			'deepseek-r1'  => 'DeepSeek R1',
 		);
 	}
 }

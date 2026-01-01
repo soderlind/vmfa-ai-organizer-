@@ -69,10 +69,7 @@ class OpenAIProvider extends AbstractProvider {
 	 * {@inheritDoc}
 	 */
 	public function get_label(): string {
-		$type = $this->get_setting( 'openai_type' ) ?: 'openai';
-		return 'azure' === $type
-			? __( 'Azure OpenAI', 'vmfa-ai-organizer' )
-			: __( 'OpenAI', 'vmfa-ai-organizer' );
+		return __( 'OpenAI', 'vmfa-ai-organizer' );
 	}
 
 	/**
@@ -122,7 +119,7 @@ class OpenAIProvider extends AbstractProvider {
 		);
 
 		if ( 'openai' === $type ) {
-			$body['model'] = $model;
+			$body[ 'model' ] = $model;
 		}
 
 		$response = $this->make_request(
@@ -131,7 +128,7 @@ class OpenAIProvider extends AbstractProvider {
 			$this->get_headers( $api_key )
 		);
 
-		if ( ! $response['success'] ) {
+		if ( ! $response[ 'success' ] ) {
 			return array(
 				'action'          => 'skip',
 				'folder_id'       => null,
@@ -140,12 +137,12 @@ class OpenAIProvider extends AbstractProvider {
 				'reason'          => sprintf(
 					/* translators: %s: error message */
 					__( 'OpenAI API error: %s', 'vmfa-ai-organizer' ),
-					$response['error']
+					$response[ 'error' ]
 				),
 			);
 		}
 
-		$content = $response['data']['choices'][0]['message']['content'] ?? '';
+		$content = $response[ 'data' ][ 'choices' ][ 0 ][ 'message' ][ 'content' ] ?? '';
 
 		return $this->parse_response( $content, $folder_paths );
 	}
@@ -162,7 +159,7 @@ class OpenAIProvider extends AbstractProvider {
 	 */
 	private function build_user_content( string $text_prompt, ?array $image_data ): string|array {
 		// If no image data, return plain text.
-		if ( null === $image_data || empty( $image_data['base64'] ) ) {
+		if ( null === $image_data || empty( $image_data[ 'base64' ] ) ) {
 			return $text_prompt;
 		}
 
@@ -175,7 +172,7 @@ class OpenAIProvider extends AbstractProvider {
 			array(
 				'type'      => 'image_url',
 				'image_url' => array(
-					'url'    => 'data:' . $image_data['mime_type'] . ';base64,' . $image_data['base64'],
+					'url'    => 'data:' . $image_data[ 'mime_type' ] . ';base64,' . $image_data[ 'base64' ],
 					'detail' => 'low', // Use 'low' for faster/cheaper processing, 'high' for more detail.
 				),
 			),
@@ -188,16 +185,16 @@ class OpenAIProvider extends AbstractProvider {
 	 * {@inheritDoc}
 	 */
 	public function test( array $settings ): ?string {
-		$api_key = $settings['openai_key'] ?? '';
-		$model   = $settings['openai_model'] ?? 'gpt-4o-mini';
-		$type    = $settings['openai_type'] ?? 'openai';
+		$api_key = $settings[ 'openai_key' ] ?? '';
+		$model   = $settings[ 'openai_model' ] ?? 'gpt-4o-mini';
+		$type    = $settings[ 'openai_type' ] ?? 'openai';
 
 		if ( empty( $api_key ) ) {
 			return __( 'API key is required.', 'vmfa-ai-organizer' );
 		}
 
 		if ( 'azure' === $type ) {
-			$endpoint = $settings['azure_endpoint'] ?? '';
+			$endpoint = $settings[ 'azure_endpoint' ] ?? '';
 			if ( empty( $endpoint ) ) {
 				return __( 'Azure endpoint is required.', 'vmfa-ai-organizer' );
 			}
@@ -205,7 +202,7 @@ class OpenAIProvider extends AbstractProvider {
 				return __( 'Azure deployment name is required.', 'vmfa-ai-organizer' );
 			}
 
-			$api_version = $settings['azure_api_version'] ?? '2024-02-15-preview';
+			$api_version = $settings[ 'azure_api_version' ] ?? '2024-02-15-preview';
 			$url         = rtrim( $endpoint, '/' ) . '/openai/deployments/' . $model . '/chat/completions?api-version=' . $api_version;
 			$headers     = array( 'api-key' => $api_key );
 		} else {
@@ -224,13 +221,13 @@ class OpenAIProvider extends AbstractProvider {
 		);
 
 		if ( 'openai' === $type ) {
-			$body['model'] = $model;
+			$body[ 'model' ] = $model;
 		}
 
 		$response = $this->make_request( $url, $body, $headers );
 
-		if ( ! $response['success'] ) {
-			return $response['error'];
+		if ( ! $response[ 'success' ] ) {
+			return $response[ 'error' ];
 		}
 
 		return null;
@@ -260,10 +257,10 @@ class OpenAIProvider extends AbstractProvider {
 	 */
 	public function get_available_models(): array {
 		return array(
-			'gpt-4o-mini'    => 'GPT-4o Mini (Fast, Affordable)',
-			'gpt-4o'         => 'GPT-4o (Balanced)',
-			'gpt-4-turbo'    => 'GPT-4 Turbo (Powerful)',
-			'gpt-3.5-turbo'  => 'GPT-3.5 Turbo (Budget)',
+			'gpt-4o-mini'   => 'GPT-4o Mini (Fast, Affordable)',
+			'gpt-4o'        => 'GPT-4o (Balanced)',
+			'gpt-4-turbo'   => 'GPT-4 Turbo (Powerful)',
+			'gpt-3.5-turbo' => 'GPT-3.5 Turbo (Budget)',
 		);
 	}
 }

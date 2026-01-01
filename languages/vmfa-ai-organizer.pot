@@ -1,15 +1,15 @@
-# Copyright (C) 2025 Per Soderlind
+# Copyright (C) 2026 Per Soderlind
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Virtual Media Folders AI Organizer 0.1.3\n"
+"Project-Id-Version: Virtual Media Folders AI Organizer 0.1.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/vmfa-ai-organizer\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-12-31T02:25:04+00:00\n"
+"POT-Creation-Date: 2026-01-01T23:40:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: vmfa-ai-organizer\n"
@@ -44,7 +44,7 @@ msgid "AI Organizer Settings"
 msgstr ""
 
 #: src/php/Admin/SettingsPage.php:156
-#: src/php/Admin/SettingsPage.php:534
+#: src/php/Admin/SettingsPage.php:538
 msgid "AI Organizer"
 msgstr ""
 
@@ -57,158 +57,203 @@ msgid "Media Scanner"
 msgstr ""
 
 #: src/php/Admin/SettingsPage.php:249
-#: src/php/Admin/SettingsPage.php:294
+msgid "Settings"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:253
+#: src/php/Admin/SettingsPage.php:306
 msgid "AI Provider"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:258
+#: src/php/Admin/SettingsPage.php:262
 msgid "JavaScript is required for the media scanner."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:266
+#: src/php/Admin/SettingsPage.php:270
+msgid "Save Settings"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:278
 msgid "Save AI Settings"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:301
+#: src/php/Admin/SettingsPage.php:313
 msgid "Provider"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:310
+#: src/php/Admin/SettingsPage.php:322
 msgid "OpenAI Type"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:321
+#: src/php/Admin/SettingsPage.php:333
 msgid "API Key"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:333
+#: src/php/Admin/SettingsPage.php:345
 msgid "Model / Deployment"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:345
+#: src/php/Admin/SettingsPage.php:357
 msgid "Azure Endpoint"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:356
+#: src/php/Admin/SettingsPage.php:368
 msgid "Azure API Version"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:368
+#: src/php/Admin/SettingsPage.php:380
 msgid "Anthropic API Key"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:380
+#: src/php/Admin/SettingsPage.php:392
 msgid "Anthropic Model"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:393
+#: src/php/Admin/SettingsPage.php:405
 msgid "Gemini API Key"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:405
+#: src/php/Admin/SettingsPage.php:417
 msgid "Gemini Model"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:418
+#: src/php/Admin/SettingsPage.php:430
 msgid "Ollama URL"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:430
+#: src/php/Admin/SettingsPage.php:442
 msgid "Ollama Model"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:443
+#: src/php/Admin/SettingsPage.php:455
 msgid "Grok API Key"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:455
+#: src/php/Admin/SettingsPage.php:467
 msgid "Grok Model"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:468
-msgid "Exo URL"
+#: src/php/Admin/SettingsPage.php:480
+msgid "Exo Endpoint"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:480
+#: src/php/Admin/SettingsPage.php:488
 msgid "Exo Model"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:493
+#: src/php/Admin/SettingsPage.php:497
 msgid "Organization Settings"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:500
+#: src/php/Admin/SettingsPage.php:504
 msgid "Maximum Folder Depth"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:508
+#: src/php/Admin/SettingsPage.php:512
 msgid "Allow New Folders"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:514
+#: src/php/Admin/SettingsPage.php:518
 msgid "Allow AI to suggest creating new folders when no suitable existing folder is found."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:520
+#: src/php/Admin/SettingsPage.php:524
 msgid "Batch Size"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:546
+#: src/php/Admin/SettingsPage.php:550
 msgid "Configure the AI provider to use for analyzing and organizing media files."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:559
+#: src/php/Admin/SettingsPage.php:563
 msgid "Configure how media files should be organized into folders."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:644
+#: src/php/Admin/SettingsPage.php:648
 msgid "For OpenAI: model name (e.g., gpt-4o-mini, gpt-4o). For Azure: deployment name."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:734
+#: src/php/Admin/SettingsPage.php:739
+msgid "Connection status"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:741
+msgid "Check Connection"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:746
+msgid "Your Exo cluster endpoint URL (e.g., http://localhost:52415). Exo is a distributed local LLM cluster."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:772
+msgid "— Select a model —"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:776
+msgid "Refresh Models"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:784
+msgid "Select a model from your running Exo cluster. Click \"Refresh Models\" after entering the endpoint."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:839
+msgid "Please enter the Exo endpoint first."
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:863
+msgid "— No models available —"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:877
+#: src/php/Admin/SettingsPage.php:880
+msgid "Failed to fetch models:"
+msgstr ""
+
+#: src/php/Admin/SettingsPage.php:919
 msgid "Maximum depth for folder hierarchy (1-5). Higher values allow more nested folders."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:792
+#: src/php/Admin/SettingsPage.php:977
 msgid "Number of media files to process in each batch (10-100). Lower values are safer for shared hosting."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:817
+#: src/php/Admin/SettingsPage.php:1002
 #: src/php/AI/OpenAIProvider.php:75
 msgid "OpenAI"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:820
+#: src/php/Admin/SettingsPage.php:1005
 #: src/php/AI/OpenAIProvider.php:74
 msgid "Azure OpenAI"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:824
+#: src/php/Admin/SettingsPage.php:1009
 msgid "Select OpenAI or Azure OpenAI as your provider."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:852
+#: src/php/Admin/SettingsPage.php:1037
 msgid "Your Azure OpenAI resource endpoint URL."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:880
+#: src/php/Admin/SettingsPage.php:1065
 msgid "Azure OpenAI API version (e.g., 2024-02-15-preview)."
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:897
+#: src/php/Admin/SettingsPage.php:1082
 msgid "This setting is overridden"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:900
+#: src/php/Admin/SettingsPage.php:1085
 msgid "🔒 Constant"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:902
+#: src/php/Admin/SettingsPage.php:1087
 msgid "🔒 Environment"
 msgstr ""
 
 #. translators: %s: error message
-#: src/php/Admin/SettingsPage.php:1072
+#: src/php/Admin/SettingsPage.php:1257
 #, php-format
 msgid "AI Configuration Warning: %s"
 msgstr ""
@@ -424,6 +469,27 @@ msgstr ""
 
 #: src/php/REST/AnalysisController.php:605
 msgid "Backup restored successfully."
+msgstr ""
+
+#: src/php/REST/ExoController.php:99
+#: src/php/REST/ExoController.php:163
+msgid "Endpoint is required."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: src/php/REST/ExoController.php:131
+#, php-format
+msgid "HTTP %d: Unable to connect to Exo"
+msgstr ""
+
+#: src/php/REST/ExoController.php:142
+msgid "Connected"
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: src/php/REST/ExoController.php:197
+#, php-format
+msgid "HTTP %d: Unable to fetch models"
 msgstr ""
 
 #: src/php/Services/AIAnalysisService.php:137
