@@ -103,10 +103,10 @@ final class Plugin {
 	 * @return void
 	 */
 	private function init_services(): void {
-		$this->settings_page    = new SettingsPage();
-		$this->rest_controller  = new AnalysisController();
-		$this->exo_controller   = new ExoController();
-		$this->scanner_service  = new MediaScannerService();
+		$this->settings_page   = new SettingsPage();
+		$this->rest_controller = new AnalysisController();
+		$this->exo_controller  = new ExoController();
+		$this->scanner_service = new MediaScannerService();
 	}
 
 	/**
@@ -157,8 +157,8 @@ final class Plugin {
 		wp_enqueue_script(
 			'vmfa-ai-organizer-admin',
 			VMFA_AI_ORGANIZER_URL . 'build/index.js',
-			$asset['dependencies'],
-			$asset['version'],
+			$asset[ 'dependencies' ],
+			$asset[ 'version' ],
 			true
 		);
 
@@ -166,7 +166,7 @@ final class Plugin {
 			'vmfa-ai-organizer-admin',
 			VMFA_AI_ORGANIZER_URL . 'build/index.css',
 			array( 'wp-components' ),
-			$asset['version']
+			$asset[ 'version' ]
 		);
 
 		wp_localize_script(

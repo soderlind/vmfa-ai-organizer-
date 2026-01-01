@@ -208,28 +208,28 @@ class ExoController {
 
 		$models = array();
 
-		if ( isset( $data['data'] ) && is_array( $data['data'] ) ) {
+		if ( isset( $data[ 'data' ] ) && is_array( $data[ 'data' ] ) ) {
 			// OpenAI-compatible format.
-			foreach ( $data['data'] as $model ) {
-				if ( isset( $model['id'] ) ) {
+			foreach ( $data[ 'data' ] as $model ) {
+				if ( isset( $model[ 'id' ] ) ) {
 					$models[] = array(
-						'id'   => $model['id'],
-						'name' => $model['id'],
+						'id'   => $model[ 'id' ],
+						'name' => $model[ 'id' ],
 					);
 				}
 			}
-		} elseif ( isset( $data['models'] ) && is_array( $data['models'] ) ) {
+		} elseif ( isset( $data[ 'models' ] ) && is_array( $data[ 'models' ] ) ) {
 			// Alternative format.
-			foreach ( $data['models'] as $model ) {
+			foreach ( $data[ 'models' ] as $model ) {
 				if ( is_string( $model ) ) {
 					$models[] = array(
 						'id'   => $model,
 						'name' => $model,
 					);
-				} elseif ( isset( $model['id'] ) ) {
+				} elseif ( isset( $model[ 'id' ] ) ) {
 					$models[] = array(
-						'id'   => $model['id'],
-						'name' => $model['name'] ?? $model['id'],
+						'id'   => $model[ 'id' ],
+						'name' => $model[ 'name' ] ?? $model[ 'id' ],
 					);
 				}
 			}
@@ -249,19 +249,19 @@ class ExoController {
 			$state_data = json_decode( $state_body, true );
 
 			// If we have running models from state, filter to only show those.
-			if ( isset( $state_data['running_models'] ) && is_array( $state_data['running_models'] ) ) {
+			if ( isset( $state_data[ 'running_models' ] ) && is_array( $state_data[ 'running_models' ] ) ) {
 				$running_ids = array_map(
 					function ( $m ) {
-						return is_string( $m ) ? $m : ( $m['id'] ?? '' );
+						return is_string( $m ) ? $m : ( $m[ 'id' ] ?? '' );
 					},
-					$state_data['running_models']
+					$state_data[ 'running_models' ]
 				);
 
 				if ( ! empty( $running_ids ) ) {
 					$models = array_filter(
 						$models,
 						function ( $m ) use ( $running_ids ) {
-							return in_array( $m['id'], $running_ids, true );
+							return in_array( $m[ 'id' ], $running_ids, true );
 						}
 					);
 					$models = array_values( $models );
