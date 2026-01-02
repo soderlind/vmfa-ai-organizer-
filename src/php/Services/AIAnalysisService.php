@@ -140,6 +140,13 @@ class AIAnalysisService {
 		$folder_paths = $this->get_folder_paths();
 		$mime_type    = $metadata[ 'mime_type' ] ?? '';
 
+		// For "reorganize_all" mode (even in dry-run/preview), simulate empty folders.
+		// This ensures the preview accurately shows what would happen after folders are deleted.
+		$progress = get_option( 'vmfa_scan_progress', array() );
+		if ( 'reorganize_all' === ( $progress['mode'] ?? '' ) ) {
+			$folder_paths = array();
+		}
+
 		// Handle documents - assign to Documents folder.
 		if ( in_array( $mime_type, self::DOCUMENT_MIME_TYPES, true ) ) {
 			return $this->assign_to_type_folder( $attachment_id, __( 'Documents', 'vmfa-ai-organizer' ), $folder_paths );
@@ -178,6 +185,11 @@ class AIAnalysisService {
 		$allow_new         = (bool) Plugin::get_instance()->get_setting( 'allow_new_folders', false );
 		$suggested_folders = $this->get_session_suggested_folders();
 
+		// For "reorganize_all" mode, always allow creating new folders since we're starting fresh.
+		if ( 'reorganize_all' === ( $progress['mode'] ?? '' ) ) {
+			$allow_new = true;
+		}
+
 		// Get image data for vision-capable providers.
 		$image_data = $this->get_image_data( $attachment_id );
 
@@ -188,17 +200,23 @@ class AIAnalysisService {
 			$conflict = $this->detect_hierarchy_conflict( $result[ 'new_folder_path' ] );
 
 			if ( $conflict[ 'conflict' ] && ! empty( $conflict[ 'existing_path' ] ) ) {
-				// Auto-remap to existing path to prevent inverted hierarchy.
-				$result[ 'action' ]          = 'assign';
-				$result[ 'folder_id' ]       = $folder_paths[ $conflict[ 'existing_path' ] ] ?? null;
-				$result[ 'new_folder_path' ] = null;
-				$result[ 'reason' ]          = sprintf(
+				// Check if the existing path is in the database or just a session-suggested folder.
+				if ( isset( $folder_paths[ $conflict[ 'existing_path' ] ] ) ) {
+					// Path exists in database - remap to existing folder.
+					$result[ 'action' ]          = 'assign';
+					$result[ 'folder_id' ]       = $folder_paths[ $conflict[ 'existing_path' ] ];
+					$result[ 'new_folder_path' ] = null;
+				} else {
+					// Path is session-suggested but not yet created - use that path instead.
+					$result[ 'new_folder_path' ] = $conflict[ 'existing_path' ];
+				}
+				$result[ 'reason' ]     = sprintf(
 					/* translators: 1: original reason, 2: existing path */
 					__( '%1$s (Auto-remapped to existing folder: %2$s to prevent hierarchy inversion)', 'vmfa-ai-organizer' ),
 					$result[ 'reason' ],
 					$conflict[ 'existing_path' ]
 				);
-				$result[ 'confidence' ]      = $result[ 'confidence' ] * 0.9; // Slightly reduce confidence.
+				$result[ 'confidence' ] = $result[ 'confidence' ] * 0.9; // Slightly reduce confidence.
 			}
 		}
 
@@ -465,24 +483,45 @@ class AIAnalysisService {
 			$this->folder_name_map = null;
 		}
 
-		$terms = get_terms(
-			array(
-				'taxonomy'   => self::TAXONOMY,
-				'hide_empty' => false,
+		// Use direct database query to bypass all WordPress caching.
+		// This is necessary because persistent object caches (Redis, Memcached)
+		// don't respect wp_cache_flush_group across separate PHP requests.
+		global $wpdb;
+
+		$terms = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT t.term_id, t.name, t.slug, tt.parent, tt.count, tt.taxonomy
+				FROM {$wpdb->terms} t
+				INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+				WHERE tt.taxonomy = %s",
+				self::TAXONOMY
 			)
 		);
 
-		if ( is_wp_error( $terms ) || empty( $terms ) ) {
+		if ( empty( $terms ) ) {
 			$this->folder_paths = array();
 			return $this->folder_paths;
+		}
+
+		// Convert to term-like objects for build_term_path compatibility.
+		$term_objects = array();
+		foreach ( $terms as $row ) {
+			$term           = new \stdClass();
+			$term->term_id  = (int) $row->term_id;
+			$term->name     = $row->name;
+			$term->slug     = $row->slug;
+			$term->parent   = (int) $row->parent;
+			$term->count    = (int) $row->count;
+			$term->taxonomy = $row->taxonomy;
+			$term_objects[] = $term;
 		}
 
 		$max_depth = (int) Plugin::get_instance()->get_setting( 'max_folder_depth', 3 );
 
 		$this->folder_paths = array();
 
-		foreach ( $terms as $term ) {
-			$path  = $this->build_term_path( $term, $terms );
+		foreach ( $term_objects as $term ) {
+			$path  = $this->build_term_path( $term, $term_objects );
 			$depth = substr_count( $path, '/' ) + 1;
 
 			// Only include folders within max depth.
@@ -500,21 +539,31 @@ class AIAnalysisService {
 	/**
 	 * Build the full path for a term.
 	 *
-	 * @param \WP_Term          $term  Term object.
-	 * @param array<\WP_Term>   $terms All terms for lookup.
+	 * @param object          $term  Term object (WP_Term or stdClass with same properties).
+	 * @param array<object>   $terms All terms for lookup.
 	 * @return string
 	 */
-	private function build_term_path( \WP_Term $term, array $terms ): string {
+	private function build_term_path( object $term, array $terms ): string {
 		$path   = $term->name;
 		$parent = $term->parent;
+		$seen   = array(); // Prevent infinite loops.
 
-		while ( $parent > 0 ) {
+		while ( $parent > 0 && ! isset( $seen[ $parent ] ) ) {
+			$seen[ $parent ] = true;
+			$found           = false;
+
 			foreach ( $terms as $parent_term ) {
 				if ( $parent_term->term_id === $parent ) {
 					$path   = $parent_term->name . '/' . $path;
 					$parent = $parent_term->parent;
+					$found  = true;
 					break;
 				}
+			}
+
+			// If parent not found in terms array, stop to prevent infinite loop.
+			if ( ! $found ) {
+				break;
 			}
 		}
 
@@ -556,6 +605,7 @@ class AIAnalysisService {
 	 *
 	 * Checks if the proposed path's components exist in any existing path but in a different order.
 	 * For example, if "Events/Outdoor" exists and we propose "Outdoor/Events", this is a conflict.
+	 * Also checks against session-suggested folders to prevent inversions during batch processing.
 	 *
 	 * @param string $proposed_path The proposed folder path.
 	 * @return array{conflict: bool, existing_path: string|null, message: string|null}
@@ -563,8 +613,12 @@ class AIAnalysisService {
 	public function detect_hierarchy_conflict( string $proposed_path ): array {
 		$folder_paths = $this->get_folder_paths();
 
+		// Also include session-suggested folders to prevent inversions during batch processing.
+		$session_folders = $this->get_session_suggested_folders();
+		$all_paths       = array_merge( array_keys( $folder_paths ), $session_folders );
+
 		// If the path already exists exactly, no conflict.
-		if ( isset( $folder_paths[ $proposed_path ] ) ) {
+		if ( isset( $folder_paths[ $proposed_path ] ) || in_array( $proposed_path, $session_folders, true ) ) {
 			return array(
 				'conflict'      => false,
 				'existing_path' => $proposed_path,
@@ -584,8 +638,8 @@ class AIAnalysisService {
 			);
 		}
 
-		// Check each existing path for conflicts.
-		foreach ( array_keys( $folder_paths ) as $existing_path ) {
+		// Check each existing and session-suggested path for conflicts.
+		foreach ( $all_paths as $existing_path ) {
 			$existing_parts = array_map( 'mb_strtolower', explode( '/', $existing_path ) );
 
 			// Find common components between proposed and existing.
@@ -853,6 +907,31 @@ class AIAnalysisService {
 		}
 
 		if ( 'create' === $result[ 'action' ] && ! empty( $result[ 'new_folder_path' ] ) ) {
+			// Re-check for hierarchy conflicts at apply time (folders may have been created since scan).
+			// Refresh folder paths to get latest state.
+			$folder_paths = $this->get_folder_paths( true );
+
+			// If the exact path now exists, just assign to it.
+			if ( isset( $folder_paths[ $result[ 'new_folder_path' ] ] ) ) {
+				return $this->assign_to_folder( $attachment_id, $folder_paths[ $result[ 'new_folder_path' ] ] );
+			}
+
+			// Check for hierarchy inversions against now-existing folders.
+			$conflict = $this->detect_hierarchy_conflict( $result[ 'new_folder_path' ] );
+			if ( $conflict[ 'conflict' ] && ! empty( $conflict[ 'existing_path' ] ) ) {
+				// Use the existing path instead to prevent inversion.
+				if ( isset( $folder_paths[ $conflict[ 'existing_path' ] ] ) ) {
+					return $this->assign_to_folder( $attachment_id, $folder_paths[ $conflict[ 'existing_path' ] ] );
+				}
+				// If existing path is also not in DB, create that one instead.
+				$folder_id = $this->create_folder_from_path( $conflict[ 'existing_path' ] );
+				if ( $folder_id ) {
+					return $this->assign_to_folder( $attachment_id, $folder_id );
+				}
+				return false;
+			}
+
+			// No conflict, create the folder.
 			$folder_id = $this->create_folder_from_path( $result[ 'new_folder_path' ] );
 			if ( $folder_id ) {
 				return $this->assign_to_folder( $attachment_id, $folder_id );

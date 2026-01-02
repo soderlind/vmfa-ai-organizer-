@@ -281,9 +281,10 @@ class BackupService {
 			}
 		}
 
-		// Clear caches.
+		// Clear standard caches.
 		wp_cache_delete( 'all_ids', self::TAXONOMY );
 		delete_transient( 'vmfo_folder_counts' );
+		clean_taxonomy_cache( self::TAXONOMY );
 
 		return $count;
 	}

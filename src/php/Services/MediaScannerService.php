@@ -148,7 +148,7 @@ class MediaScannerService {
 
 		$batch_size = (int) Plugin::get_instance()->get_setting( 'batch_size', 20 );
 
-		// For reorganize_all mode, schedule folder cleanup first.
+		// For reorganize_all mode, schedule folder cleanup first (only when not previewing).
 		if ( 'reorganize_all' === $mode && ! $dry_run ) {
 			as_schedule_single_action(
 				time(),
@@ -195,6 +195,12 @@ class MediaScannerService {
 
 		// Remove all existing folders.
 		$this->backup_service->remove_all_folders();
+
+		// Force refresh the folder paths cache to ensure it's empty.
+		$this->analysis_service->get_folder_paths( true );
+
+		// Clear session-suggested folders for fresh start.
+		delete_option( 'vmfa_session_suggested_folders' );
 
 		// Schedule first batch.
 		$batch_size = (int) Plugin::get_instance()->get_setting( 'batch_size', 20 );
@@ -271,6 +277,10 @@ class MediaScannerService {
 			}
 			return;
 		}
+
+		// Force refresh folder paths at start of each batch to ensure fresh data.
+		// This is critical for "Reorganize All" where folders are deleted before first batch.
+		$this->analysis_service->get_folder_paths( true );
 
 		// Process each attachment in batch.
 		$batch_results   = array();
@@ -401,36 +411,11 @@ class MediaScannerService {
 		if ( 'reorganize_all' === $mode ) {
 			$this->backup_service->export();
 
-			// Remove all media from all folders.
-			$folders = get_terms(
-				array(
-					'taxonomy'   => 'vmfo_folder',
-					'hide_empty' => false,
-					'fields'     => 'ids',
-				)
-			);
+			// Remove all existing folders (this also removes all media assignments).
+			$this->backup_service->remove_all_folders();
 
-			if ( ! is_wp_error( $folders ) && ! empty( $folders ) ) {
-				foreach ( $folders as $folder_id ) {
-					$attachments = get_posts(
-						array(
-							'post_type'      => 'attachment',
-							'posts_per_page' => -1,
-							'fields'         => 'ids',
-							'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-								array(
-									'taxonomy' => 'vmfo_folder',
-									'terms'    => $folder_id,
-								),
-							),
-						)
-					);
-
-					foreach ( $attachments as $attachment_id ) {
-						wp_remove_object_terms( $attachment_id, $folder_id, 'vmfo_folder' );
-					}
-				}
-			}
+			// Clear session-suggested folders for fresh start.
+			delete_option( 'vmfa_session_suggested_folders' );
 		}
 
 		// Initialize progress for applying cached results.

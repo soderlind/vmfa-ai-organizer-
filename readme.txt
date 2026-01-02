@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.1.9
+Stable tag: 0.2.0
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -132,6 +132,16 @@ Use the "Reorganize All" scan mode. This removes all existing folder assignments
 4. Backup and restore functionality
 
 == Changelog ==
+
+= 0.2.0 =
+* Complete overhaul of "Reorganize All" feature
+* Fixed folders not being deleted before rebuilding from scratch
+* Preview mode now correctly simulates empty folders for accurate predictions
+* Direct database queries bypass WordPress/Redis term cache for fresh data
+* Fixed folders not being created when applying cached preview results
+* Documents/Videos folders now always created when needed (type-based, not AI-suggested)
+* Comprehensive hierarchy inversion prevention across batches
+* "Reorganize All" now always allows creating new folders since starting from scratch
 
 = 0.1.9 =
 * Fixed Documents/Videos folders not being created during "Reorganize All" when "Allow New Folders" is disabled
