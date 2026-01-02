@@ -143,7 +143,7 @@ class AIAnalysisService {
 		// For "reorganize_all" mode (even in dry-run/preview), simulate empty folders.
 		// This ensures the preview accurately shows what would happen after folders are deleted.
 		$progress = get_option( 'vmfa_scan_progress', array() );
-		if ( 'reorganize_all' === ( $progress['mode'] ?? '' ) ) {
+		if ( 'reorganize_all' === ( $progress[ 'mode' ] ?? '' ) ) {
 			$folder_paths = array();
 		}
 
@@ -186,7 +186,7 @@ class AIAnalysisService {
 		$suggested_folders = $this->get_session_suggested_folders();
 
 		// For "reorganize_all" mode, always allow creating new folders since we're starting fresh.
-		if ( 'reorganize_all' === ( $progress['mode'] ?? '' ) ) {
+		if ( 'reorganize_all' === ( $progress[ 'mode' ] ?? '' ) ) {
 			$allow_new = true;
 		}
 

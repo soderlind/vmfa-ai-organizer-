@@ -83,7 +83,7 @@ class MediaScannerService {
 
 		// Check if a scan is already running.
 		$progress = $this->get_progress();
-		if ( 'running' === $progress['status'] ) {
+		if ( 'running' === $progress[ 'status' ] ) {
 			return array(
 				'success' => false,
 				'message' => __( 'A scan is already in progress. Please wait for it to complete or cancel it.', 'vmfa-ai-organizer' ),
@@ -121,14 +121,14 @@ class MediaScannerService {
 		// Initialize progress.
 		$this->update_progress(
 			array(
-				'status'      => 'running',
-				'mode'        => $mode,
-				'dry_run'     => $dry_run,
-				'total'       => count( $attachment_ids ),
-				'processed'   => 0,
-				'results'     => array(),
-				'started_at'  => time(),
-				'error'       => null,
+				'status'     => 'running',
+				'mode'       => $mode,
+				'dry_run'    => $dry_run,
+				'total'      => count( $attachment_ids ),
+				'processed'  => 0,
+				'results'    => array(),
+				'started_at' => time(),
+				'error'      => null,
 			)
 		);
 
@@ -189,7 +189,7 @@ class MediaScannerService {
 	public function cleanup_folders(): void {
 		$progress = $this->get_progress();
 
-		if ( 'reorganize_all' !== $progress['mode'] ) {
+		if ( 'reorganize_all' !== $progress[ 'mode' ] ) {
 			return;
 		}
 
@@ -211,7 +211,7 @@ class MediaScannerService {
 			array(
 				'batch_number' => 0,
 				'batch_size'   => $batch_size,
-				'dry_run'      => $progress['dry_run'] ?? false,
+				'dry_run'      => $progress[ 'dry_run' ] ?? false,
 			),
 			'vmfa-ai-organizer'
 		);
@@ -229,13 +229,13 @@ class MediaScannerService {
 		$attachment_ids = get_option( 'vmfa_scan_attachment_ids', array() );
 		$progress       = $this->get_progress();
 
-		if ( empty( $attachment_ids ) || 'running' !== $progress['status'] ) {
+		if ( empty( $attachment_ids ) || 'running' !== $progress[ 'status' ] ) {
 			return;
 		}
 
 		// Safety check: if already processed all items, finalize.
 		$total = count( $attachment_ids );
-		if ( $progress['processed'] >= $total ) {
+		if ( $progress[ 'processed' ] >= $total ) {
 			if ( ! $dry_run ) {
 				as_schedule_single_action(
 					time(),
@@ -256,7 +256,7 @@ class MediaScannerService {
 
 		// Get batch of IDs based on what's already processed, not batch number.
 		// This prevents issues with duplicate action scheduler runs.
-		$batch_ids = array_slice( $attachment_ids, $progress['processed'], $batch_size );
+		$batch_ids = array_slice( $attachment_ids, $progress[ 'processed' ], $batch_size );
 
 		if ( empty( $batch_ids ) ) {
 			// No more batches, finalize.
@@ -292,12 +292,12 @@ class MediaScannerService {
 			$batch_results[] = $result;
 
 			// Store pending result for later application.
-			if ( ! $dry_run && in_array( $result['action'], array( 'assign', 'create' ), true ) ) {
+			if ( ! $dry_run && in_array( $result[ 'action' ], array( 'assign', 'create' ), true ) ) {
 				$pending_results[] = $result;
 			}
 
 			// Cache ALL actionable results during dry-run for later application.
-			if ( $dry_run && in_array( $result['action'], array( 'assign', 'create' ), true ) ) {
+			if ( $dry_run && in_array( $result[ 'action' ], array( 'assign', 'create' ), true ) ) {
 				$dryrun_cache[] = $result;
 			}
 		}
@@ -311,8 +311,8 @@ class MediaScannerService {
 		}
 
 		// Update progress.
-		$new_processed = $progress['processed'] + count( $batch_ids );
-		$all_results   = array_merge( $progress['results'] ?? array(), $batch_results );
+		$new_processed = $progress[ 'processed' ] + count( $batch_ids );
+		$all_results   = array_merge( $progress[ 'results' ] ?? array(), $batch_results );
 
 		// Keep only last 100 results in progress for memory efficiency.
 		if ( count( $all_results ) > 100 ) {
@@ -400,7 +400,7 @@ class MediaScannerService {
 
 		// Check if a scan is already running.
 		$progress = $this->get_progress();
-		if ( 'running' === $progress['status'] ) {
+		if ( 'running' === $progress[ 'status' ] ) {
 			return array(
 				'success' => false,
 				'message' => __( 'A scan is already in progress. Please wait for it to complete or cancel it.', 'vmfa-ai-organizer' ),
@@ -421,14 +421,14 @@ class MediaScannerService {
 		// Initialize progress for applying cached results.
 		$this->update_progress(
 			array(
-				'status'      => 'running',
-				'mode'        => $mode,
-				'dry_run'     => false,
-				'total'       => count( $cached_results ),
-				'processed'   => 0,
-				'results'     => array(),
-				'started_at'  => time(),
-				'error'       => null,
+				'status'     => 'running',
+				'mode'       => $mode,
+				'dry_run'    => false,
+				'total'      => count( $cached_results ),
+				'processed'  => 0,
+				'results'    => array(),
+				'started_at' => time(),
+				'error'      => null,
 			)
 		);
 
@@ -547,7 +547,7 @@ class MediaScannerService {
 	public function cancel_scan(): array {
 		$progress = $this->get_progress();
 
-		if ( 'running' !== $progress['status'] ) {
+		if ( 'running' !== $progress[ 'status' ] ) {
 			return array(
 				'success' => false,
 				'message' => __( 'No scan is currently running.', 'vmfa-ai-organizer' ),
