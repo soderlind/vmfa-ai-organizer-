@@ -272,40 +272,21 @@ class AIAnalysisService {
 			);
 		}
 
-		// Folder doesn't exist, suggest creating it.
-		$allow_new = (bool) Plugin::get_instance()->get_setting( 'allow_new_folders', false );
-
-		if ( $allow_new ) {
-			return array(
-				'action'          => 'create',
-				'folder_id'       => null,
-				'new_folder_path' => $folder_name,
-				'confidence'      => 1.0,
-				'reason'          => sprintf(
-					/* translators: %s: folder name */
-					__( 'File type requires %s folder (will be created).', 'vmfa-ai-organizer' ),
-					$folder_name
-				),
-				'attachment_id'   => $attachment_id,
-				'filename'        => $filename,
-				'folder_name'     => $folder_name,
-			);
-		}
-
-		// Cannot create folder, skip.
+		// Folder doesn't exist - always create Documents/Videos type folders.
+		// These are type-based folders, not AI-suggested, so allow_new_folders setting doesn't apply.
 		return array(
-			'action'          => 'skip',
+			'action'          => 'create',
 			'folder_id'       => null,
-			'new_folder_path' => null,
-			'confidence'      => 0.0,
+			'new_folder_path' => $folder_name,
+			'confidence'      => 1.0,
 			'reason'          => sprintf(
 				/* translators: %s: folder name */
-				__( '%s folder does not exist and new folder creation is disabled.', 'vmfa-ai-organizer' ),
+				__( 'File type requires %s folder (will be created).', 'vmfa-ai-organizer' ),
 				$folder_name
 			),
 			'attachment_id'   => $attachment_id,
 			'filename'        => $filename,
-			'folder_name'     => '',
+			'folder_name'     => $folder_name,
 		);
 	}
 

@@ -2,6 +2,10 @@
 
 AI-powered media organization add-on for the [Virtual Media Folders](https://wordpress.org/plugins/virtual-media-folders/) plugin. Uses vision-capable AI models to analyze actual image content and automatically organize your media library into virtual folders.
 
+>## Tested with 
+> * Azure OpenAI (gpt-4.1)
+> * Ollama (Llama:latest)
+
 ## Features
 
 - **Vision-Based AI Analysis**: Analyzes actual image content (objects, scenes, colors) - not just metadata

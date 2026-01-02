@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.1.9] - 2026-01-02
+
+### Fixed
+
+- **Documents/Videos Folder Creation**: Documents and Videos folders are now always created when needed during "Reorganize All", regardless of "Allow New Folders" setting (these are type-based folders, not AI-suggested)
+
+
 ## [0.1.8] - 2026-01-02
 
 ### Added
@@ -206,6 +213,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bundles Action Scheduler 3.9.3 for background processing
 
 
+[0.1.9]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.5...v0.1.6
