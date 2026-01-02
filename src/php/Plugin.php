@@ -12,6 +12,7 @@ namespace VmfaAiOrganizer;
 use VmfaAiOrganizer\Admin\SettingsPage;
 use VmfaAiOrganizer\REST\AnalysisController;
 use VmfaAiOrganizer\REST\ExoController;
+use VmfaAiOrganizer\REST\OllamaController;
 use VmfaAiOrganizer\Services\MediaScannerService;
 
 /**
@@ -46,6 +47,13 @@ final class Plugin {
 	 * @var ExoController|null
 	 */
 	private ?ExoController $exo_controller = null;
+
+	/**
+	 * Ollama REST controller instance.
+	 *
+	 * @var OllamaController|null
+	 */
+	private ?OllamaController $ollama_controller = null;
 
 	/**
 	 * Media scanner service instance.
@@ -103,10 +111,11 @@ final class Plugin {
 	 * @return void
 	 */
 	private function init_services(): void {
-		$this->settings_page   = new SettingsPage();
-		$this->rest_controller = new AnalysisController();
-		$this->exo_controller  = new ExoController();
-		$this->scanner_service = new MediaScannerService();
+		$this->settings_page     = new SettingsPage();
+		$this->rest_controller   = new AnalysisController();
+		$this->exo_controller    = new ExoController();
+		$this->ollama_controller = new OllamaController();
+		$this->scanner_service   = new MediaScannerService();
 	}
 
 	/**
@@ -123,6 +132,7 @@ final class Plugin {
 		// REST API hooks.
 		add_action( 'rest_api_init', array( $this->rest_controller, 'register_routes' ) );
 		$this->exo_controller->register();
+		$this->ollama_controller->register();
 
 		// Action Scheduler hooks.
 		$this->scanner_service->register_hooks();
@@ -203,6 +213,7 @@ final class Plugin {
 			'gemini_model'      => 'gemini-1.5-flash',
 			'ollama_url'        => 'http://localhost:11434',
 			'ollama_model'      => 'llama3.2',
+			'ollama_timeout'    => 120,
 			'grok_key'          => '',
 			'grok_model'        => 'grok-beta',
 			'exo_endpoint'      => '',

@@ -22,6 +22,16 @@ abstract class AbstractProvider implements ProviderInterface {
 	protected const REQUEST_TIMEOUT = 30;
 
 	/**
+	 * Get the request timeout in seconds.
+	 * Override in subclasses to provide a configurable timeout.
+	 *
+	 * @return int
+	 */
+	protected function get_request_timeout(): int {
+		return static::REQUEST_TIMEOUT;
+	}
+
+	/**
 	 * Get the system prompt for folder organization with vision capabilities.
 	 *
 	 * @return string The system prompt with language instruction.
@@ -122,7 +132,7 @@ PROMPT;
 			array(
 				'headers'   => array_merge( $default_headers, $headers ),
 				'body'      => wp_json_encode( $body ),
-				'timeout'   => static::REQUEST_TIMEOUT,
+				'timeout'   => $this->get_request_timeout(),
 				'sslverify' => true,
 			)
 		);
@@ -273,9 +283,18 @@ PROMPT;
 	protected function parse_response( string $response, array $folder_paths ): array {
 		// Clean up response - remove markdown code blocks if present.
 		$original_response = $response;
-		$response          = preg_replace( '/^```(?:json)?\s*/m', '', $response );
-		$response          = preg_replace( '/```\s*$/m', '', $response );
-		$response          = trim( $response );
+
+		// Strip markdown code blocks: ```json ... ``` or ``` ... ```
+		// Handle both opening and closing fences.
+		if ( preg_match( '/```(?:json)?\s*\n?(.*?)\n?```/s', $response, $matches ) ) {
+			$response = $matches[ 1 ];
+		} else {
+			// Fallback: try to extract just the JSON object/array.
+			if ( preg_match( '/(\{[\s\S]*\}|\[[\s\S]*\])/', $response, $matches ) ) {
+				$response = $matches[ 1 ];
+			}
+		}
+		$response = trim( $response );
 
 		// Check for empty response.
 		if ( empty( $response ) ) {
