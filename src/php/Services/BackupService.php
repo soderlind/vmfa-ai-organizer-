@@ -112,10 +112,10 @@ class BackupService {
 
 		return array(
 			'exists'           => true,
-			'timestamp'        => $backup['timestamp'] ?? null,
-			'folder_count'     => count( $backup['folders'] ?? array() ),
-			'assignment_count' => count( $backup['assignments'] ?? array() ),
-			'version'          => $backup['version'] ?? null,
+			'timestamp'        => $backup[ 'timestamp' ] ?? null,
+			'folder_count'     => count( $backup[ 'folders' ] ?? array() ),
+			'assignment_count' => count( $backup[ 'assignments' ] ?? array() ),
+			'version'          => $backup[ 'version' ] ?? null,
 		);
 	}
 
@@ -149,11 +149,11 @@ class BackupService {
 
 		// Restore folders, respecting hierarchy.
 		// Sort by parent to ensure parents are created first.
-		$folders = $backup['folders'] ?? array();
+		$folders = $backup[ 'folders' ] ?? array();
 		usort(
 			$folders,
 			function ( $a, $b ) {
-				return $a['parent'] <=> $b['parent'];
+				return $a[ 'parent' ] <=> $b[ 'parent' ];
 			}
 		);
 
@@ -162,26 +162,26 @@ class BackupService {
 			$parent_id = 0;
 
 			// Map old parent ID to new parent ID.
-			if ( $folder['parent'] > 0 && isset( $id_map[ $folder['parent'] ] ) ) {
-				$parent_id = $id_map[ $folder['parent'] ];
+			if ( $folder[ 'parent' ] > 0 && isset( $id_map[ $folder[ 'parent' ] ] ) ) {
+				$parent_id = $id_map[ $folder[ 'parent' ] ];
 			}
 
 			$result = wp_insert_term(
-				$folder['name'],
+				$folder[ 'name' ],
 				self::TAXONOMY,
 				array(
-					'slug'   => $folder['slug'],
+					'slug'   => $folder[ 'slug' ],
 					'parent' => $parent_id,
 				)
 			);
 
 			if ( ! is_wp_error( $result ) ) {
-				$new_id                       = $result['term_id'];
-				$id_map[ $folder['term_id'] ] = $new_id;
+				$new_id                       = $result[ 'term_id' ];
+				$id_map[ $folder[ 'term_id' ] ] = $new_id;
 
 				// Restore order metadata.
-				if ( isset( $folder['order'] ) && '' !== $folder['order'] ) {
-					update_term_meta( $new_id, 'vmfo_order', $folder['order'] );
+				if ( isset( $folder[ 'order' ] ) && '' !== $folder[ 'order' ] ) {
+					update_term_meta( $new_id, 'vmfo_order', $folder[ 'order' ] );
 				}
 
 				++$folders_restored;
@@ -189,12 +189,12 @@ class BackupService {
 		}
 
 		// Restore assignments.
-		$assignments          = $backup['assignments'] ?? array();
+		$assignments          = $backup[ 'assignments' ] ?? array();
 		$assignments_restored = 0;
 
 		foreach ( $assignments as $assignment ) {
-			$attachment_id = (int) $assignment['object_id'];
-			$old_term_id   = (int) $assignment['term_id'];
+			$attachment_id = (int) $assignment[ 'object_id' ];
+			$old_term_id   = (int) $assignment[ 'term_id' ];
 
 			// Map old term ID to new term ID.
 			if ( ! isset( $id_map[ $old_term_id ] ) ) {
@@ -281,9 +281,10 @@ class BackupService {
 			}
 		}
 
-		// Clear caches.
+		// Clear standard caches.
 		wp_cache_delete( 'all_ids', self::TAXONOMY );
 		delete_transient( 'vmfo_folder_counts' );
+		clean_taxonomy_cache( self::TAXONOMY );
 
 		return $count;
 	}

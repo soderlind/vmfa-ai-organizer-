@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.2.0] - 2026-01-02
+
+### Fixed
+
+- **"Reorganize All" Complete Overhaul**: Fixed multiple issues with the Reorganize All feature
+  - Now properly deletes all existing folders before rebuilding from scratch
+  - Preview mode correctly simulates empty folders to show accurate predictions
+  - Direct database queries bypass WordPress/Redis term cache for fresh data
+  - Fixed infinite loop protection in folder path building
+
+- **Folder Creation in Apply Mode**: Fixed folders not being created when applying cached preview results
+  - `apply_cached_results()` now properly removes all folders before applying
+  - Session-suggested folders are cleared for a fresh start
+
+- **Documents/Videos Folder Creation**: Documents and Videos folders are now always created when needed during "Reorganize All", regardless of "Allow New Folders" setting
+
+- **Hierarchy Inversion Prevention**: Comprehensive fix for hierarchy inversions
+  - Detection now checks session-suggested folders during batch processing
+  - Secondary conflict check when applying folder assignments
+  - Prevents inversions like `Outdoor/Events` and `Events/Outdoor` from being created
+
+### Changed
+
+- **Force Allow New Folders**: "Reorganize All" mode now always allows creating new folders since it starts from scratch
+
+
 ## [0.1.9] - 2026-01-02
 
 ### Fixed
@@ -213,6 +239,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bundles Action Scheduler 3.9.3 for background processing
 
 
+[0.2.0]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.9...v0.2.0
 [0.1.9]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.6...v0.1.7

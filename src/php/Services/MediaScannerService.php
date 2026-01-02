@@ -83,7 +83,7 @@ class MediaScannerService {
 
 		// Check if a scan is already running.
 		$progress = $this->get_progress();
-		if ( 'running' === $progress['status'] ) {
+		if ( 'running' === $progress[ 'status' ] ) {
 			return array(
 				'success' => false,
 				'message' => __( 'A scan is already in progress. Please wait for it to complete or cancel it.', 'vmfa-ai-organizer' ),
@@ -121,14 +121,14 @@ class MediaScannerService {
 		// Initialize progress.
 		$this->update_progress(
 			array(
-				'status'      => 'running',
-				'mode'        => $mode,
-				'dry_run'     => $dry_run,
-				'total'       => count( $attachment_ids ),
-				'processed'   => 0,
-				'results'     => array(),
-				'started_at'  => time(),
-				'error'       => null,
+				'status'     => 'running',
+				'mode'       => $mode,
+				'dry_run'    => $dry_run,
+				'total'      => count( $attachment_ids ),
+				'processed'  => 0,
+				'results'    => array(),
+				'started_at' => time(),
+				'error'      => null,
 			)
 		);
 
@@ -148,7 +148,7 @@ class MediaScannerService {
 
 		$batch_size = (int) Plugin::get_instance()->get_setting( 'batch_size', 20 );
 
-		// For reorganize_all mode, schedule folder cleanup first.
+		// For reorganize_all mode, schedule folder cleanup first (only when not previewing).
 		if ( 'reorganize_all' === $mode && ! $dry_run ) {
 			as_schedule_single_action(
 				time(),
@@ -189,12 +189,18 @@ class MediaScannerService {
 	public function cleanup_folders(): void {
 		$progress = $this->get_progress();
 
-		if ( 'reorganize_all' !== $progress['mode'] ) {
+		if ( 'reorganize_all' !== $progress[ 'mode' ] ) {
 			return;
 		}
 
 		// Remove all existing folders.
 		$this->backup_service->remove_all_folders();
+
+		// Force refresh the folder paths cache to ensure it's empty.
+		$this->analysis_service->get_folder_paths( true );
+
+		// Clear session-suggested folders for fresh start.
+		delete_option( 'vmfa_session_suggested_folders' );
 
 		// Schedule first batch.
 		$batch_size = (int) Plugin::get_instance()->get_setting( 'batch_size', 20 );
@@ -205,7 +211,7 @@ class MediaScannerService {
 			array(
 				'batch_number' => 0,
 				'batch_size'   => $batch_size,
-				'dry_run'      => $progress['dry_run'] ?? false,
+				'dry_run'      => $progress[ 'dry_run' ] ?? false,
 			),
 			'vmfa-ai-organizer'
 		);
@@ -223,13 +229,13 @@ class MediaScannerService {
 		$attachment_ids = get_option( 'vmfa_scan_attachment_ids', array() );
 		$progress       = $this->get_progress();
 
-		if ( empty( $attachment_ids ) || 'running' !== $progress['status'] ) {
+		if ( empty( $attachment_ids ) || 'running' !== $progress[ 'status' ] ) {
 			return;
 		}
 
 		// Safety check: if already processed all items, finalize.
 		$total = count( $attachment_ids );
-		if ( $progress['processed'] >= $total ) {
+		if ( $progress[ 'processed' ] >= $total ) {
 			if ( ! $dry_run ) {
 				as_schedule_single_action(
 					time(),
@@ -250,7 +256,7 @@ class MediaScannerService {
 
 		// Get batch of IDs based on what's already processed, not batch number.
 		// This prevents issues with duplicate action scheduler runs.
-		$batch_ids = array_slice( $attachment_ids, $progress['processed'], $batch_size );
+		$batch_ids = array_slice( $attachment_ids, $progress[ 'processed' ], $batch_size );
 
 		if ( empty( $batch_ids ) ) {
 			// No more batches, finalize.
@@ -272,6 +278,10 @@ class MediaScannerService {
 			return;
 		}
 
+		// Force refresh folder paths at start of each batch to ensure fresh data.
+		// This is critical for "Reorganize All" where folders are deleted before first batch.
+		$this->analysis_service->get_folder_paths( true );
+
 		// Process each attachment in batch.
 		$batch_results   = array();
 		$pending_results = get_option( self::PENDING_RESULTS_OPTION, array() );
@@ -282,12 +292,12 @@ class MediaScannerService {
 			$batch_results[] = $result;
 
 			// Store pending result for later application.
-			if ( ! $dry_run && in_array( $result['action'], array( 'assign', 'create' ), true ) ) {
+			if ( ! $dry_run && in_array( $result[ 'action' ], array( 'assign', 'create' ), true ) ) {
 				$pending_results[] = $result;
 			}
 
 			// Cache ALL actionable results during dry-run for later application.
-			if ( $dry_run && in_array( $result['action'], array( 'assign', 'create' ), true ) ) {
+			if ( $dry_run && in_array( $result[ 'action' ], array( 'assign', 'create' ), true ) ) {
 				$dryrun_cache[] = $result;
 			}
 		}
@@ -301,8 +311,8 @@ class MediaScannerService {
 		}
 
 		// Update progress.
-		$new_processed = $progress['processed'] + count( $batch_ids );
-		$all_results   = array_merge( $progress['results'] ?? array(), $batch_results );
+		$new_processed = $progress[ 'processed' ] + count( $batch_ids );
+		$all_results   = array_merge( $progress[ 'results' ] ?? array(), $batch_results );
 
 		// Keep only last 100 results in progress for memory efficiency.
 		if ( count( $all_results ) > 100 ) {
@@ -390,7 +400,7 @@ class MediaScannerService {
 
 		// Check if a scan is already running.
 		$progress = $this->get_progress();
-		if ( 'running' === $progress['status'] ) {
+		if ( 'running' === $progress[ 'status' ] ) {
 			return array(
 				'success' => false,
 				'message' => __( 'A scan is already in progress. Please wait for it to complete or cancel it.', 'vmfa-ai-organizer' ),
@@ -401,49 +411,24 @@ class MediaScannerService {
 		if ( 'reorganize_all' === $mode ) {
 			$this->backup_service->export();
 
-			// Remove all media from all folders.
-			$folders = get_terms(
-				array(
-					'taxonomy'   => 'vmfo_folder',
-					'hide_empty' => false,
-					'fields'     => 'ids',
-				)
-			);
+			// Remove all existing folders (this also removes all media assignments).
+			$this->backup_service->remove_all_folders();
 
-			if ( ! is_wp_error( $folders ) && ! empty( $folders ) ) {
-				foreach ( $folders as $folder_id ) {
-					$attachments = get_posts(
-						array(
-							'post_type'      => 'attachment',
-							'posts_per_page' => -1,
-							'fields'         => 'ids',
-							'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-								array(
-									'taxonomy' => 'vmfo_folder',
-									'terms'    => $folder_id,
-								),
-							),
-						)
-					);
-
-					foreach ( $attachments as $attachment_id ) {
-						wp_remove_object_terms( $attachment_id, $folder_id, 'vmfo_folder' );
-					}
-				}
-			}
+			// Clear session-suggested folders for fresh start.
+			delete_option( 'vmfa_session_suggested_folders' );
 		}
 
 		// Initialize progress for applying cached results.
 		$this->update_progress(
 			array(
-				'status'      => 'running',
-				'mode'        => $mode,
-				'dry_run'     => false,
-				'total'       => count( $cached_results ),
-				'processed'   => 0,
-				'results'     => array(),
-				'started_at'  => time(),
-				'error'       => null,
+				'status'     => 'running',
+				'mode'       => $mode,
+				'dry_run'    => false,
+				'total'      => count( $cached_results ),
+				'processed'  => 0,
+				'results'    => array(),
+				'started_at' => time(),
+				'error'      => null,
 			)
 		);
 
@@ -562,7 +547,7 @@ class MediaScannerService {
 	public function cancel_scan(): array {
 		$progress = $this->get_progress();
 
-		if ( 'running' !== $progress['status'] ) {
+		if ( 'running' !== $progress[ 'status' ] ) {
 			return array(
 				'success' => false,
 				'message' => __( 'No scan is currently running.', 'vmfa-ai-organizer' ),
