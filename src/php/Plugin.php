@@ -111,11 +111,11 @@ final class Plugin {
 	 * @return void
 	 */
 	private function init_services(): void {
-		$this->settings_page   = new SettingsPage();
-		$this->rest_controller = new AnalysisController();
+		$this->settings_page     = new SettingsPage();
+		$this->rest_controller   = new AnalysisController();
 		$this->exo_controller    = new ExoController();
 		$this->ollama_controller = new OllamaController();
-		$this->scanner_service = new MediaScannerService();
+		$this->scanner_service   = new MediaScannerService();
 	}
 
 	/**

@@ -80,7 +80,7 @@ class OllamaController {
 			return new \WP_REST_Response(
 				array(
 					'error'  => __( 'Endpoint is required.', 'vmfa-ai-organizer' ),
-					'models'  => array(),
+					'models' => array(),
 				),
 				400
 			);
@@ -100,7 +100,7 @@ class OllamaController {
 			return new \WP_REST_Response(
 				array(
 					'error'  => $tags_response->get_error_message(),
-					'models'  => array(),
+					'models' => array(),
 				),
 				200
 			);
@@ -125,10 +125,10 @@ class OllamaController {
 		$data = json_decode( $body, true );
 
 		$names = array();
-		if ( isset( $data['models'] ) && is_array( $data['models'] ) ) {
-			foreach ( $data['models'] as $model ) {
-				if ( is_array( $model ) && isset( $model['name'] ) && is_string( $model['name'] ) ) {
-					$names[] = $model['name'];
+		if ( isset( $data[ 'models' ] ) && is_array( $data[ 'models' ] ) ) {
+			foreach ( $data[ 'models' ] as $model ) {
+				if ( is_array( $model ) && isset( $model[ 'name' ] ) && is_string( $model[ 'name' ] ) ) {
+					$names[] = $model[ 'name' ];
 				}
 			}
 		}

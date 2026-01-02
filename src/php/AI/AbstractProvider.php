@@ -287,11 +287,11 @@ PROMPT;
 		// Strip markdown code blocks: ```json ... ``` or ``` ... ```
 		// Handle both opening and closing fences.
 		if ( preg_match( '/```(?:json)?\s*\n?(.*?)\n?```/s', $response, $matches ) ) {
-			$response = $matches[1];
+			$response = $matches[ 1 ];
 		} else {
 			// Fallback: try to extract just the JSON object/array.
 			if ( preg_match( '/(\{[\s\S]*\}|\[[\s\S]*\])/', $response, $matches ) ) {
-				$response = $matches[1];
+				$response = $matches[ 1 ];
 			}
 		}
 		$response = trim( $response );

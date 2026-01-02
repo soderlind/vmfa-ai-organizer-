@@ -83,8 +83,8 @@ class OllamaProvider extends AbstractProvider {
 		);
 
 		// Add images for vision-capable models like llava.
-		if ( null !== $image_data && ! empty( $image_data['base64'] ) ) {
-			$user_message['images'] = array( $image_data['base64'] );
+		if ( null !== $image_data && ! empty( $image_data[ 'base64' ] ) ) {
+			$user_message[ 'images' ] = array( $image_data[ 'base64' ] );
 		}
 
 		$response = $this->make_request(
@@ -105,7 +105,7 @@ class OllamaProvider extends AbstractProvider {
 			)
 		);
 
-		if ( ! $response['success'] ) {
+		if ( ! $response[ 'success' ] ) {
 			return array(
 				'action'          => 'skip',
 				'folder_id'       => null,
@@ -114,12 +114,12 @@ class OllamaProvider extends AbstractProvider {
 				'reason'          => sprintf(
 					/* translators: %s: error message */
 					__( 'Ollama error: %s', 'vmfa-ai-organizer' ),
-					$response['error']
+					$response[ 'error' ]
 				),
 			);
 		}
 
-		$content = $response['data']['message']['content'] ?? '';
+		$content = $response[ 'data' ][ 'message' ][ 'content' ] ?? '';
 
 		return $this->parse_response( $content, $folder_paths );
 	}
@@ -128,8 +128,8 @@ class OllamaProvider extends AbstractProvider {
 	 * {@inheritDoc}
 	 */
 	public function test( array $settings ): ?string {
-		$base_url = $settings['ollama_url'] ?? self::DEFAULT_URL;
-		$model    = $settings['ollama_model'] ?? 'llama3.2';
+		$base_url = $settings[ 'ollama_url' ] ?? self::DEFAULT_URL;
+		$model    = $settings[ 'ollama_model' ] ?? 'llama3.2';
 
 		// First check if Ollama is running.
 		$ping_response = wp_remote_get(
@@ -153,7 +153,7 @@ class OllamaProvider extends AbstractProvider {
 		// Check if model is available.
 		$body   = wp_remote_retrieve_body( $ping_response );
 		$data   = json_decode( $body, true );
-		$models = array_column( $data['models'] ?? array(), 'name' );
+		$models = array_column( $data[ 'models' ] ?? array(), 'name' );
 
 		// Model names may include :latest suffix.
 		$model_found = false;
@@ -196,14 +196,14 @@ class OllamaProvider extends AbstractProvider {
 	 */
 	public function get_available_models(): array {
 		return array(
-			'llama3.2'       => 'Llama 3.2 (3B)',
-			'llama3.2:1b'    => 'Llama 3.2 (1B, Lightweight)',
-			'llama3.1'       => 'Llama 3.1 (8B)',
-			'mistral'        => 'Mistral (7B)',
-			'mixtral'        => 'Mixtral (8x7B)',
-			'phi3'           => 'Phi-3 (3.8B)',
-			'gemma2'         => 'Gemma 2 (9B)',
-			'qwen2.5'        => 'Qwen 2.5 (7B)',
+			'llama3.2'    => 'Llama 3.2 (3B)',
+			'llama3.2:1b' => 'Llama 3.2 (1B, Lightweight)',
+			'llama3.1'    => 'Llama 3.1 (8B)',
+			'mistral'     => 'Mistral (7B)',
+			'mixtral'     => 'Mixtral (8x7B)',
+			'phi3'        => 'Phi-3 (3.8B)',
+			'gemma2'      => 'Gemma 2 (9B)',
+			'qwen2.5'     => 'Qwen 2.5 (7B)',
 		);
 	}
 }
