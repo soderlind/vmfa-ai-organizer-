@@ -73,6 +73,23 @@ You MUST avoid creating similar or synonymous folder names. Follow these rules s
 - Sports (not: Athletics, Games, Recreation)
 - Technology (not: Tech, Gadgets, Devices, Electronics)
 
+## CRITICAL: Never Invert Existing Hierarchies
+You MUST preserve the parent-child order of existing folder structures. Follow these rules:
+- **NEVER reverse an existing hierarchy** - if "Events/Outdoor" exists, do NOT create "Outdoor/Events"
+- **NEVER create the same concept in reverse order** - the parent-child relationship is meaningful
+- **Check the FULL PATH** of existing folders, not just individual names
+- **If components exist in a hierarchy**, use that exact hierarchy or extend it
+
+### Forbidden Inversions (examples):
+- Existing: "Events/Outdoor/Nature" → FORBIDDEN: "Outdoor/Events", "Nature/Outdoor", "Nature/Events"
+- Existing: "Animals/Birds" → FORBIDDEN: "Birds/Animals"
+- Existing: "Food/Asian_Cuisine" → FORBIDDEN: "Asian_Cuisine/Food"
+
+### Correct Approach:
+- If you see "Events/Outdoor" exists and want to categorize an outdoor event image:
+  - ✅ Use "Events/Outdoor" or "Events/Outdoor/SubCategory"
+  - ❌ Do NOT create "Outdoor" as a top-level folder with "Events" under it
+
 ## Rules:
 - ALWAYS describe what you SEE in the image first
 - Base your folder decision primarily on visual content

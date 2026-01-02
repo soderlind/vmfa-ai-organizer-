@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.1.7
+Stable tag: 0.1.8
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -120,6 +120,10 @@ JPEG, PNG, GIF, and WebP images up to 10MB. SVG and other formats are processed 
 
 It depends on your media library size and AI provider speed. The plugin processes media in batches using background jobs, so you can continue working while it runs.
 
+= I have duplicate or messy folder structures. How do I clean them up? =
+
+Use the "Reorganize All" scan mode. This removes all existing folder assignments and rebuilds your organization from scratch using the AI. Make sure to preview the results first with dry-run mode, and note that a backup is automatically created before reorganization.
+
 == Screenshots ==
 
 1. Media Scanner interface with real-time progress
@@ -128,6 +132,19 @@ It depends on your media library size and AI provider speed. The plugin processe
 4. Backup and restore functionality
 
 == Changelog ==
+
+= 0.1.8 =
+* Added hierarchy inversion prevention: AI now detects and prevents creating inverted folder hierarchies
+* Automatic remapping to existing paths when conflicts are detected (e.g., Events/Outdoor vs Outdoor/Events)
+* Enhanced system prompt with explicit anti-inversion rules and examples
+* Fixed document/video assignment when target folders exist as subfolders
+* Added folder name caching for efficient lookups during scans
+
+= 0.1.7 =
+* Ollama: Dynamic model list populated from running Ollama server with "Refresh Models" button
+* Ollama: Configurable timeout setting (10-600 seconds) for larger models or slower hardware
+* Improved JSON parsing for AI responses wrapped in markdown code blocks
+* Fixed WordPress 6.7 CheckboxControl deprecation warning
 
 = 0.1.6 =
 * Added Exo settings enhancements: health check button, dynamic model dropdown, refresh models button
@@ -138,12 +155,6 @@ It depends on your media library size and AI provider speed. The plugin processe
 * Reorganized settings into three tabs: Media Scanner, Settings, and AI Provider
 * Simplified README documentation, now points to AI Provider Guide for details
 * Moved development documentation to separate file (docs/DEVELOPMENT.md)
-
-= 0.1.7 =
-* Ollama: Dynamic model list populated from running Ollama server with "Refresh Models" button
-* Ollama: Configurable timeout setting (10-600 seconds) for larger models or slower hardware
-* Improved JSON parsing for AI responses wrapped in markdown code blocks
-* Fixed WordPress 6.7 CheckboxControl deprecation warning
 
 = 0.1.4 =
 * Improved user messaging: scan started notices now inform users they can leave the page and return later
