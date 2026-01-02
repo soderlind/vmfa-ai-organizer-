@@ -551,7 +551,7 @@ class AIAnalysisService {
 			return $this->folder_name_map;
 		}
 
-		$folder_paths = $this->get_folder_paths();
+		$folder_paths          = $this->get_folder_paths();
 		$this->folder_name_map = array();
 
 		foreach ( array_keys( $folder_paths ) as $path ) {
@@ -695,7 +695,7 @@ class AIAnalysisService {
 		}
 
 		// Fall back to first occurrence.
-		$first_path = $paths[0];
+		$first_path = $paths[ 0 ];
 		return array(
 			'found'     => true,
 			'path'      => $first_path,
