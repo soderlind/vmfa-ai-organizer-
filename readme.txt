@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.1.8
+Stable tag: 0.1.9
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -132,6 +132,9 @@ Use the "Reorganize All" scan mode. This removes all existing folder assignments
 4. Backup and restore functionality
 
 == Changelog ==
+
+= 0.1.9 =
+* Fixed Documents/Videos folders not being created during "Reorganize All" when "Allow New Folders" is disabled
 
 = 0.1.8 =
 * Added hierarchy inversion prevention: AI now detects and prevents creating inverted folder hierarchies
