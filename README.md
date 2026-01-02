@@ -127,4 +127,6 @@ For development setup, testing, REST API endpoints, and hooks documentation, see
 
 ## License
 
-GPL v2 or later
+Virtual Media Folders AI Organizer is free software licensed under the [GPL v2 or later](https://www.gnu.org/licenses/gpl-2.0.html).
+
+Copyright 2025 Per Soderlind
