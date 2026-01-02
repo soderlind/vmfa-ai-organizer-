@@ -6,7 +6,7 @@ AI-powered media organization add-on for the [Virtual Media Folders](https://wor
 
 - **Vision-Based AI Analysis**: Analyzes actual image content (objects, scenes, colors) - not just metadata
 - **Multiple AI Providers**: OpenAI/Azure, Anthropic Claude, Google Gemini, Ollama, Grok, Exo
-  - Tested with Azure OpenAI (gpt-4.1) and Ollama (Llama:latest)
+  - Tested with the providers I have access to: Azure OpenAI (gpt-4.1) and Ollama (Llama:latest)
 - **Azure OpenAI Support**: Full support for Azure-hosted OpenAI deployments
 - **Automatic File Handling**: Documents go to "Documents", videos go to "Videos" - no AI needed
 - **Three Scan Modes**:
