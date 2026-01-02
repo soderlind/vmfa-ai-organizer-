@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.1.6
+Stable tag: 0.1.7
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -138,6 +138,12 @@ It depends on your media library size and AI provider speed. The plugin processe
 * Reorganized settings into three tabs: Media Scanner, Settings, and AI Provider
 * Simplified README documentation, now points to AI Provider Guide for details
 * Moved development documentation to separate file (docs/DEVELOPMENT.md)
+
+= 0.1.7 =
+* Ollama: Dynamic model list populated from running Ollama server with "Refresh Models" button
+* Ollama: Configurable timeout setting (10-600 seconds) for larger models or slower hardware
+* Improved JSON parsing for AI responses wrapped in markdown code blocks
+* Fixed WordPress 6.7 CheckboxControl deprecation warning
 
 = 0.1.4 =
 * Improved user messaging: scan started notices now inform users they can leave the page and return later

@@ -268,7 +268,9 @@ curl http://localhost:11434/api/tags
 In **Media → AI Organizer → AI Provider**:
 - Set **AI Provider** to "Ollama"
 - Set **Ollama URL** to `http://localhost:11434`
-- Set **Model** to the name of your pulled vision model
+- Click **Refresh Models** to populate the model dropdown from your running Ollama server
+- Select a model from the dropdown
+- Optionally adjust **Ollama Timeout** (default 120 seconds) for larger models or slower hardware
 
 #### Configuration (wp-config.php)
 
@@ -276,12 +278,15 @@ In **Media → AI Organizer → AI Provider**:
 define( 'VMFA_AI_PROVIDER', 'ollama' );
 define( 'VMFA_AI_OLLAMA_URL', 'http://localhost:11434' );
 define( 'VMFA_AI_OLLAMA_MODEL', 'your-vision-model' );
+define( 'VMFA_AI_OLLAMA_TIMEOUT', 120 ); // Optional: timeout in seconds (10-600)
 ```
 
 #### Tips
 
+- Click **Refresh Models** to see all models installed in your Ollama instance
 - Search the [Ollama library](https://ollama.com/library) for "vision" to find compatible models
 - Larger models need more VRAM/RAM but produce better results
+- Increase the timeout setting for larger models or slower hardware
 - If WordPress is in Docker, use `http://host.docker.internal:11434`
 - Processing is slower than cloud APIs but completely free and private
 
@@ -379,6 +384,13 @@ You must select and configure an AI provider in **Media → AI Organizer → AI 
 2. Verify the URL is correct (default: `http://localhost:11434`)
 3. If WordPress is in Docker, use `http://host.docker.internal:11434`
 4. Check firewall settings if accessing remotely
+
+### Ollama timeout errors
+
+1. Increase the **Ollama Timeout** setting (default is 120 seconds)
+2. Larger models take longer to load into memory on first request
+3. Consider using a smaller/faster model for quicker responses
+4. Ensure your hardware meets the model's requirements (RAM/VRAM)
 
 ### Exo connection issues
 

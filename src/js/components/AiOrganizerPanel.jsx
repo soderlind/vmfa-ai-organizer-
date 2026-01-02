@@ -263,6 +263,7 @@ export function AiOrganizerPanel() {
 						) }
 
 						<CheckboxControl
+							__nextHasNoMarginBottom
 							label={ __( 'Preview mode (dry run)', 'vmfa-ai-organizer' ) }
 							help={ __( 'Show proposed changes without applying them.', 'vmfa-ai-organizer' ) }
 							checked={ dryRun }

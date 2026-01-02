@@ -93,6 +93,11 @@ class SettingsPage {
 			'const'   => 'VMFA_AI_OLLAMA_MODEL',
 			'default' => 'llama3.2',
 		),
+		'ollama_timeout'    => array(
+			'env'     => 'VMFA_AI_OLLAMA_TIMEOUT',
+			'const'   => 'VMFA_AI_OLLAMA_TIMEOUT',
+			'default' => 120,
+		),
 		'grok_key'          => array(
 			'env'     => 'VMFA_AI_GROK_KEY',
 			'const'   => 'VMFA_AI_GROK_KEY',
@@ -440,11 +445,23 @@ class SettingsPage {
 		add_settings_field(
 			'ollama_model',
 			__( 'Ollama Model', 'vmfa-ai-organizer' ),
-			array( $this, 'render_model_field' ),
+			array( $this, 'render_ollama_model_field' ),
 			'vmfa-ai-organizer-provider',
 			'vmfa_ai_provider_section',
 			array(
 				'key'      => 'ollama_model',
+				'provider' => 'ollama',
+			)
+		);
+
+		add_settings_field(
+			'ollama_timeout',
+			__( 'Ollama Timeout', 'vmfa-ai-organizer' ),
+			array( $this, 'render_ollama_timeout_field' ),
+			'vmfa-ai-organizer-provider',
+			'vmfa_ai_provider_section',
+			array(
+				'key'      => 'ollama_timeout',
 				'provider' => 'ollama',
 			)
 		);
@@ -631,7 +648,11 @@ class SettingsPage {
 		$provider  = $args['provider'];
 		$settings  = $this->get_settings();
 		$value     = $settings[ $key ] ?? 'gpt-4o-mini';
+		$type      = $settings['openai_type'] ?? 'openai';
 		$is_locked = $this->is_setting_locked( $key );
+
+		// For Azure OpenAI: the "model" is actually the deployment name.
+		// Azure doesn't support listing deployments via API key auth, so we use a text input.
 
 		?>
 		<input 
@@ -641,14 +662,29 @@ class SettingsPage {
 			value="<?php echo esc_attr( $value ); ?>"
 			class="regular-text vmfa-provider-field"
 			data-provider="<?php echo esc_attr( $provider ); ?>"
-			placeholder="gpt-4o-mini"
+			placeholder="<?php echo esc_attr( 'azure' === $type ? 'your-deployment-name' : 'gpt-4o-mini' ); ?>"
 			<?php disabled( $is_locked ); ?>
 		>
 		<p class="description">
-			<?php esc_html_e( 'For OpenAI: model name (e.g., gpt-4o-mini, gpt-4o). For Azure: deployment name.', 'vmfa-ai-organizer' ); ?>
+			<?php if ( 'azure' === $type ) : ?>
+				<?php esc_html_e( 'Enter your Azure OpenAI deployment name (found in Azure Portal → Your Resource → Deployments).', 'vmfa-ai-organizer' ); ?>
+			<?php else : ?>
+				<?php esc_html_e( 'OpenAI model name (e.g., gpt-4o-mini, gpt-4o).', 'vmfa-ai-organizer' ); ?>
+			<?php endif; ?>
 		</p>
 		<?php
 		$this->render_locked_badge( $key );
+	}
+
+	/**
+	 * Render Azure OpenAI deployments helper script (deprecated - Azure doesn't support listing via API key).
+	 *
+	 * @return void
+	 */
+	private function render_azure_deployments_script(): void {
+		// Azure Resource Manager requires Azure AD auth to list deployments.
+		// The data plane API doesn't support listing deployments with just an API key.
+		// This function is kept for backwards compatibility but no longer renders anything.
 	}
 
 	/**
@@ -785,6 +821,145 @@ class SettingsPage {
 		</p>
 		<?php
 		$this->render_exo_scripts();
+	}
+
+	/**
+	 * Render Ollama model field with dynamic model refresh.
+	 *
+	 * @return void
+	 */
+	public function render_ollama_model_field(): void {
+		$settings  = $this->get_settings();
+		$value     = $settings['ollama_model'] ?? '';
+		$is_locked = $this->is_setting_locked( 'ollama_model' );
+
+		?>
+		<select 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[ollama_model]"
+			id="vmfa_ollama_model"
+			class="vmfa-provider-field"
+			data-provider="ollama"
+			<?php disabled( $is_locked ); ?>
+		>
+			<?php if ( ! empty( $value ) ) : ?>
+				<option value="<?php echo esc_attr( $value ); ?>" selected><?php echo esc_html( $value ); ?></option>
+			<?php else : ?>
+				<option value=""><?php esc_html_e( '— Select a model —', 'vmfa-ai-organizer' ); ?></option>
+			<?php endif; ?>
+		</select>
+		<button type="button" id="vmfa-ollama-refresh-models" class="button button-secondary" style="margin-left: 4px;">
+			<?php esc_html_e( 'Refresh Models', 'vmfa-ai-organizer' ); ?>
+		</button>
+		<?php if ( $is_locked ) : ?>
+			<input type="hidden" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[ollama_model]"
+				value="<?php echo esc_attr( $value ); ?>" />
+		<?php endif; ?>
+		<?php $this->render_locked_badge( 'ollama_model' ); ?>
+		<p class="description">
+			<?php esc_html_e( 'Select a model from your local Ollama instance. Click "Refresh Models" after entering the Ollama URL.', 'vmfa-ai-organizer' ); ?>
+		</p>
+		<?php
+		$this->render_ollama_scripts();
+	}
+
+	/**
+	 * Render Ollama-specific JavaScript for model refresh.
+	 *
+	 * @return void
+	 */
+	private function render_ollama_scripts(): void {
+		?>
+		<script>
+			(function() {
+				const ollamaUrlField = document.getElementById('vmfa_ollama_url');
+				const ollamaModelField = document.getElementById('vmfa_ollama_model');
+				const ollamaRefreshBtn = document.getElementById('vmfa-ollama-refresh-models');
+
+				async function refreshOllamaModels() {
+					const endpoint = ollamaUrlField ? ollamaUrlField.value.trim() : '';
+					if (!endpoint) {
+						alert('<?php echo esc_js( __( 'Please enter the Ollama URL first.', 'vmfa-ai-organizer' ) ); ?>');
+						return;
+					}
+
+					if (ollamaRefreshBtn) ollamaRefreshBtn.disabled = true;
+
+					try {
+						const response = await fetch('<?php echo esc_url( rest_url( 'vmfa/v1/ollama-models' ) ); ?>', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								'X-WP-Nonce': '<?php echo esc_js( wp_create_nonce( 'wp_rest' ) ); ?>'
+							},
+							body: JSON.stringify({ endpoint: endpoint })
+						});
+						const data = await response.json();
+
+						if (data.models && Array.isArray(data.models) && ollamaModelField) {
+							const currentValue = ollamaModelField.value;
+							ollamaModelField.innerHTML = '';
+
+							if (data.models.length === 0) {
+								const opt = document.createElement('option');
+								opt.value = '';
+								opt.textContent = '<?php echo esc_js( __( '— No models available —', 'vmfa-ai-organizer' ) ); ?>';
+								ollamaModelField.appendChild(opt);
+							} else {
+								data.models.forEach(model => {
+									const opt = document.createElement('option');
+									opt.value = model.id || model;
+									opt.textContent = model.name || model.id || model;
+									if (opt.value === currentValue) opt.selected = true;
+									ollamaModelField.appendChild(opt);
+								});
+							}
+						} else if (data.error) {
+							alert('<?php echo esc_js( __( 'Failed to fetch models:', 'vmfa-ai-organizer' ) ); ?> ' + data.error);
+						}
+					} catch (e) {
+						alert('<?php echo esc_js( __( 'Failed to fetch models:', 'vmfa-ai-organizer' ) ); ?> ' + e.message);
+					} finally {
+						if (ollamaRefreshBtn) ollamaRefreshBtn.disabled = false;
+					}
+				}
+
+				if (ollamaRefreshBtn) {
+					ollamaRefreshBtn.addEventListener('click', refreshOllamaModels);
+				}
+			})();
+		</script>
+		<?php
+	}
+
+	/**
+	 * Render Ollama timeout field.
+	 *
+	 * @return void
+	 */
+	public function render_ollama_timeout_field(): void {
+		$settings  = $this->get_settings();
+		$value     = $settings['ollama_timeout'] ?? 120;
+		$is_locked = $this->is_setting_locked( 'ollama_timeout' );
+
+		?>
+		<input 
+			type="number" 
+			name="<?php echo esc_attr( self::OPTION_NAME ); ?>[ollama_timeout]"
+			id="vmfa_ollama_timeout"
+			value="<?php echo esc_attr( (string) $value ); ?>"
+			class="small-text vmfa-provider-field"
+			data-provider="ollama"
+			min="10"
+			max="600"
+			step="10"
+			<?php disabled( $is_locked ); ?>
+		>
+		<span class="description"><?php esc_html_e( 'seconds', 'vmfa-ai-organizer' ); ?></span>
+		<p class="description">
+			<?php esc_html_e( 'Request timeout for Ollama. Increase for larger models or slower hardware (default: 120).', 'vmfa-ai-organizer' ); ?>
+		</p>
+		<?php
+		$this->render_locked_badge( 'ollama_timeout' );
 	}
 
 	/**
@@ -1218,12 +1393,35 @@ class SettingsPage {
 			$sanitized['batch_size'] = max( 10, min( 100, absint( $input['batch_size'] ) ) );
 		}
 
+		if ( isset( $input['ollama_timeout'] ) ) {
+			$sanitized['ollama_timeout'] = max( 10, min( 600, absint( $input['ollama_timeout'] ) ) );
+		}
+
 		// Checkbox.
 		$sanitized['allow_new_folders'] = ! empty( $input['allow_new_folders'] );
 
 		// Validate AI configuration if provider is set.
 		if ( ! empty( $sanitized['ai_provider'] ) ) {
 			$this->validate_ai_configuration( $sanitized );
+		}
+
+		// Require Azure endpoint + key when using Azure OpenAI.
+		$effective_provider    = $sanitized['ai_provider'] ?? Plugin::get_instance()->get_setting( 'ai_provider', '' );
+		$effective_openai_type = $sanitized['openai_type'] ?? Plugin::get_instance()->get_setting( 'openai_type', 'openai' );
+		if ( 'openai' === $effective_provider && 'azure' === $effective_openai_type ) {
+			$effective_endpoint = $sanitized['azure_endpoint'] ?? Plugin::get_instance()->get_setting( 'azure_endpoint', '' );
+			$effective_key      = $sanitized['openai_key'] ?? Plugin::get_instance()->get_setting( 'openai_key', '' );
+
+			if ( empty( $effective_endpoint ) || empty( $effective_key ) ) {
+				add_settings_error(
+					self::OPTION_NAME,
+					'azure_required',
+					__( 'Azure OpenAI requires both an endpoint and an API key.', 'vmfa-ai-organizer' ),
+					'error'
+				);
+				// Prevent saving an invalid configuration.
+				return Plugin::get_instance()->get_settings();
+			}
 		}
 
 		return $sanitized;

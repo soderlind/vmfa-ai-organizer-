@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.1.7] - 2026-01-02
+
+### Added
+
+- **Ollama Dynamic Model List**: Model dropdown now populated dynamically from running Ollama server
+  - "Refresh Models" button to fetch available models via `/api/tags`
+  - New `OllamaController` REST endpoint (`POST /vmfa/v1/ollama-models`)
+- **Ollama Configurable Timeout**: New setting for Ollama request timeout (10-600 seconds, default 120)
+  - Useful for larger models or slower hardware
+  - Configurable via settings UI or `VMFA_AI_OLLAMA_TIMEOUT` env var/constant
+- **Improved JSON Parsing**: Better extraction of JSON from AI responses wrapped in markdown code blocks
+
+
+### Fixed
+
+- **WordPress 6.7 Deprecation**: Added `__nextHasNoMarginBottom` prop to CheckboxControl
+
+
 ## [0.1.6] - 2026-01-02
 
 ### Added
@@ -170,6 +188,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bundles Action Scheduler 3.9.3 for background processing
 
 
+[0.1.7]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.6...v0.1.7
+[0.1.6]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.5...v0.1.6
+[0.1.5]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.1...v0.1.2

@@ -20,6 +20,23 @@ class OllamaProvider extends AbstractProvider {
 	private const DEFAULT_URL = 'http://localhost:11434';
 
 	/**
+	 * Default timeout in seconds (can be overridden via settings).
+	 *
+	 * @var int
+	 */
+	protected const REQUEST_TIMEOUT = 120;
+
+	/**
+	 * Get the request timeout from settings.
+	 *
+	 * @return int
+	 */
+	protected function get_request_timeout(): int {
+		$timeout = $this->get_setting( 'ollama_timeout' );
+		return $timeout ? (int) $timeout : static::REQUEST_TIMEOUT;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function get_name(): string {
