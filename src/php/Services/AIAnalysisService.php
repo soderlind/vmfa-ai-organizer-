@@ -81,6 +81,14 @@ class AIAnalysisService {
 	private ?array $folder_paths = null;
 
 	/**
+	 * Cached folder name to paths map.
+	 * Maps folder names to arrays of full paths where they appear.
+	 *
+	 * @var array<string, array<string>>|null
+	 */
+	private ?array $folder_name_map = null;
+
+	/**
 	 * Get the AI provider.
 	 *
 	 * @return ProviderInterface|null Null if no provider configured.
@@ -175,6 +183,25 @@ class AIAnalysisService {
 
 		$result = $provider->analyze( $metadata, $folder_paths, $max_depth, $allow_new, $image_data, $suggested_folders );
 
+		// Check for hierarchy conflicts when creating new folders.
+		if ( 'create' === $result[ 'action' ] && ! empty( $result[ 'new_folder_path' ] ) ) {
+			$conflict = $this->detect_hierarchy_conflict( $result[ 'new_folder_path' ] );
+
+			if ( $conflict[ 'conflict' ] && ! empty( $conflict[ 'existing_path' ] ) ) {
+				// Auto-remap to existing path to prevent inverted hierarchy.
+				$result[ 'action' ]          = 'assign';
+				$result[ 'folder_id' ]       = $folder_paths[ $conflict[ 'existing_path' ] ] ?? null;
+				$result[ 'new_folder_path' ] = null;
+				$result[ 'reason' ]          = sprintf(
+					/* translators: 1: original reason, 2: existing path */
+					__( '%1$s (Auto-remapped to existing folder: %2$s to prevent hierarchy inversion)', 'vmfa-ai-organizer' ),
+					$result[ 'reason' ],
+					$conflict[ 'existing_path' ]
+				);
+				$result[ 'confidence' ]      = $result[ 'confidence' ] * 0.9; // Slightly reduce confidence.
+			}
+		}
+
 		// Track the suggested folder for consistency in this scan session.
 		if ( ! empty( $result[ 'new_folder_path' ] ) ) {
 			$this->add_session_suggested_folder( $result[ 'new_folder_path' ] );
@@ -207,7 +234,7 @@ class AIAnalysisService {
 	private function assign_to_type_folder( int $attachment_id, string $folder_name, array $folder_paths ): array {
 		$filename = basename( get_attached_file( $attachment_id ) ?: '' );
 
-		// Check if folder already exists.
+		// Check if folder already exists as exact path.
 		if ( isset( $folder_paths[ $folder_name ] ) ) {
 			return array(
 				'action'          => 'assign',
@@ -218,6 +245,26 @@ class AIAnalysisService {
 					/* translators: %s: folder name */
 					__( 'File type automatically assigned to %s folder.', 'vmfa-ai-organizer' ),
 					$folder_name
+				),
+				'attachment_id'   => $attachment_id,
+				'filename'        => $filename,
+				'folder_name'     => $folder_name,
+			);
+		}
+
+		// Try to find folder by name anywhere in the hierarchy (prefers shallowest).
+		$found_folder = $this->find_folder_by_name( $folder_name );
+		if ( $found_folder[ 'found' ] && ! empty( $found_folder[ 'folder_id' ] ) ) {
+			return array(
+				'action'          => 'assign',
+				'folder_id'       => $found_folder[ 'folder_id' ],
+				'new_folder_path' => null,
+				'confidence'      => 1.0,
+				'reason'          => sprintf(
+					/* translators: 1: folder name, 2: full path */
+					__( 'File type automatically assigned to %1$s folder (found at %2$s).', 'vmfa-ai-organizer' ),
+					$folder_name,
+					$found_folder[ 'path' ]
 				),
 				'attachment_id'   => $attachment_id,
 				'filename'        => $filename,
@@ -432,6 +479,11 @@ class AIAnalysisService {
 			return $this->folder_paths;
 		}
 
+		// Clear folder name map when refreshing paths.
+		if ( $refresh ) {
+			$this->folder_name_map = null;
+		}
+
 		$terms = get_terms(
 			array(
 				'taxonomy'   => self::TAXONOMY,
@@ -486,6 +538,169 @@ class AIAnalysisService {
 		}
 
 		return $path;
+	}
+
+	/**
+	 * Get folder name to paths map with caching.
+	 * Maps each folder name to an array of full paths where that name appears.
+	 *
+	 * @return array<string, array<string>> Folder name => array of full paths.
+	 */
+	public function get_folder_name_map(): array {
+		if ( null !== $this->folder_name_map ) {
+			return $this->folder_name_map;
+		}
+
+		$folder_paths = $this->get_folder_paths();
+		$this->folder_name_map = array();
+
+		foreach ( array_keys( $folder_paths ) as $path ) {
+			$parts = explode( '/', $path );
+			foreach ( $parts as $name ) {
+				$name_lower = mb_strtolower( $name );
+				if ( ! isset( $this->folder_name_map[ $name_lower ] ) ) {
+					$this->folder_name_map[ $name_lower ] = array();
+				}
+				if ( ! in_array( $path, $this->folder_name_map[ $name_lower ], true ) ) {
+					$this->folder_name_map[ $name_lower ][] = $path;
+				}
+			}
+		}
+
+		return $this->folder_name_map;
+	}
+
+	/**
+	 * Detect if a proposed path conflicts with existing hierarchies (inverted order).
+	 *
+	 * Checks if the proposed path's components exist in any existing path but in a different order.
+	 * For example, if "Events/Outdoor" exists and we propose "Outdoor/Events", this is a conflict.
+	 *
+	 * @param string $proposed_path The proposed folder path.
+	 * @return array{conflict: bool, existing_path: string|null, message: string|null}
+	 */
+	public function detect_hierarchy_conflict( string $proposed_path ): array {
+		$folder_paths = $this->get_folder_paths();
+
+		// If the path already exists exactly, no conflict.
+		if ( isset( $folder_paths[ $proposed_path ] ) ) {
+			return array(
+				'conflict'      => false,
+				'existing_path' => $proposed_path,
+				'message'       => null,
+			);
+		}
+
+		$proposed_parts = array_map( 'mb_strtolower', explode( '/', trim( $proposed_path, '/' ) ) );
+		$proposed_count = count( $proposed_parts );
+
+		if ( $proposed_count < 2 ) {
+			// Single-level paths cannot have hierarchy inversions.
+			return array(
+				'conflict'      => false,
+				'existing_path' => null,
+				'message'       => null,
+			);
+		}
+
+		// Check each existing path for conflicts.
+		foreach ( array_keys( $folder_paths ) as $existing_path ) {
+			$existing_parts = array_map( 'mb_strtolower', explode( '/', $existing_path ) );
+
+			// Find common components between proposed and existing.
+			$common = array_intersect( $proposed_parts, $existing_parts );
+
+			// Need at least 2 common components to have a potential inversion.
+			if ( count( $common ) < 2 ) {
+				continue;
+			}
+
+			// Check if the order of common components differs.
+			$proposed_order = array();
+			$existing_order = array();
+
+			foreach ( $proposed_parts as $index => $part ) {
+				if ( in_array( $part, $common, true ) ) {
+					$proposed_order[] = $part;
+				}
+			}
+
+			foreach ( $existing_parts as $index => $part ) {
+				if ( in_array( $part, $common, true ) ) {
+					$existing_order[] = $part;
+				}
+			}
+
+			// If the order of common elements differs, this is an inversion.
+			if ( $proposed_order !== $existing_order ) {
+				return array(
+					'conflict'      => true,
+					'existing_path' => $existing_path,
+					'message'       => sprintf(
+						/* translators: 1: proposed path, 2: existing path */
+						__( 'Path "%1$s" conflicts with existing hierarchy "%2$s" (inverted order).', 'vmfa-ai-organizer' ),
+						$proposed_path,
+						$existing_path
+					),
+				);
+			}
+		}
+
+		return array(
+			'conflict'      => false,
+			'existing_path' => null,
+			'message'       => null,
+		);
+	}
+
+	/**
+	 * Find a folder by name regardless of its position in the hierarchy.
+	 * Prefers shallower paths (top-level first).
+	 *
+	 * @param string $folder_name Folder name to find.
+	 * @return array{found: bool, path: string|null, folder_id: int|null}
+	 */
+	public function find_folder_by_name( string $folder_name ): array {
+		$folder_paths = $this->get_folder_paths();
+		$name_lower   = mb_strtolower( $folder_name );
+		$name_map     = $this->get_folder_name_map();
+
+		if ( ! isset( $name_map[ $name_lower ] ) ) {
+			return array(
+				'found'     => false,
+				'path'      => null,
+				'folder_id' => null,
+			);
+		}
+
+		$paths = $name_map[ $name_lower ];
+
+		// Sort by depth (shallowest first).
+		usort( $paths, function ( $a, $b ) {
+			$depth_a = substr_count( $a, '/' );
+			$depth_b = substr_count( $b, '/' );
+			return $depth_a - $depth_b;
+		} );
+
+		// Prefer paths where the folder is the leaf (last component).
+		foreach ( $paths as $path ) {
+			$parts = explode( '/', $path );
+			if ( mb_strtolower( end( $parts ) ) === $name_lower ) {
+				return array(
+					'found'     => true,
+					'path'      => $path,
+					'folder_id' => $folder_paths[ $path ] ?? null,
+				);
+			}
+		}
+
+		// Fall back to first occurrence.
+		$first_path = $paths[0];
+		return array(
+			'found'     => true,
+			'path'      => $first_path,
+			'folder_id' => $folder_paths[ $first_path ] ?? null,
+		);
 	}
 
 	/**

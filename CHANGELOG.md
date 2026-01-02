@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.1.8] - 2026-01-02
+
+### Added
+
+- **Hierarchy Inversion Prevention**: AI now detects and prevents creating inverted folder hierarchies
+  - If `Events/Outdoor` exists, AI will not create `Outdoor/Events`
+  - Automatic remapping to existing paths when conflicts are detected
+  - Enhanced system prompt with explicit anti-inversion rules and examples
+- **Folder Name Caching**: New `get_folder_name_map()` method with session caching for efficient lookups
+- **Flexible Folder Matching**: `find_folder_by_name()` method to locate folders anywhere in hierarchy
+  - Prefers shallowest depth (top-level first)
+  - Enables Documents/Videos folders to be found regardless of position
+
+### Fixed
+
+- **Document/Video Assignment**: Documents and videos now correctly assigned even when their target folders exist as subfolders (e.g., `Media/Documents` instead of just `Documents`)
+
+
 ## [0.1.7] - 2026-01-02
 
 ### Added
@@ -188,6 +206,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bundles Action Scheduler 3.9.3 for background processing
 
 
+[0.1.8]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.4...v0.1.5
