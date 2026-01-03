@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.2.3
+Stable tag: 0.2.4
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -138,6 +138,14 @@ Use the "Reorganize All" scan mode. This removes all existing folder assignments
 4. Backup and restore functionality
 
 == Changelog ==
+
+= 0.2.4 =
+* Improved reliability when AI returns invalid folder IDs (prompt now includes IDs and parser falls back to folder path)
+* Reduced false skips when creating new folders is allowed (requires new_folder_path)
+* Prevented emoji/emoticon folder names from being created (emoji stripping enforced)
+* Improved prompt consistency (restored visual_description and strengthened anti-synonym guidance)
+* Reduced "Skipped: Folder not found" in Reorganize All preview when starting from an empty folder list
+* Filtered out generic numbered folders (e.g. "Subfolder 01") from the AI-visible folder list
 
 = 0.2.3 =
 * Fixed Ollama JSON parse errors with structured JSON output schema

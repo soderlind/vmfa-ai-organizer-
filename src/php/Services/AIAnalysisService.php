@@ -195,6 +195,43 @@ class AIAnalysisService {
 
 		$result = $provider->analyze( $metadata, $folder_paths, $max_depth, $allow_new, $image_data, $suggested_folders );
 
+		// Enforce allow_new_folders at runtime (providers/LLMs may ignore prompt constraints).
+		if ( ! $allow_new && 'create' === ( $result['action'] ?? '' ) ) {
+			$result = array(
+				'action'          => 'skip',
+				'folder_id'       => null,
+				'new_folder_path' => null,
+				'confidence'      => 0.0,
+				'reason'          => __( 'New folder creation is disabled in settings.', 'vmfa-ai-organizer' ),
+			);
+		}
+
+		// Sanitize AI-suggested new folder paths (remove emojis/emoticons, normalize whitespace).
+		if ( 'create' === ( $result[ 'action' ] ?? '' ) && ! empty( $result[ 'new_folder_path' ] ) ) {
+			$original_path  = (string) $result[ 'new_folder_path' ];
+			$sanitized_path = $this->sanitize_folder_path( $original_path );
+
+			if ( $sanitized_path !== $original_path ) {
+				$result[ 'new_folder_path' ] = $sanitized_path;
+				$result[ 'reason' ]          = sprintf(
+					/* translators: 1: original reason */
+					__( '%1$s (Folder name sanitized)', 'vmfa-ai-organizer' ),
+					(string) ( $result[ 'reason' ] ?? '' )
+				);
+				$result[ 'confidence' ]      = (float) ( $result[ 'confidence' ] ?? 0.0 ) * 0.98;
+			}
+
+			if ( '' === $sanitized_path ) {
+				$result = array(
+					'action'          => 'skip',
+					'folder_id'       => null,
+					'new_folder_path' => null,
+					'confidence'      => 0.0,
+					'reason'          => __( 'Suggested folder name was empty after sanitization.', 'vmfa-ai-organizer' ),
+				);
+			}
+		}
+
 		// Check for hierarchy conflicts when creating new folders.
 		if ( 'create' === $result[ 'action' ] && ! empty( $result[ 'new_folder_path' ] ) ) {
 			$conflict = $this->detect_hierarchy_conflict( $result[ 'new_folder_path' ] );
@@ -324,6 +361,11 @@ class AIAnalysisService {
 	 * @return void
 	 */
 	public function add_session_suggested_folder( string $folder_path ): void {
+		$folder_path = $this->sanitize_folder_path( $folder_path );
+		if ( '' === $folder_path ) {
+			return;
+		}
+
 		$folders = $this->get_session_suggested_folders();
 		if ( ! in_array( $folder_path, $folders, true ) ) {
 			$folders[] = $folder_path;
@@ -521,6 +563,13 @@ class AIAnalysisService {
 		$this->folder_paths = array();
 
 		foreach ( $term_objects as $term ) {
+			// Skip generic numbered folders (e.g., "Subfolder 01", "Folder 1", "Test Folder 99").
+			// These are not meaningful for AI categorization.
+			if ( preg_match( '/^(sub)?folder\s*\d+$/i', trim( $term->name ) ) ||
+				preg_match( '/^test\s*(sub)?folder[s]?\s*\d*$/i', trim( $term->name ) ) ) {
+				continue;
+			}
+
 			$path  = $this->build_term_path( $term, $term_objects );
 			$depth = substr_count( $path, '/' ) + 1;
 
@@ -768,7 +817,7 @@ class AIAnalysisService {
 		$parent_id = 0;
 
 		foreach ( $parts as $part ) {
-			$part = sanitize_text_field( trim( $part ) );
+			$part = $this->sanitize_folder_name( $part );
 			if ( empty( $part ) ) {
 				continue;
 			}
@@ -810,6 +859,69 @@ class AIAnalysisService {
 		$this->folder_paths = null;
 
 		return $parent_id > 0 ? $parent_id : null;
+	}
+
+	/**
+	 * Sanitize an AI-suggested folder path.
+	 *
+	 * - Removes emojis/emoticons.
+	 * - Normalizes whitespace.
+	 * - Applies WordPress sanitization per segment.
+	 *
+	 * @param string $path Folder path (e.g., "Plants/Leaves").
+	 * @return string Sanitized path.
+	 */
+	private function sanitize_folder_path( string $path ): string {
+		$path  = trim( $path );
+		$path  = trim( $path, '/' );
+		$parts = explode( '/', $path );
+
+		$sanitized_parts = array();
+		foreach ( $parts as $part ) {
+			$part = $this->sanitize_folder_name( $part );
+			if ( '' !== $part ) {
+				$sanitized_parts[] = $part;
+			}
+		}
+
+		return implode( '/', $sanitized_parts );
+	}
+
+	/**
+	 * Sanitize a single folder name segment.
+	 *
+	 * @param string $name Folder name.
+	 * @return string Sanitized name.
+	 */
+	private function sanitize_folder_name( string $name ): string {
+		$name = trim( $name );
+		if ( '' === $name ) {
+			return '';
+		}
+
+		$name = $this->strip_emojis( $name );
+		$name = preg_replace( '/\s+/u', ' ', $name );
+		$name = sanitize_text_field( $name );
+		$name = trim( $name );
+
+		return $name;
+	}
+
+	/**
+	 * Remove emojis/emoticons from a string.
+	 *
+	 * @param string $text Input string.
+	 * @return string String without emojis/emoticons.
+	 */
+	private function strip_emojis( string $text ): string {
+		// Remove common emoji blocks + variation selectors + ZWJ.
+		$text = preg_replace(
+			'/[\x{1F300}-\x{1F5FF}\x{1F600}-\x{1F64F}\x{1F680}-\x{1F6FF}\x{1F700}-\x{1F77F}\x{1F780}-\x{1F7FF}\x{1F800}-\x{1F8FF}\x{1F900}-\x{1F9FF}\x{1FA00}-\x{1FA6F}\x{1FA70}-\x{1FAFF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}\x{FE0F}\x{200D}]/u',
+			'',
+			$text
+		);
+
+		return is_string( $text ) ? $text : '';
 	}
 
 	/**

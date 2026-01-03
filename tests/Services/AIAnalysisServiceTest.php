@@ -55,4 +55,40 @@ class AIAnalysisServiceTest extends BrainMonkeyTestCase {
 		$this->assertArrayHasKey( 'mime_type', $metadata );
 		$this->assertEquals( 'image/jpeg', $metadata['mime_type'] );
 	}
+
+	/**
+	 * Test create_folder_from_path strips emojis/emoticons.
+	 */
+	public function test_create_folder_from_path_strips_emojis(): void {
+		Functions\when( 'get_terms' )->justReturn( array() );
+		Functions\when( 'is_wp_error' )->alias( static fn( $value ) => false );
+		Functions\when( 'update_term_meta' )->justReturn( true );
+
+		$calls = array();
+		Functions\when( 'wp_insert_term' )->alias(
+			static function ( $name, $taxonomy, $args ) use ( &$calls ) {
+				$calls[] = array(
+					'name'     => $name,
+					'taxonomy' => $taxonomy,
+					'args'     => $args,
+				);
+				return array( 'term_id' => count( $calls ) );
+			}
+		);
+
+		$factory = Mockery::mock( ProviderFactory::class );
+		$this->stub_options( array( 'vmfa_settings' => array() ) );
+		$service = new AIAnalysisService( $factory );
+
+		$term_id = $service->create_folder_from_path( '🌿 Plants/🍂 Leaves' );
+
+		$this->assertSame( 2, $term_id );
+		$this->assertCount( 2, $calls );
+		$this->assertSame( 'Plants', $calls[0]['name'] );
+		$this->assertSame( 'vmfo_folder', $calls[0]['taxonomy'] );
+		$this->assertSame( array( 'parent' => 0 ), $calls[0]['args'] );
+		$this->assertSame( 'Leaves', $calls[1]['name'] );
+		$this->assertSame( 'vmfo_folder', $calls[1]['taxonomy'] );
+		$this->assertSame( array( 'parent' => 1 ), $calls[1]['args'] );
+	}
 }

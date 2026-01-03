@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.2.4] - 2026-01-03
+
+### Fixed
+
+- **Folder ID Mismatches**: Improved reliability when the AI returns an invalid `folder_id`
+  - Prompts now include folder IDs alongside paths
+  - Added fallback mapping by `folder_path` when an ID is missing or incorrect
+
+- **New Folder Actions**: Reduced false "Skipped" results when creating new folders is allowed
+  - Prompt now requires a non-empty `new_folder_path` when `action` is `new`
+
+- **No Emojis in Folder Names**: Prevented emoji/emoticon folder names from being created
+  - Enforced emoji stripping during folder creation and when storing suggested folder paths
+
+- **Prompt Consistency**: Improved system prompt alignment and folder naming consistency
+  - Restored `visual_description` in the JSON schema when an image is analyzed
+  - Reinforced guidance to avoid synonyms and near-duplicate folders
+
+- **Reorganize All Preview**: Reduced "Skipped: Folder not found" results when starting from an empty folder list
+  - When no folders exist, prompt now forces `action="new"` or `"skip"` (never `"existing"`)
+  - Parser is more forgiving if the model returns `existing` with a missing/invalid target
+
+### Changed
+
+- **Less Folder List Noise**: Filtered out generic numbered folders (e.g. "Subfolder 01") from the AI-visible folder list
+
 ## [0.2.3] - 2026-01-03
 
 ### Fixed
@@ -305,6 +331,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bundles Action Scheduler 3.9.3 for background processing
 
 
+[0.2.4]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.2.0...v0.2.1

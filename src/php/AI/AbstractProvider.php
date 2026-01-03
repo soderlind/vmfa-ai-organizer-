@@ -52,6 +52,26 @@ You MUST respond with folder names in {$language_name}. All folder_path values i
 3. **Text metadata**: Title, alt text, caption, description
 4. **Filename**: Only as a last resort hint
 
+## CRITICAL: Folder Name Consistency
+You MUST avoid creating similar or synonymous folder names. Follow these rules strictly:
+- **ALWAYS check existing folders first** - if an existing folder covers the same concept, USE IT
+- **Use broad, canonical categories** - prefer common terms over niche variations
+- **NO synonyms** - if "Animals" exists, do NOT create "Wildlife", "Fauna", "Creatures", etc.
+- **NO near-duplicates** - if "Landscapes" exists, do NOT create "Scenery", "Views", "Vistas", etc.
+- **Standardize naming** - use the most common, simple term for each category
+
+### Standard Category Examples (use these exact names, not synonyms):
+- Animals (not: Wildlife, Fauna, Creatures, Pets)
+- Nature (not: Outdoors, Natural, Environment)
+- People (not: Humans, Persons, Portraits, Faces)
+- Buildings (not: Architecture, Structures, Constructions)
+- Food (not: Cuisine, Meals, Dishes)
+- Travel (not: Vacation, Tourism, Trips)
+- Events (not: Celebrations, Occasions, Gatherings)
+- Art (not: Artwork, Artistic, Creative)
+- Sports (not: Athletics, Games, Recreation)
+- Technology (not: Tech, Gadgets, Devices, Electronics)
+
 ## Folder Creation Guidelines
 
 ### When to REUSE an existing/suggested folder:
@@ -65,10 +85,11 @@ You MUST respond with folder names in {$language_name}. All folder_path values i
 
 ### Folder Naming Rules:
 - Use Title Case in {$language_name}
-- Keep names concise: 1-3 words per level
+- Keep names concise: 1-3 words per level (prefer 1-2 when possible)
 - Spaces are allowed (e.g., "Street Art", "Birthday Party")
 - Create hierarchies when it makes sense (e.g., "Animals/Birds", "Food/Desserts")
 - Maximum 3 levels deep
+- NO emojis or emoticons in folder names (use plain text only)
 
 ### Avoid These Mistakes:
 - Don't create synonymous folders (if "Animals" exists, don't create "Wildlife")
@@ -87,12 +108,18 @@ Transportation, Water, Plants, Music, Fashion, Documents, Videos
 
 Respond with valid JSON only. No markdown formatting, no code blocks:
 {
-    "action": "existing" (use existing folder), "new" (create new folder), or "skip" (cannot categorize),
-    "folder_id": integer ID of existing folder to use, or null if action is "new" or "skip",
-    "new_folder_path": "path/to/new/folder (in {$language_name})" if action is "new", otherwise null,
+	"visual_description": "Brief description of what is visible in the image" (REQUIRED when an image was analyzed, otherwise null),
+    "action": "existing" or "new" or "skip",
+	"folder_id": 123 (REQUIRED integer ID from the folder list when action is "existing", otherwise null),
+	"folder_path": "Exact/Folder/Path" (REQUIRED exact path from the folder list when action is "existing"; do NOT include the "(ID: ...)" suffix; otherwise null),
+	"new_folder_path": "Category" or "Category/Subcategory" (REQUIRED string when action is "new", otherwise null),
     "confidence": 0.0 to 1.0,
     "reason": "One brief sentence explaining the folder choice (max 20 words)"
 }
+
+CRITICAL: When action is "new", you MUST provide a non-empty new_folder_path value like "Plants" or "Nature/Leaves".
+CRITICAL: When action is "existing", you MUST provide BOTH folder_id AND folder_path copied from the Available Folders list.
+CRITICAL: If the Available Folders section says "No existing folders.", you MUST NOT use action "existing". Use "new" or "skip".
 PROMPT;
 	}
 
@@ -202,7 +229,11 @@ PROMPT;
 	): string {
 		$folders_list = empty( $folder_paths )
 			? 'No existing folders.'
-			: implode( "\n", array_map( fn( $path ) => "- {$path}", array_keys( $folder_paths ) ) );
+			: implode( "\n", array_map( fn( $path, $id ) => "- {$path} (ID: {$id})", array_keys( $folder_paths ), $folder_paths ) );
+
+		$no_folders_note = empty( $folder_paths )
+			? "\nIMPORTANT: There are no existing folders listed. You MUST use action \"new\" (or \"skip\" if truly uncategorizable).\n"
+			: '';
 
 		$metadata_text = $this->format_metadata( $media_metadata );
 
@@ -233,6 +264,7 @@ Analyze this media file and suggest a folder.
 ## Available Folders
 {$folders_list}
 {$suggested_folders_text}
+{$no_folders_note}
 
 ## Constraints
 {$new_folders_text}
@@ -403,18 +435,38 @@ PROMPT;
 		}
 
 		// Handle the new schema format (from structured outputs).
-		// New format uses: action: existing/new/skip, folder_id, new_folder_path.
+		// New format uses: action: existing/new/skip, folder_id, folder_path, new_folder_path.
 		if ( isset( $data[ 'action' ] ) && in_array( $data[ 'action' ], array( 'existing', 'new', 'skip' ), true ) ) {
 			$action          = $data[ 'action' ];
 			$folder_id       = isset( $data[ 'folder_id' ] ) ? (int) $data[ 'folder_id' ] : null;
+			$folder_path     = isset( $data[ 'folder_path' ] ) && is_string( $data[ 'folder_path' ] ) ? $data[ 'folder_path' ] : '';
 			$new_folder_path = $data[ 'new_folder_path' ] ?? null;
 			$confidence      = (float) ( $data[ 'confidence' ] ?? 0.5 );
 			$reason          = $data[ 'reason' ] ?? '';
 
+			// Normalize folder_path if model copied the "(ID: N)" suffix.
+			if ( '' !== $folder_path ) {
+				$folder_path = trim( $folder_path );
+				$folder_path = preg_replace( '/\s*\(ID:\s*\d+\)\s*$/', '', $folder_path );
+				$folder_path = trim( $folder_path );
+			}
+
 			// Validate folder_id exists for "existing" action.
-			if ( 'existing' === $action && $folder_id ) {
-				// Verify the folder_id is valid.
-				if ( in_array( $folder_id, $folder_paths, true ) ) {
+			if ( 'existing' === $action ) {
+				// Some models return action=existing but put the suggestion in new_folder_path.
+				// If so, treat it as a create action.
+				if ( ! empty( $new_folder_path ) && is_string( $new_folder_path ) ) {
+					return array(
+						'action'          => 'create',
+						'folder_id'       => null,
+						'new_folder_path' => $new_folder_path,
+						'confidence'      => $confidence * 0.95,
+						'reason'          => $reason ?: __( 'Treated as new folder suggestion.', 'vmfa-ai-organizer' ),
+					);
+				}
+
+				// Prefer folder_id when valid.
+				if ( $folder_id && in_array( $folder_id, $folder_paths, true ) ) {
 					return array(
 						'action'          => 'assign',
 						'folder_id'       => $folder_id,
@@ -423,17 +475,58 @@ PROMPT;
 						'reason'          => $reason,
 					);
 				}
-				// Folder ID not found, skip.
+
+				// Fallback: map folder_path to ID (prevents skips when model hallucinates folder_id).
+				if ( '' !== $folder_path ) {
+					if ( isset( $folder_paths[ $folder_path ] ) ) {
+						return array(
+							'action'          => 'assign',
+							'folder_id'       => $folder_paths[ $folder_path ],
+							'new_folder_path' => null,
+							'confidence'      => $confidence,
+							'reason'          => $reason,
+						);
+					}
+
+					// Case-insensitive exact match.
+					foreach ( $folder_paths as $path => $id ) {
+						if ( 0 === strcasecmp( $path, $folder_path ) ) {
+							return array(
+								'action'          => 'assign',
+								'folder_id'       => $id,
+								'new_folder_path' => null,
+								'confidence'      => $confidence,
+								'reason'          => $reason,
+							);
+						}
+					}
+				}
+
+				// If there are no existing folders provided (e.g., Reorganize All preview),
+				// and the model still provided a folder_path, treat it as a request to create that folder.
+				if ( '' !== $folder_path && empty( $folder_paths ) ) {
+					return array(
+						'action'          => 'create',
+						'folder_id'       => null,
+						'new_folder_path' => $folder_path,
+						'confidence'      => $confidence * 0.9,
+						'reason'          => $reason ?: __( 'Folder not found; treated as new folder suggestion.', 'vmfa-ai-organizer' ),
+					);
+				}
+
+				// Folder not found, skip.
 				return array(
 					'action'          => 'skip',
 					'folder_id'       => null,
 					'new_folder_path' => null,
 					'confidence'      => 0.0,
-					'reason'          => sprintf(
-						/* translators: %d: folder ID */
-						__( 'Folder ID %d not found.', 'vmfa-ai-organizer' ),
-						$folder_id
-					),
+					'reason'          => $folder_id
+						? sprintf(
+							/* translators: %d: folder ID */
+							__( 'Folder ID %d not found.', 'vmfa-ai-organizer' ),
+							$folder_id
+						)
+						: __( 'Folder not found.', 'vmfa-ai-organizer' ),
 				);
 			}
 

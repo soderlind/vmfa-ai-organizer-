@@ -105,6 +105,10 @@ class OllamaProvider extends AbstractProvider {
 				'folder_id'       => array(
 					'type' => array( 'integer', 'null' ),
 				),
+				'folder_path'     => array(
+					'type'      => array( 'string', 'null' ),
+					'maxLength' => 200,
+				),
 				'new_folder_path' => array(
 					'type'      => array( 'string', 'null' ),
 					'maxLength' => 100,
@@ -120,7 +124,7 @@ class OllamaProvider extends AbstractProvider {
 					'description' => 'Brief explanation, max 2 sentences',
 				),
 			),
-			'required'   => array( 'action', 'folder_id', 'new_folder_path', 'confidence', 'reason' ),
+			'required'   => array( 'action', 'folder_id', 'folder_path', 'new_folder_path', 'confidence', 'reason' ),
 		);
 
 		$response = $this->make_request(
