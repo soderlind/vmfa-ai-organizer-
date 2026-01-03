@@ -134,18 +134,6 @@ class OllamaController {
 		}
 
 		$names = array_values( array_unique( array_filter( $names ) ) );
-
-		// Add suffix-less variants for :latest to preserve compatibility with older settings.
-		foreach ( $names as $name ) {
-			if ( str_ends_with( $name, ':latest' ) ) {
-				$base = substr( $name, 0, -strlen( ':latest' ) );
-				if ( '' !== $base ) {
-					$names[] = $base;
-				}
-			}
-		}
-
-		$names = array_values( array_unique( array_filter( $names ) ) );
 		sort( $names, SORT_NATURAL | SORT_FLAG_CASE );
 
 		$models = array_map(

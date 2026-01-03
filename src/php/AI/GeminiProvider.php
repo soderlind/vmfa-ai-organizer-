@@ -74,8 +74,9 @@ class GeminiProvider extends AbstractProvider {
 					),
 				),
 				'generationConfig' => array(
-					'maxOutputTokens' => 500,
-					'temperature'     => 0.3,
+					'maxOutputTokens'  => 500,
+					'temperature'      => 0.3,
+					'responseMimeType' => 'application/json',
 				),
 			)
 		);

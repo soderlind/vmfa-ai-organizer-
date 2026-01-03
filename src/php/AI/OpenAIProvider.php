@@ -104,7 +104,7 @@ class OpenAIProvider extends AbstractProvider {
 
 		// Build request body - Azure doesn't need model in body.
 		$body = array(
-			'messages'    => array(
+			'messages'        => array(
 				array(
 					'role'    => 'system',
 					'content' => $this->get_system_prompt(),
@@ -114,8 +114,9 @@ class OpenAIProvider extends AbstractProvider {
 					'content' => $user_content,
 				),
 			),
-			'max_tokens'  => 500,
-			'temperature' => 0.3,
+			'max_tokens'      => 500,
+			'temperature'     => 0.3,
+			'response_format' => array( 'type' => 'json_object' ),
 		);
 
 		if ( 'openai' === $type ) {

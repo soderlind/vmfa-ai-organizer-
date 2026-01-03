@@ -91,7 +91,7 @@ class SettingsPage {
 		'ollama_model'      => array(
 			'env'     => 'VMFA_AI_OLLAMA_MODEL',
 			'const'   => 'VMFA_AI_OLLAMA_MODEL',
-			'default' => 'llama3.2',
+			'default' => 'llama3.2-vision:latest',
 		),
 		'ollama_timeout'    => array(
 			'env'     => 'VMFA_AI_OLLAMA_TIMEOUT',
@@ -1111,6 +1111,8 @@ class SettingsPage {
 		$is_locked   = $this->is_setting_locked( $key );
 
 		?>
+		<!-- Hidden field to ensure the key exists in POST even when checkbox is unchecked -->
+		<input type="hidden" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $key ); ?>]" value="0">
 		<label>
 			<input 
 				type="checkbox" 
@@ -1399,8 +1401,12 @@ class SettingsPage {
 			$sanitized['ollama_timeout'] = max( 10, min( 600, absint( $input['ollama_timeout'] ) ) );
 		}
 
-		// Checkbox.
-		$sanitized['allow_new_folders'] = ! empty( $input['allow_new_folders'] );
+		// Checkbox - only update if the form field was submitted (check for hidden field or checkbox).
+		// We use array_key_exists because unchecked checkboxes are not sent, but we need to know
+		// if this form includes the checkbox at all (Organization Settings tab does, AI Provider tab doesn't).
+		if ( array_key_exists( 'allow_new_folders', $input ) ) {
+			$sanitized['allow_new_folders'] = ! empty( $input['allow_new_folders'] );
+		}
 
 		// Validate AI configuration if provider is set.
 		if ( ! empty( $sanitized['ai_provider'] ) ) {

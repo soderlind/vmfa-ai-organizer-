@@ -79,8 +79,8 @@ class GrokProvider extends AbstractProvider {
 		$response = $this->make_request(
 			self::API_URL,
 			array(
-				'model'       => $model,
-				'messages'    => array(
+				'model'           => $model,
+				'messages'        => array(
 					array(
 						'role'    => 'system',
 						'content' => $this->get_system_prompt(),
@@ -90,8 +90,9 @@ class GrokProvider extends AbstractProvider {
 						'content' => $user_content,
 					),
 				),
-				'max_tokens'  => 500,
-				'temperature' => 0.3,
+				'max_tokens'      => 500,
+				'temperature'     => 0.3,
+				'response_format' => array( 'type' => 'json_object' ),
 			),
 			array(
 				'Authorization' => "Bearer {$api_key}",
