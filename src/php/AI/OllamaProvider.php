@@ -95,8 +95,8 @@ class OllamaProvider extends AbstractProvider {
 		}
 
 		// Define JSON schema for structured output - forces valid JSON response.
-		$json_schema = $this->get_basic_result_json_schema();
-		$json_schema['properties']['reason']['description'] = 'Brief explanation, max 2 sentences';
+		$json_schema                                        = $this->get_basic_result_json_schema();
+		$json_schema[ 'properties' ][ 'reason' ][ 'description' ] = 'Brief explanation, max 2 sentences';
 
 		$response = $this->make_request(
 			rtrim( $base_url, '/' ) . '/api/chat',

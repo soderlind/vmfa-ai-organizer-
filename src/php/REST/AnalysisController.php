@@ -310,10 +310,10 @@ class AnalysisController extends WP_REST_Controller {
 
 		$result = $this->scanner_service->start_scan( $mode, $dry_run );
 
-		if ( ! $result['success'] ) {
+		if ( ! $result[ 'success' ] ) {
 			return new WP_Error(
 				'scan_error',
-				$result['message'],
+				$result[ 'message' ],
 				array( 'status' => 400 )
 			);
 		}
@@ -321,8 +321,8 @@ class AnalysisController extends WP_REST_Controller {
 		return new WP_REST_Response(
 			array(
 				'success' => true,
-				'message' => $result['message'],
-				'total'   => $result['total'] ?? 0,
+				'message' => $result[ 'message' ],
+				'total'   => $result[ 'total' ] ?? 0,
 			),
 			200
 		);
@@ -337,28 +337,28 @@ class AnalysisController extends WP_REST_Controller {
 		$progress = $this->scanner_service->get_progress();
 
 		// Ensure processed never exceeds total (safety cap).
-		$processed = min( $progress['processed'], $progress['total'] );
+		$processed = min( $progress[ 'processed' ], $progress[ 'total' ] );
 
 		// Calculate percentage (capped at 100%).
 		$percentage = 0;
-		if ( $progress['total'] > 0 ) {
-			$percentage = min( 100, round( ( $processed / $progress['total'] ) * 100, 1 ) );
+		if ( $progress[ 'total' ] > 0 ) {
+			$percentage = min( 100, round( ( $processed / $progress[ 'total' ] ) * 100, 1 ) );
 		}
 
 		return new WP_REST_Response(
 			array(
-				'status'       => $progress['status'],
-				'mode'         => $progress['mode'],
-				'dry_run'      => $progress['dry_run'],
-				'total'        => $progress['total'],
+				'status'       => $progress[ 'status' ],
+				'mode'         => $progress[ 'mode' ],
+				'dry_run'      => $progress[ 'dry_run' ],
+				'total'        => $progress[ 'total' ],
 				'processed'    => $processed,
 				'percentage'   => $percentage,
-				'applied'      => $progress['applied'] ?? 0,
-				'failed'       => $progress['failed'] ?? 0,
-				'results'      => $progress['results'],
-				'started_at'   => $progress['started_at'],
-				'completed_at' => $progress['completed_at'] ?? null,
-				'error'        => $progress['error'],
+				'applied'      => $progress[ 'applied' ] ?? 0,
+				'failed'       => $progress[ 'failed' ] ?? 0,
+				'results'      => $progress[ 'results' ],
+				'started_at'   => $progress[ 'started_at' ],
+				'completed_at' => $progress[ 'completed_at' ] ?? null,
+				'error'        => $progress[ 'error' ],
 			),
 			200
 		);
@@ -372,10 +372,10 @@ class AnalysisController extends WP_REST_Controller {
 	public function cancel_scan(): WP_REST_Response|WP_Error {
 		$result = $this->scanner_service->cancel_scan();
 
-		if ( ! $result['success'] ) {
+		if ( ! $result[ 'success' ] ) {
 			return new WP_Error(
 				'cancel_error',
-				$result['message'],
+				$result[ 'message' ],
 				array( 'status' => 400 )
 			);
 		}
@@ -383,7 +383,7 @@ class AnalysisController extends WP_REST_Controller {
 		return new WP_REST_Response(
 			array(
 				'success' => true,
-				'message' => $result['message'],
+				'message' => $result[ 'message' ],
 			),
 			200
 		);
@@ -417,10 +417,10 @@ class AnalysisController extends WP_REST_Controller {
 
 		$result = $this->scanner_service->apply_cached_results( $mode );
 
-		if ( ! $result['success'] ) {
+		if ( ! $result[ 'success' ] ) {
 			return new WP_Error(
 				'apply_error',
-				$result['message'],
+				$result[ 'message' ],
 				array( 'status' => 400 )
 			);
 		}
@@ -428,9 +428,9 @@ class AnalysisController extends WP_REST_Controller {
 		return new WP_REST_Response(
 			array(
 				'success' => true,
-				'message' => $result['message'],
-				'applied' => $result['applied'] ?? 0,
-				'failed'  => $result['failed'] ?? 0,
+				'message' => $result[ 'message' ],
+				'applied' => $result[ 'applied' ] ?? 0,
+				'failed'  => $result[ 'failed' ] ?? 0,
 			),
 			200
 		);
@@ -593,10 +593,10 @@ class AnalysisController extends WP_REST_Controller {
 
 		$result = $this->backup_service->restore();
 
-		if ( ! $result['success'] ) {
+		if ( ! $result[ 'success' ] ) {
 			return new WP_Error(
 				'restore_failed',
-				$result['error'],
+				$result[ 'error' ],
 				array( 'status' => 500 )
 			);
 		}
@@ -605,8 +605,8 @@ class AnalysisController extends WP_REST_Controller {
 			array(
 				'success'              => true,
 				'message'              => __( 'Backup restored successfully.', 'vmfa-ai-organizer' ),
-				'folders_restored'     => $result['folders_restored'],
-				'assignments_restored' => $result['assignments_restored'],
+				'folders_restored'     => $result[ 'folders_restored' ],
+				'assignments_restored' => $result[ 'assignments_restored' ],
 			),
 			200
 		);

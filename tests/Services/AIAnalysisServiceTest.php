@@ -22,7 +22,7 @@ class AIAnalysisServiceTest extends BrainMonkeyTestCase {
 	 * Test double for AIAnalysisService.
 	 */
 	private function make_test_service( array $metadata, array $folder_paths ): AIAnalysisService {
-		return new class( $metadata, $folder_paths ) extends AIAnalysisService {
+		return new class ($metadata, $folder_paths) extends AIAnalysisService {
 			/** @var array<string, mixed> */
 			private array $test_metadata;
 			/** @var array<string, int> */
@@ -124,10 +124,10 @@ class AIAnalysisServiceTest extends BrainMonkeyTestCase {
 
 		$result = $service->analyze_media( 123 );
 
-		$this->assertSame( 'create', $result['action'] );
-		$this->assertSame( 'Documents', $result['new_folder_path'] );
-		$this->assertSame( 'Documents', $result['folder_name'] );
-		$this->assertSame( 'report.pdf', $result['filename'] );
+		$this->assertSame( 'create', $result[ 'action' ] );
+		$this->assertSame( 'Documents', $result[ 'new_folder_path' ] );
+		$this->assertSame( 'Documents', $result[ 'folder_name' ] );
+		$this->assertSame( 'report.pdf', $result[ 'filename' ] );
 	}
 
 	/**
@@ -150,9 +150,9 @@ class AIAnalysisServiceTest extends BrainMonkeyTestCase {
 
 		$result = $service->analyze_media( 124 );
 
-		$this->assertSame( 'create', $result['action'] );
-		$this->assertSame( 'Videos', $result['new_folder_path'] );
-		$this->assertSame( 'Videos', $result['folder_name'] );
-		$this->assertSame( 'clip.mp4', $result['filename'] );
+		$this->assertSame( 'create', $result[ 'action' ] );
+		$this->assertSame( 'Videos', $result[ 'new_folder_path' ] );
+		$this->assertSame( 'Videos', $result[ 'folder_name' ] );
+		$this->assertSame( 'clip.mp4', $result[ 'filename' ] );
 	}
 }

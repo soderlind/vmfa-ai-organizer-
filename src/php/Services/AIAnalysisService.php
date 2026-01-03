@@ -147,7 +147,7 @@ class AIAnalysisService {
 
 		// For "reorganize_all" mode (even in dry-run/preview), simulate empty folders.
 		// This ensures the preview accurately shows what would happen after folders are deleted.
-		$progress = get_option( self::PROGRESS_OPTION, array() );
+		$progress          = get_option( self::PROGRESS_OPTION, array() );
 		$is_reorganize_all = 'reorganize_all' === ( $progress[ 'mode' ] ?? '' );
 		if ( $is_reorganize_all ) {
 			$folder_paths = array();

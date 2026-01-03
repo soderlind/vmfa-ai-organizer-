@@ -231,16 +231,16 @@ PROMPT;
 	 * @return string|array<int, array<string, mixed>>
 	 */
 	protected function build_openai_compatible_user_content( string $text_prompt, ?array $image_data, ?string $detail = null ): string|array {
-		if ( null === $image_data || empty( $image_data['base64'] ) ) {
+		if ( null === $image_data || empty( $image_data[ 'base64' ] ) ) {
 			return $text_prompt;
 		}
 
 		$image_url = array(
-			'url' => 'data:' . ( $image_data['mime_type'] ?? 'image/jpeg' ) . ';base64,' . $image_data['base64'],
+			'url' => 'data:' . ( $image_data[ 'mime_type' ] ?? 'image/jpeg' ) . ';base64,' . $image_data[ 'base64' ],
 		);
 
 		if ( null !== $detail && '' !== $detail ) {
-			$image_url['detail'] = $detail;
+			$image_url[ 'detail' ] = $detail;
 		}
 
 		return array(
@@ -282,7 +282,7 @@ PROMPT;
 		);
 
 		if ( null !== $model && '' !== $model ) {
-			$body['model'] = $model;
+			$body[ 'model' ] = $model;
 		}
 
 		return $body;
