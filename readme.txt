@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.2.4
+Stable tag: 0.3.0
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -130,14 +130,13 @@ Vision models can take 30+ seconds per image, and complex or high-resolution ima
 
 Use the "Reorganize All" scan mode. This removes all existing folder assignments and rebuilds your organization from scratch using the AI. Make sure to preview the results first with dry-run mode, and note that a backup is automatically created before reorganization.
 
-== Screenshots ==
-
-1. Media Scanner interface with real-time progress
-2. AI Provider configuration with multiple options
-3. Scan results preview before applying
-4. Backup and restore functionality
 
 == Changelog ==
+
+= 0.3.0 =
+* Deterministic type routing: documents go to "Documents" and videos go to "Videos" before image AI analysis
+* Reorganize All preview: type-based routing respects simulated empty folders (avoids false assigns)
+* Documents/Videos folder names are deterministic (not translated)
 
 = 0.2.4 =
 * Improved reliability when AI returns invalid folder IDs (prompt now includes IDs and parser falls back to folder path)

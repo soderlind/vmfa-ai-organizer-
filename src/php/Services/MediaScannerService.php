@@ -17,6 +17,22 @@ use VmfaAiOrganizer\Plugin;
 class MediaScannerService {
 
 	/**
+	 * Valid scan modes.
+	 *
+	 * @var array<string>
+	 */
+	private const VALID_MODES = array( 'organize_unassigned', 'reanalyze_all', 'reorganize_all' );
+
+	/**
+	 * Get the valid scan modes.
+	 *
+	 * @return array<string>
+	 */
+	public function get_valid_modes(): array {
+		return self::VALID_MODES;
+	}
+
+	/**
 	 * Progress option name.
 	 */
 	private const PROGRESS_OPTION = 'vmfa_scan_progress';
@@ -81,18 +97,13 @@ class MediaScannerService {
 			);
 		}
 
-		// Check if a scan is already running.
-		$progress = $this->get_progress();
-		if ( 'running' === $progress[ 'status' ] ) {
-			return array(
-				'success' => false,
-				'message' => __( 'A scan is already in progress. Please wait for it to complete or cancel it.', 'vmfa-ai-organizer' ),
-			);
+		$already_running_error = $this->get_already_running_error();
+		if ( null !== $already_running_error ) {
+			return $already_running_error;
 		}
 
 		// Validate mode.
-		$valid_modes = array( 'organize_unassigned', 'reanalyze_all', 'reorganize_all' );
-		if ( ! in_array( $mode, $valid_modes, true ) ) {
+		if ( ! $this->is_valid_mode( $mode ) ) {
 			return array(
 				'success' => false,
 				'message' => __( 'Invalid scan mode.', 'vmfa-ai-organizer' ),
@@ -100,11 +111,7 @@ class MediaScannerService {
 		}
 
 		// Get attachment IDs based on mode.
-		if ( 'organize_unassigned' === $mode ) {
-			$attachment_ids = $this->analysis_service->get_unassigned_media_ids();
-		} else {
-			$attachment_ids = $this->analysis_service->get_all_media_ids();
-		}
+		$attachment_ids = $this->get_attachment_ids_for_mode( $mode );
 
 		if ( empty( $attachment_ids ) ) {
 			return array(
@@ -113,24 +120,8 @@ class MediaScannerService {
 			);
 		}
 
-		// For reorganize_all mode, create backup first.
-		if ( 'reorganize_all' === $mode && ! $dry_run ) {
-			$this->backup_service->export();
-		}
-
-		// Initialize progress.
-		$this->update_progress(
-			array(
-				'status'     => 'running',
-				'mode'       => $mode,
-				'dry_run'    => $dry_run,
-				'total'      => count( $attachment_ids ),
-				'processed'  => 0,
-				'results'    => array(),
-				'started_at' => time(),
-				'error'      => null,
-			)
-		);
+		$this->run_reorganize_all_preflight_for_scan_start( $mode, $dry_run );
+		$this->initialize_progress( $mode, $dry_run, count( $attachment_ids ) );
 
 		// Store attachment IDs for processing.
 		update_option( 'vmfa_scan_attachment_ids', $attachment_ids, false );
@@ -146,29 +137,8 @@ class MediaScannerService {
 			delete_option( self::DRYRUN_CACHE_OPTION );
 		}
 
-		$batch_size = (int) Plugin::get_instance()->get_setting( 'batch_size', 20 );
-
-		// For reorganize_all mode, schedule folder cleanup first (only when not previewing).
-		if ( 'reorganize_all' === $mode && ! $dry_run ) {
-			as_schedule_single_action(
-				time(),
-				'vmfa_cleanup_folders',
-				array(),
-				'vmfa-ai-organizer'
-			);
-		} else {
-			// Schedule first batch.
-			as_schedule_single_action(
-				time(),
-				'vmfa_process_media_batch',
-				array(
-					'batch_number' => 0,
-					'batch_size'   => $batch_size,
-					'dry_run'      => $dry_run,
-				),
-				'vmfa-ai-organizer'
-			);
-		}
+		$batch_size = $this->get_batch_size();
+		$this->schedule_scan_start_actions( $mode, $dry_run, $batch_size );
 
 		return array(
 			'success' => true,
@@ -202,19 +172,7 @@ class MediaScannerService {
 		// Clear session-suggested folders for fresh start.
 		delete_option( 'vmfa_session_suggested_folders' );
 
-		// Schedule first batch.
-		$batch_size = (int) Plugin::get_instance()->get_setting( 'batch_size', 20 );
-
-		as_schedule_single_action(
-			time(),
-			'vmfa_process_media_batch',
-			array(
-				'batch_number' => 0,
-				'batch_size'   => $batch_size,
-				'dry_run'      => $progress[ 'dry_run' ] ?? false,
-			),
-			'vmfa-ai-organizer'
-		);
+		$this->schedule_first_batch( (bool) ( $progress[ 'dry_run' ] ?? false ), $this->get_batch_size() );
 	}
 
 	/**
@@ -236,21 +194,7 @@ class MediaScannerService {
 		// Safety check: if already processed all items, finalize.
 		$total = count( $attachment_ids );
 		if ( $progress[ 'processed' ] >= $total ) {
-			if ( ! $dry_run ) {
-				as_schedule_single_action(
-					time(),
-					'vmfa_apply_assignments',
-					array(),
-					'vmfa-ai-organizer'
-				);
-			} else {
-				as_schedule_single_action(
-					time(),
-					'vmfa_finalize_scan',
-					array(),
-					'vmfa-ai-organizer'
-				);
-			}
+			$this->schedule_completion( $dry_run );
 			return;
 		}
 
@@ -260,21 +204,7 @@ class MediaScannerService {
 
 		if ( empty( $batch_ids ) ) {
 			// No more batches, finalize.
-			if ( ! $dry_run ) {
-				as_schedule_single_action(
-					time(),
-					'vmfa_apply_assignments',
-					array(),
-					'vmfa-ai-organizer'
-				);
-			} else {
-				as_schedule_single_action(
-					time(),
-					'vmfa_finalize_scan',
-					array(),
-					'vmfa-ai-organizer'
-				);
-			}
+			$this->schedule_completion( $dry_run );
 			return;
 		}
 
@@ -412,39 +342,21 @@ class MediaScannerService {
 			);
 		}
 
-		// Check if a scan is already running.
-		$progress = $this->get_progress();
-		if ( 'running' === $progress[ 'status' ] ) {
+		$already_running_error = $this->get_already_running_error();
+		if ( null !== $already_running_error ) {
+			return $already_running_error;
+		}
+
+		if ( ! $this->is_valid_mode( $mode ) ) {
 			return array(
 				'success' => false,
-				'message' => __( 'A scan is already in progress. Please wait for it to complete or cancel it.', 'vmfa-ai-organizer' ),
+				'message' => __( 'Invalid scan mode.', 'vmfa-ai-organizer' ),
 			);
 		}
 
-		// For reorganize_all mode, create backup and cleanup folders first.
-		if ( 'reorganize_all' === $mode ) {
-			$this->backup_service->export();
+		$this->run_reorganize_all_preflight_for_apply_cached( $mode );
 
-			// Remove all existing folders (this also removes all media assignments).
-			$this->backup_service->remove_all_folders();
-
-			// Clear session-suggested folders for fresh start.
-			delete_option( 'vmfa_session_suggested_folders' );
-		}
-
-		// Initialize progress for applying cached results.
-		$this->update_progress(
-			array(
-				'status'     => 'running',
-				'mode'       => $mode,
-				'dry_run'    => false,
-				'total'      => count( $cached_results ),
-				'processed'  => 0,
-				'results'    => array(),
-				'started_at' => time(),
-				'error'      => null,
-			)
-		);
+		$this->initialize_progress( $mode, false, count( $cached_results ) );
 
 		$applied = 0;
 		$failed  = 0;
@@ -502,6 +414,180 @@ class MediaScannerService {
 			'applied' => $applied,
 			'failed'  => $failed,
 		);
+	}
+
+	/**
+	 * Check if a mode is valid.
+	 *
+	 * @param string $mode Scan mode.
+	 * @return bool
+	 */
+	private function is_valid_mode( string $mode ): bool {
+		return in_array( $mode, self::VALID_MODES, true );
+	}
+
+	/**
+	 * Get an error array if a scan is already running.
+	 *
+	 * @return array{success: bool, message: string}|null
+	 */
+	private function get_already_running_error(): ?array {
+		$progress = $this->get_progress();
+		if ( 'running' !== ( $progress[ 'status' ] ?? '' ) ) {
+			return null;
+		}
+
+		return array(
+			'success' => false,
+			'message' => __( 'A scan is already in progress. Please wait for it to complete or cancel it.', 'vmfa-ai-organizer' ),
+		);
+	}
+
+	/**
+	 * Get attachment IDs for a given scan mode.
+	 *
+	 * @param string $mode Scan mode.
+	 * @return array<int>
+	 */
+	private function get_attachment_ids_for_mode( string $mode ): array {
+		if ( 'organize_unassigned' === $mode ) {
+			return $this->analysis_service->get_unassigned_media_ids();
+		}
+
+		return $this->analysis_service->get_all_media_ids();
+	}
+
+	/**
+	 * Initialize scan progress.
+	 *
+	 * @param string $mode    Scan mode.
+	 * @param bool   $dry_run Whether this is a dry run.
+	 * @param int    $total   Total items.
+	 * @return void
+	 */
+	private function initialize_progress( string $mode, bool $dry_run, int $total ): void {
+		$this->update_progress(
+			array(
+				'status'     => 'running',
+				'mode'       => $mode,
+				'dry_run'    => $dry_run,
+				'total'      => $total,
+				'processed'  => 0,
+				'results'    => array(),
+				'started_at' => time(),
+				'error'      => null,
+			)
+		);
+	}
+
+	/**
+	 * Get configured batch size.
+	 *
+	 * @return int
+	 */
+	private function get_batch_size(): int {
+		return (int) Plugin::get_instance()->get_setting( 'batch_size', 20 );
+	}
+
+	/**
+	 * Schedule actions for starting a scan.
+	 *
+	 * @param string $mode       Scan mode.
+	 * @param bool   $dry_run    Whether this is a dry run.
+	 * @param int    $batch_size Batch size.
+	 * @return void
+	 */
+	private function schedule_scan_start_actions( string $mode, bool $dry_run, int $batch_size ): void {
+		// For reorganize_all mode, schedule folder cleanup first (only when not previewing).
+		if ( 'reorganize_all' === $mode && ! $dry_run ) {
+			as_schedule_single_action(
+				time(),
+				'vmfa_cleanup_folders',
+				array(),
+				'vmfa-ai-organizer'
+			);
+			return;
+		}
+
+		$this->schedule_first_batch( $dry_run, $batch_size );
+	}
+
+	/**
+	 * Schedule the first batch processing action.
+	 *
+	 * @param bool $dry_run    Whether this is a dry run.
+	 * @param int  $batch_size Batch size.
+	 * @return void
+	 */
+	private function schedule_first_batch( bool $dry_run, int $batch_size ): void {
+		as_schedule_single_action(
+			time(),
+			'vmfa_process_media_batch',
+			array(
+				'batch_number' => 0,
+				'batch_size'   => $batch_size,
+				'dry_run'      => $dry_run,
+			),
+			'vmfa-ai-organizer'
+		);
+	}
+
+	/**
+	 * Schedule scan completion step based on dry-run.
+	 *
+	 * @param bool $dry_run Whether this is a dry run.
+	 * @return void
+	 */
+	private function schedule_completion( bool $dry_run ): void {
+		if ( ! $dry_run ) {
+			as_schedule_single_action(
+				time(),
+				'vmfa_apply_assignments',
+				array(),
+				'vmfa-ai-organizer'
+			);
+			return;
+		}
+
+		as_schedule_single_action(
+			time(),
+			'vmfa_finalize_scan',
+			array(),
+			'vmfa-ai-organizer'
+		);
+	}
+
+	/**
+	 * Preflight for reorganize_all when starting a scan.
+	 *
+	 * @param string $mode    Scan mode.
+	 * @param bool   $dry_run Whether this is a dry run.
+	 * @return void
+	 */
+	private function run_reorganize_all_preflight_for_scan_start( string $mode, bool $dry_run ): void {
+		if ( 'reorganize_all' === $mode && ! $dry_run ) {
+			$this->backup_service->export();
+		}
+	}
+
+	/**
+	 * Preflight for reorganize_all when applying cached dry-run results.
+	 *
+	 * @param string $mode Scan mode.
+	 * @return void
+	 */
+	private function run_reorganize_all_preflight_for_apply_cached( string $mode ): void {
+		if ( 'reorganize_all' !== $mode ) {
+			return;
+		}
+
+		$this->backup_service->export();
+
+		// Remove all existing folders (this also removes all media assignments).
+		$this->backup_service->remove_all_folders();
+
+		// Clear session-suggested folders for fresh start.
+		delete_option( 'vmfa_session_suggested_folders' );
 	}
 
 	/**

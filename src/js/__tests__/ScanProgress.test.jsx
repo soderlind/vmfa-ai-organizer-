@@ -1,14 +1,14 @@
 /**
  * Tests for ScanProgress component.
  *
- * @package VmfaAiOrganizer
+ * @package
  */
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ScanProgress } from '../components/ScanProgress';
 
-describe( 'ScanProgress', () => {
+describe('ScanProgress', () => {
 	const defaultStatus = {
 		status: 'running',
 		mode: 'organize_unassigned',
@@ -19,36 +19,36 @@ describe( 'ScanProgress', () => {
 		applied: 0,
 		failed: 0,
 		results: [],
-		started_at: Math.floor( Date.now() / 1000 ) - 60,
+		started_at: Math.floor(Date.now() / 1000) - 60,
 	};
 
-	it( 'should render progress information', () => {
+	it('should render progress information', () => {
 		render(
 			<ScanProgress
-				status={ defaultStatus }
-				onCancel={ vi.fn() }
-				onReset={ vi.fn() }
-				isLoading={ false }
+				status={defaultStatus}
+				onCancel={vi.fn()}
+				onReset={vi.fn()}
+				isLoading={false}
 			/>
 		);
 
-		expect( screen.getByText( /50 \/ 100/ ) ).toBeInTheDocument();
-	} );
+		expect(screen.getByText(/50 \/ 100/)).toBeInTheDocument();
+	});
 
-	it( 'should show cancel button when running', () => {
+	it('should show cancel button when running', () => {
 		render(
 			<ScanProgress
-				status={ defaultStatus }
-				onCancel={ vi.fn() }
-				onReset={ vi.fn() }
-				isLoading={ false }
+				status={defaultStatus}
+				onCancel={vi.fn()}
+				onReset={vi.fn()}
+				isLoading={false}
 			/>
 		);
 
-		expect( screen.getByText( 'Cancel Scan' ) ).toBeInTheDocument();
-	} );
+		expect(screen.getByText('Cancel Scan')).toBeInTheDocument();
+	});
 
-	it( 'should show reset button when completed', () => {
+	it('should show reset button when completed', () => {
 		const completedStatus = {
 			...defaultStatus,
 			status: 'completed',
@@ -58,17 +58,17 @@ describe( 'ScanProgress', () => {
 
 		render(
 			<ScanProgress
-				status={ completedStatus }
-				onCancel={ vi.fn() }
-				onReset={ vi.fn() }
-				isLoading={ false }
+				status={completedStatus}
+				onCancel={vi.fn()}
+				onReset={vi.fn()}
+				isLoading={false}
 			/>
 		);
 
-		expect( screen.getByText( 'Start New Scan' ) ).toBeInTheDocument();
-	} );
+		expect(screen.getByText('Start New Scan')).toBeInTheDocument();
+	});
 
-	it( 'should display preview badge for dry run', () => {
+	it('should display preview badge for dry run', () => {
 		const dryRunStatus = {
 			...defaultStatus,
 			dry_run: true,
@@ -76,17 +76,17 @@ describe( 'ScanProgress', () => {
 
 		render(
 			<ScanProgress
-				status={ dryRunStatus }
-				onCancel={ vi.fn() }
-				onReset={ vi.fn() }
-				isLoading={ false }
+				status={dryRunStatus}
+				onCancel={vi.fn()}
+				onReset={vi.fn()}
+				isLoading={false}
 			/>
 		);
 
-		expect( screen.getByText( 'Preview' ) ).toBeInTheDocument();
-	} );
+		expect(screen.getByText('Preview')).toBeInTheDocument();
+	});
 
-	it( 'should show applied and failed counts when completed', () => {
+	it('should show applied and failed counts when completed', () => {
 		const completedStatus = {
 			...defaultStatus,
 			status: 'completed',
@@ -98,18 +98,18 @@ describe( 'ScanProgress', () => {
 
 		render(
 			<ScanProgress
-				status={ completedStatus }
-				onCancel={ vi.fn() }
-				onReset={ vi.fn() }
-				isLoading={ false }
+				status={completedStatus}
+				onCancel={vi.fn()}
+				onReset={vi.fn()}
+				isLoading={false}
 			/>
 		);
 
-		expect( screen.getByText( '95' ) ).toBeInTheDocument();
-		expect( screen.getByText( '5' ) ).toBeInTheDocument();
-	} );
+		expect(screen.getByText('95')).toBeInTheDocument();
+		expect(screen.getByText('5')).toBeInTheDocument();
+	});
 
-	it( 'should render recent results', () => {
+	it('should render recent results', () => {
 		const statusWithResults = {
 			...defaultStatus,
 			results: [
@@ -124,14 +124,14 @@ describe( 'ScanProgress', () => {
 
 		render(
 			<ScanProgress
-				status={ statusWithResults }
-				onCancel={ vi.fn() }
-				onReset={ vi.fn() }
-				isLoading={ false }
+				status={statusWithResults}
+				onCancel={vi.fn()}
+				onReset={vi.fn()}
+				isLoading={false}
 			/>
 		);
 
-		expect( screen.getByText( '#123' ) ).toBeInTheDocument();
-		expect( screen.getByText( '90%' ) ).toBeInTheDocument();
-	} );
-} );
+		expect(screen.getByText('#123')).toBeInTheDocument();
+		expect(screen.getByText('90%')).toBeInTheDocument();
+	});
+});

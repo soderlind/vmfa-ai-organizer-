@@ -61,40 +61,11 @@ class ExoProvider extends AbstractProvider {
 
 		// Exo uses OpenAI-compatible API.
 		// Note: Vision support depends on the model being used.
-		$user_content = $user_prompt;
-		if ( null !== $image_data && ! empty( $image_data[ 'base64' ] ) ) {
-			$user_content = array(
-				array(
-					'type' => 'text',
-					'text' => $user_prompt,
-				),
-				array(
-					'type'      => 'image_url',
-					'image_url' => array(
-						'url' => 'data:' . $image_data[ 'mime_type' ] . ';base64,' . $image_data[ 'base64' ],
-					),
-				),
-			);
-		}
+		$user_content = $this->build_openai_compatible_user_content( $user_prompt, $image_data );
 
 		$response = $this->make_request(
 			rtrim( $base_url, '/' ) . '/v1/chat/completions',
-			array(
-				'model'           => $model,
-				'messages'        => array(
-					array(
-						'role'    => 'system',
-						'content' => $this->get_system_prompt(),
-					),
-					array(
-						'role'    => 'user',
-						'content' => $user_content,
-					),
-				),
-				'max_tokens'      => 500,
-				'temperature'     => 0.3,
-				'response_format' => array( 'type' => 'json_object' ),
-			)
+			$this->build_openai_compatible_chat_body( $model, $user_content, 500, 0.3 )
 		);
 
 		if ( ! $response[ 'success' ] ) {
