@@ -387,10 +387,16 @@ You must select and configure an AI provider in **Media → AI Organizer → AI 
 
 ### Ollama timeout errors
 
-1. Increase the **Ollama Timeout** setting (default is 120 seconds)
-2. Larger models take longer to load into memory on first request
-3. Consider using a smaller/faster model for quicker responses
-4. Ensure your hardware meets the model's requirements (RAM/VRAM)
+Vision models can take 30+ seconds per image, and complex or high-resolution images may take even longer. If you're seeing timeout errors:
+
+1. Increase the **Ollama Timeout** setting in the AI Provider tab (default is 120 seconds, max 600 seconds)
+2. Or add to `wp-config.php`:
+   ```php
+   define( 'VMFA_AI_OLLAMA_TIMEOUT', 180 ); // 3 minutes
+   ```
+3. Larger models take longer to load into memory on first request
+4. Consider using a smaller/faster model for quicker responses (e.g., `moondream` instead of `llama3.2-vision`)
+5. Ensure your hardware meets the model's requirements (RAM/VRAM)
 
 ### Exo connection issues
 

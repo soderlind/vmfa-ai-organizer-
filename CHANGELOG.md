@@ -6,6 +6,56 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.2.3] - 2026-01-03
+
+### Fixed
+
+- **Ollama Structured JSON Output**: Added JSON schema-based structured output to Ollama requests
+  - Uses Ollama's `format` parameter with full JSON schema to guarantee valid JSON responses
+  - Eliminates JSON parse errors from malformed or truncated responses
+
+- **Truncated Response Recovery**: Added `try_fix_truncated_json()` to salvage data from incomplete AI responses
+  - Extracts individual fields using regex when JSON parsing fails
+  - Allows scan to continue even when AI response is cut off mid-sentence
+
+- **Ollama Token Limit**: Added `num_predict: 300` to Ollama requests to ensure complete responses
+  - Added `maxLength` constraints to schema fields to encourage shorter output
+
+### Changed
+
+- **JSON Response Format for All Providers**: Added explicit JSON response format to all AI providers
+  - OpenAI/Azure: Added `response_format: { type: "json_object" }`
+  - Gemini: Added `responseMimeType: "application/json"`
+  - Grok/Exo: Added `response_format: { type: "json_object" }` (OpenAI-compatible)
+
+- **Unified System Prompt Schema**: Aligned system prompt with Ollama's structured output schema
+  - Changed action values from `assign/create` to `existing/new/skip`
+  - Changed from `folder_path` to `folder_id` + `new_folder_path`
+  - Updated `parse_response()` to handle both old and new schema formats
+
+- **Ollama Model Matching**: Fixed model matching in `test()` to use exact matching with suffix handling
+  - Default model changed to `llama3.2-vision:latest` for vision capabilities
+
+- **Ollama is_configured() Caching**: Added request-level cache to prevent redundant `/api/tags` calls
+  - Reduced API calls from 2 per image to 1 per batch
+
+- **Cancel Scan Cleanup**: Cancel now properly cleans up Action Scheduler jobs
+  - Added `cleanup_action_scheduler_group()` to delete in-progress, pending, and failed actions
+
+- **Shorter AI Reasons**: Updated prompt to request "One brief sentence (max 20 words)" for reason field
+
+
+## [0.2.2] - 2026-01-03
+
+### Fixed
+
+- **JSON Parse Error with Ollama**: Fixed "Unexpected control character" JSON parse errors when Ollama returns responses containing soft hyphens or other control characters
+  - Added sanitization to strip control characters (U+00AD soft hyphen, zero-width characters, etc.) before parsing AI responses
+
+- **Settings Checkbox Handling**: Fixed checkbox field to properly save unchecked state
+  - Added hidden input field to ensure checkbox state is always submitted
+
+
 ## [0.2.1] - 2026-01-02
 
 ### Fixed
@@ -255,6 +305,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bundles Action Scheduler 3.9.3 for background processing
 
 
+[0.2.3]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.9...v0.2.0
 [0.1.9]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.1.7...v0.1.8

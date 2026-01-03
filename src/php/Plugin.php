@@ -212,7 +212,7 @@ final class Plugin {
 			'gemini_key'        => '',
 			'gemini_model'      => 'gemini-1.5-flash',
 			'ollama_url'        => 'http://localhost:11434',
-			'ollama_model'      => 'llama3.2',
+			'ollama_model'      => 'llama3.2-vision:latest',
 			'ollama_timeout'    => 120,
 			'grok_key'          => '',
 			'grok_model'        => 'grok-beta',

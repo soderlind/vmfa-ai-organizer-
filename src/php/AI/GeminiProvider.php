@@ -74,13 +74,14 @@ class GeminiProvider extends AbstractProvider {
 					),
 				),
 				'generationConfig' => array(
-					'maxOutputTokens' => 500,
-					'temperature'     => 0.3,
+					'maxOutputTokens'  => 500,
+					'temperature'      => 0.3,
+					'responseMimeType' => 'application/json',
 				),
 			)
 		);
 
-		if ( ! $response['success'] ) {
+		if ( ! $response[ 'success' ] ) {
 			return array(
 				'action'          => 'skip',
 				'folder_id'       => null,
@@ -89,12 +90,12 @@ class GeminiProvider extends AbstractProvider {
 				'reason'          => sprintf(
 					/* translators: %s: error message */
 					__( 'Gemini API error: %s', 'vmfa-ai-organizer' ),
-					$response['error']
+					$response[ 'error' ]
 				),
 			);
 		}
 
-		$content = $response['data']['candidates'][0]['content']['parts'][0]['text'] ?? '';
+		$content = $response[ 'data' ][ 'candidates' ][ 0 ][ 'content' ][ 'parts' ][ 0 ][ 'text' ] ?? '';
 
 		return $this->parse_response( $content, $folder_paths );
 	}
@@ -103,8 +104,8 @@ class GeminiProvider extends AbstractProvider {
 	 * {@inheritDoc}
 	 */
 	public function test( array $settings ): ?string {
-		$api_key = $settings['gemini_key'] ?? '';
-		$model   = $settings['gemini_model'] ?? 'gemini-1.5-flash';
+		$api_key = $settings[ 'gemini_key' ] ?? '';
+		$model   = $settings[ 'gemini_model' ] ?? 'gemini-1.5-flash';
 
 		if ( empty( $api_key ) ) {
 			return __( 'Gemini API key is required.', 'vmfa-ai-organizer' );
@@ -125,8 +126,8 @@ class GeminiProvider extends AbstractProvider {
 			)
 		);
 
-		if ( ! $response['success'] ) {
-			return $response['error'];
+		if ( ! $response[ 'success' ] ) {
+			return $response[ 'error' ];
 		}
 
 		return null;
@@ -145,10 +146,10 @@ class GeminiProvider extends AbstractProvider {
 	 */
 	public function get_available_models(): array {
 		return array(
-			'gemini-1.5-flash'   => 'Gemini 1.5 Flash (Fast, Free Tier)',
+			'gemini-1.5-flash'    => 'Gemini 1.5 Flash (Fast, Free Tier)',
 			'gemini-1.5-flash-8b' => 'Gemini 1.5 Flash-8B (Fastest)',
-			'gemini-1.5-pro'     => 'Gemini 1.5 Pro (Powerful)',
-			'gemini-2.0-flash'   => 'Gemini 2.0 Flash (Latest)',
+			'gemini-1.5-pro'      => 'Gemini 1.5 Pro (Powerful)',
+			'gemini-2.0-flash'    => 'Gemini 2.0 Flash (Latest)',
 		);
 	}
 
@@ -168,11 +169,11 @@ class GeminiProvider extends AbstractProvider {
 		$parts[] = array( 'text' => $text_prompt );
 
 		// Add image part if available.
-		if ( null !== $image_data && ! empty( $image_data['base64'] ) ) {
+		if ( null !== $image_data && ! empty( $image_data[ 'base64' ] ) ) {
 			$parts[] = array(
 				'inline_data' => array(
-					'mime_type' => $image_data['mime_type'],
-					'data'      => $image_data['base64'],
+					'mime_type' => $image_data[ 'mime_type' ],
+					'data'      => $image_data[ 'base64' ],
 				),
 			);
 		}

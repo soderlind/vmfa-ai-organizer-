@@ -288,6 +288,13 @@ class MediaScannerService {
 		$dryrun_cache    = $dry_run ? get_option( self::DRYRUN_CACHE_OPTION, array() ) : array();
 
 		foreach ( $batch_ids as $attachment_id ) {
+			// Check for cancellation between each item.
+			$current_progress = $this->get_progress();
+			if ( 'running' !== $current_progress[ 'status' ] ) {
+				// Scan was cancelled, stop processing.
+				return;
+			}
+
 			$result          = $this->analysis_service->analyze_media( (int) $attachment_id );
 			$batch_results[] = $result;
 
@@ -325,6 +332,13 @@ class MediaScannerService {
 				'results'   => $all_results,
 			)
 		);
+
+		// Check for cancellation before scheduling next batch.
+		$final_progress = $this->get_progress();
+		if ( 'running' !== $final_progress[ 'status' ] ) {
+			// Scan was cancelled, don't schedule next batch.
+			return;
+		}
 
 		// Schedule next batch.
 		as_schedule_single_action(
@@ -560,6 +574,9 @@ class MediaScannerService {
 		as_unschedule_all_actions( 'vmfa_finalize_scan', array(), 'vmfa-ai-organizer' );
 		as_unschedule_all_actions( 'vmfa_cleanup_folders', array(), 'vmfa-ai-organizer' );
 
+		// Cancel in-progress and failed actions for our group.
+		$this->cleanup_action_scheduler_group();
+
 		// Update progress.
 		$this->update_progress(
 			array(
@@ -576,6 +593,56 @@ class MediaScannerService {
 			'success' => true,
 			'message' => __( 'Scan cancelled successfully.', 'vmfa-ai-organizer' ),
 		);
+	}
+
+	/**
+	 * Cleanup all Action Scheduler actions for our group.
+	 *
+	 * This marks in-progress actions as cancelled and deletes failed actions
+	 * to prevent stale actions from blocking new scans.
+	 *
+	 * @return void
+	 */
+	private function cleanup_action_scheduler_group(): void {
+		if ( ! class_exists( 'ActionScheduler_Store' ) ) {
+			return;
+		}
+
+		$store = \ActionScheduler_Store::instance();
+
+		// Get all in-progress and pending actions for our group.
+		$statuses = array(
+			\ActionScheduler_Store::STATUS_PENDING,
+			\ActionScheduler_Store::STATUS_RUNNING,
+		);
+
+		foreach ( $statuses as $status ) {
+			$action_ids = $store->query_actions(
+				array(
+					'group'    => 'vmfa-ai-organizer',
+					'status'   => $status,
+					'per_page' => 100,
+				)
+			);
+
+			foreach ( $action_ids as $action_id ) {
+				// Mark as cancelled by deleting the action.
+				$store->delete_action( $action_id );
+			}
+		}
+
+		// Also clean up failed actions to start fresh.
+		$failed_action_ids = $store->query_actions(
+			array(
+				'group'    => 'vmfa-ai-organizer',
+				'status'   => \ActionScheduler_Store::STATUS_FAILED,
+				'per_page' => 100,
+			)
+		);
+
+		foreach ( $failed_action_ids as $action_id ) {
+			$store->delete_action( $action_id );
+		}
 	}
 
 	/**

@@ -80,8 +80,8 @@ class ExoProvider extends AbstractProvider {
 		$response = $this->make_request(
 			rtrim( $base_url, '/' ) . '/v1/chat/completions',
 			array(
-				'model'       => $model,
-				'messages'    => array(
+				'model'           => $model,
+				'messages'        => array(
 					array(
 						'role'    => 'system',
 						'content' => $this->get_system_prompt(),
@@ -91,8 +91,9 @@ class ExoProvider extends AbstractProvider {
 						'content' => $user_content,
 					),
 				),
-				'max_tokens'  => 500,
-				'temperature' => 0.3,
+				'max_tokens'      => 500,
+				'temperature'     => 0.3,
+				'response_format' => array( 'type' => 'json_object' ),
 			)
 		);
 

@@ -80,18 +80,18 @@ Animals, Nature, People, Buildings, Food, Travel, Events, Art, Sports, Technolog
 Transportation, Water, Plants, Music, Fashion, Documents, Videos
 
 ## Rules:
-- ALWAYS describe what you SEE in the image first
+- ALWAYS analyze what you SEE in the image first
 - Base your folder decision primarily on visual content
 - Use metadata only to supplement your visual analysis
 - When uncertain, choose a broader category
 
-Respond with valid JSON only, no markdown formatting:
+Respond with valid JSON only. No markdown formatting, no code blocks:
 {
-    "visual_description": "Brief description of what is visible in the image",
-    "action": "assign" or "create",
-    "folder_path": "path/to/folder (in {$language_name})",
+    "action": "existing" (use existing folder), "new" (create new folder), or "skip" (cannot categorize),
+    "folder_id": integer ID of existing folder to use, or null if action is "new" or "skip",
+    "new_folder_path": "path/to/new/folder (in {$language_name})" if action is "new", otherwise null,
     "confidence": 0.0 to 1.0,
-    "reason": "Why this folder based on visual content"
+    "reason": "One brief sentence explaining the folder choice (max 20 words)"
 }
 PROMPT;
 	}
@@ -150,10 +150,25 @@ PROMPT;
 
 		$status_code = wp_remote_retrieve_response_code( $response );
 		$body        = wp_remote_retrieve_body( $response );
-		$data        = json_decode( $body, true );
+
+		// Sanitize response body to remove control characters before JSON parsing.
+		$body = preg_replace( '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $body );
+
+		$data = json_decode( $body, true );
 
 		if ( $status_code < 200 || $status_code >= 300 ) {
-			$error_message = $data[ 'error' ][ 'message' ] ?? $data[ 'error' ] ?? "HTTP {$status_code} error";
+			// Extract error message from response or use a generic message.
+			$error_message = "HTTP {$status_code} error";
+			if ( is_array( $data ) ) {
+				if ( isset( $data[ 'error' ][ 'message' ] ) ) {
+					$error_message = $data[ 'error' ][ 'message' ];
+				} elseif ( isset( $data[ 'error' ] ) && is_string( $data[ 'error' ] ) ) {
+					$error_message = $data[ 'error' ];
+				}
+			} elseif ( ! empty( $body ) ) {
+				// If JSON parsing failed, use sanitized raw body (truncated).
+				$error_message = "HTTP {$status_code}: " . substr( $body, 0, 200 );
+			}
 			return array(
 				'success' => false,
 				'data'    => $data,
@@ -299,6 +314,23 @@ PROMPT;
 		}
 		$response = trim( $response );
 
+		// Sanitize control characters that break JSON parsing.
+		// Remove all control characters except tab, newline, carriage return.
+		$response = preg_replace( '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $response );
+		// Remove soft hyphens and zero-width characters (common in LLM output).
+		$response = preg_replace( '/[\x{00AD}\x{00A0}\x{200B}-\x{200D}\x{FEFF}\x{2028}\x{2029}]/u', '', $response );
+		// Remove any remaining non-printable characters that might break JSON.
+		// This catches extended control characters in Latin-1 supplement.
+		$response = preg_replace( '/[\x{0080}-\x{009F}]/u', '', $response );
+
+		// Fix unescaped newlines inside JSON string values.
+		// LLMs sometimes return multi-line strings which are invalid JSON.
+		$response = $this->fix_json_string_newlines( $response );
+
+		// Fallback: if JSON still has control chars, try aggressive cleanup.
+		// Replace all newlines/carriage returns that aren't already escaped.
+		$response = preg_replace( '/(?<!\\\\)[\r\n]+/', ' ', $response );
+
 		// Check for empty response.
 		if ( empty( $response ) ) {
 			return array(
@@ -313,6 +345,12 @@ PROMPT;
 		$data       = json_decode( $response, true );
 		$json_error = json_last_error();
 
+		// If JSON parsing failed, try to salvage truncated JSON.
+		if ( JSON_ERROR_NONE !== $json_error ) {
+			$data       = $this->try_fix_truncated_json( $response );
+			$json_error = null === $data ? JSON_ERROR_SYNTAX : JSON_ERROR_NONE;
+		}
+
 		// Check for JSON parsing errors.
 		if ( JSON_ERROR_NONE !== $json_error ) {
 			$error_messages = array(
@@ -324,10 +362,21 @@ PROMPT;
 			);
 			$error_msg      = $error_messages[ $json_error ] ?? "Unknown error (code: {$json_error})";
 
-			// Truncate response for error message.
-			$truncated = strlen( $original_response ) > 100
-				? substr( $original_response, 0, 100 ) . '...'
-				: $original_response;
+			// Find control characters in SANITIZED response for debugging.
+			$control_chars = array();
+			for ( $i = 0; $i < strlen( $response ); $i++ ) {
+				$ord = ord( $response[ $i ] );
+				// Control chars are 0-31 (except tab=9, lf=10, cr=13) and 127.
+				if ( ( $ord < 32 && ! in_array( $ord, array( 9, 10, 13 ), true ) ) || 127 === $ord ) {
+					$control_chars[] = sprintf( 'pos %d: 0x%02X', $i, $ord );
+				}
+			}
+			$control_info = ! empty( $control_chars )
+				? ' [SANITIZED has ctrl chars: ' . implode( ', ', array_slice( $control_chars, 0, 5 ) ) . ']'
+				: '';
+
+			// Show sanitized response with visible newlines.
+			$debug_response = str_replace( array( "\r", "\n", "\t" ), array( '\\r', '\\n', '\\t' ), $response );
 
 			return array(
 				'action'          => 'skip',
@@ -335,10 +384,10 @@ PROMPT;
 				'new_folder_path' => null,
 				'confidence'      => 0.0,
 				'reason'          => sprintf(
-					/* translators: 1: JSON error message, 2: truncated response */
-					__( 'JSON parse error: %1$s. Response: %2$s', 'vmfa-ai-organizer' ),
+					'JSON error: %s.%s SANITIZED: %s',
 					$error_msg,
-					$truncated
+					$control_info,
+					$debug_response
 				),
 			);
 		}
@@ -353,6 +402,63 @@ PROMPT;
 			);
 		}
 
+		// Handle the new schema format (from structured outputs).
+		// New format uses: action: existing/new/skip, folder_id, new_folder_path.
+		if ( isset( $data[ 'action' ] ) && in_array( $data[ 'action' ], array( 'existing', 'new', 'skip' ), true ) ) {
+			$action          = $data[ 'action' ];
+			$folder_id       = isset( $data[ 'folder_id' ] ) ? (int) $data[ 'folder_id' ] : null;
+			$new_folder_path = $data[ 'new_folder_path' ] ?? null;
+			$confidence      = (float) ( $data[ 'confidence' ] ?? 0.5 );
+			$reason          = $data[ 'reason' ] ?? '';
+
+			// Validate folder_id exists for "existing" action.
+			if ( 'existing' === $action && $folder_id ) {
+				// Verify the folder_id is valid.
+				if ( in_array( $folder_id, $folder_paths, true ) ) {
+					return array(
+						'action'          => 'assign',
+						'folder_id'       => $folder_id,
+						'new_folder_path' => null,
+						'confidence'      => $confidence,
+						'reason'          => $reason,
+					);
+				}
+				// Folder ID not found, skip.
+				return array(
+					'action'          => 'skip',
+					'folder_id'       => null,
+					'new_folder_path' => null,
+					'confidence'      => 0.0,
+					'reason'          => sprintf(
+						/* translators: %d: folder ID */
+						__( 'Folder ID %d not found.', 'vmfa-ai-organizer' ),
+						$folder_id
+					),
+				);
+			}
+
+			if ( 'new' === $action && ! empty( $new_folder_path ) ) {
+				return array(
+					'action'          => 'create',
+					'folder_id'       => null,
+					'new_folder_path' => $new_folder_path,
+					'confidence'      => $confidence,
+					'reason'          => $reason,
+				);
+			}
+
+			// Skip action or fallback.
+			return array(
+				'action'          => 'skip',
+				'folder_id'       => null,
+				'new_folder_path' => null,
+				'confidence'      => $confidence,
+				'reason'          => $reason ?: __( 'AI chose to skip this image.', 'vmfa-ai-organizer' ),
+			);
+		}
+
+		// Handle the legacy format (from other providers or old prompts).
+		// Legacy format uses: action: assign/create, folder_path.
 		$action      = $data[ 'action' ] ?? 'assign';
 		$folder_path = $data[ 'folder_path' ] ?? '';
 		$confidence  = (float) ( $data[ 'confidence' ] ?? 0.5 );
@@ -417,6 +523,92 @@ PROMPT;
 			'confidence'      => $confidence,
 			'reason'          => $reason,
 		);
+	}
+
+	/**
+	 * Fix unescaped newlines inside JSON string values.
+	 *
+	 * LLMs sometimes return JSON with literal newlines inside string values,
+	 * which is invalid JSON. This method escapes them properly.
+	 *
+	 * @param string $json The potentially malformed JSON string.
+	 * @return string The fixed JSON string.
+	 */
+	protected function fix_json_string_newlines( string $json ): string {
+		// Use regex to find string values and escape newlines within them.
+		// Match JSON strings: "..." (handling escaped quotes).
+		// The 's' flag allows '.' to match newlines.
+		$pattern = '/"((?:[^"\\\\]|\\\\.)*)"/s';
+
+		return preg_replace_callback(
+			$pattern,
+			function ( $matches ) {
+				$content = $matches[ 1 ];
+				// Replace literal newlines with escaped versions.
+				$content = str_replace( array( "\r\n", "\r", "\n" ), '\\n', $content );
+				// Replace literal tabs with escaped versions.
+				$content = str_replace( "\t", '\\t', $content );
+				return '"' . $content . '"';
+			},
+			$json
+		);
+	}
+
+	/**
+	 * Try to fix and parse truncated JSON from LLM responses.
+	 *
+	 * LLMs sometimes run out of tokens and return incomplete JSON.
+	 * This attempts to extract usable data from partial responses.
+	 *
+	 * @param string $json The truncated JSON string.
+	 * @return array|null Parsed data or null if unrecoverable.
+	 */
+	protected function try_fix_truncated_json( string $json ): ?array {
+		// Try to extract known fields using regex.
+		$data = array();
+
+		// Extract action.
+		if ( preg_match( '/"action"\s*:\s*"(existing|new|skip)"/', $json, $matches ) ) {
+			$data[ 'action' ] = $matches[ 1 ];
+		}
+
+		// Extract folder_id.
+		if ( preg_match( '/"folder_id"\s*:\s*(\d+|null)/', $json, $matches ) ) {
+			$data[ 'folder_id' ] = 'null' === $matches[ 1 ] ? null : (int) $matches[ 1 ];
+		}
+
+		// Extract new_folder_path.
+		if ( preg_match( '/"new_folder_path"\s*:\s*"([^"]*)"/', $json, $matches ) ) {
+			$data[ 'new_folder_path' ] = $matches[ 1 ];
+		} elseif ( preg_match( '/"new_folder_path"\s*:\s*null/', $json ) ) {
+			$data[ 'new_folder_path' ] = null;
+		}
+
+		// Extract confidence.
+		if ( preg_match( '/"confidence"\s*:\s*([\d.]+)/', $json, $matches ) ) {
+			$data[ 'confidence' ] = (float) $matches[ 1 ];
+		}
+
+		// Extract reason (might be truncated, that's OK).
+		if ( preg_match( '/"reason"\s*:\s*"([^"]*)"?/', $json, $matches ) ) {
+			$reason = $matches[ 1 ];
+			// Clean up truncated reason.
+			$reason         = rtrim( $reason, '\\' );
+			$data[ 'reason' ] = $reason . ( strlen( $reason ) > 50 ? '...' : '' );
+		}
+
+		// Check if we have enough data to proceed.
+		if ( isset( $data[ 'action' ] ) && ( isset( $data[ 'folder_id' ] ) || isset( $data[ 'new_folder_path' ] ) ) ) {
+			// Fill in defaults for missing fields.
+			$data[ 'folder_id' ]       = $data[ 'folder_id' ] ?? null;
+			$data[ 'new_folder_path' ] = $data[ 'new_folder_path' ] ?? null;
+			$data[ 'confidence' ]      = $data[ 'confidence' ] ?? 0.7;
+			$data[ 'reason' ]          = $data[ 'reason' ] ?? 'Response was truncated but folder extracted.';
+
+			return $data;
+		}
+
+		return null;
 	}
 
 	/**

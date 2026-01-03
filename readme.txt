@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.2.1
+Stable tag: 0.2.3
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -120,6 +120,12 @@ JPEG, PNG, GIF, and WebP images up to 10MB. SVG and other formats are processed 
 
 It depends on your media library size and AI provider speed. The plugin processes media in batches using background jobs, so you can continue working while it runs.
 
+= Ollama is timing out on some images. How do I fix this? =
+
+Vision models can take 30+ seconds per image, and complex or high-resolution images may take longer. Increase the timeout in the AI Provider settings (default is 120 seconds, max 600 seconds), or add to wp-config.php:
+
+`define( 'VMFA_AI_OLLAMA_TIMEOUT', 180 ); // 3 minutes`
+
 = I have duplicate or messy folder structures. How do I clean them up? =
 
 Use the "Reorganize All" scan mode. This removes all existing folder assignments and rebuilds your organization from scratch using the AI. Make sure to preview the results first with dry-run mode, and note that a backup is automatically created before reorganization.
@@ -132,6 +138,18 @@ Use the "Reorganize All" scan mode. This removes all existing folder assignments
 4. Backup and restore functionality
 
 == Changelog ==
+
+= 0.2.3 =
+* Fixed Ollama JSON parse errors with structured JSON output schema
+* Added truncated response recovery to salvage data from incomplete AI responses
+* Added JSON response format to all AI providers (OpenAI, Gemini, Grok, Exo)
+* Fixed Ollama model matching and changed default to llama3.2-vision:latest
+* Added is_configured() caching to reduce redundant API calls
+* Cancel scan now properly cleans up Action Scheduler jobs
+
+= 0.2.2 =
+* Fixed JSON parse error when Ollama returns responses with control characters (soft hyphens)
+* Fixed settings checkbox to properly save unchecked state
 
 = 0.2.1 =
 * Fixed settings tab isolation: saving Organization Settings no longer clears AI Provider settings
@@ -175,10 +193,6 @@ Use the "Reorganize All" scan mode. This removes all existing folder assignments
 * Moved development documentation to separate file (docs/DEVELOPMENT.md)
 
 = 0.1.4 =
-* Improved user messaging: scan started notices now inform users they can leave the page and return later
-* Added initialization time hint when connecting to AI provider
-
-= 0.1.3 =
 * Folders are now sorted alphabetically in the preview modal and when creating virtual folders
 * Scan progress component now uses full available width for better visibility
 
