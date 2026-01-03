@@ -137,8 +137,8 @@ class OllamaProvider extends AbstractProvider {
 				'stream'   => false,
 				'format'   => $json_schema,
 				'options'  => array(
-					'temperature'  => 0.3,
-					'num_predict'  => 300,
+					'temperature' => 0.3,
+					'num_predict' => 300,
 				),
 			)
 		);
@@ -208,7 +208,7 @@ class OllamaProvider extends AbstractProvider {
 				break;
 			}
 			// Match base name without tag (e.g., "llama3.2:latest" matches "llama3.2:latest").
-			$base_model = explode( ':', $model )[ 0 ];
+			$base_model     = explode( ':', $model )[ 0 ];
 			$base_available = explode( ':', $available_model )[ 0 ];
 			if ( $base_model === $base_available ) {
 				$model_found = true;
@@ -256,21 +256,21 @@ class OllamaProvider extends AbstractProvider {
 	public function get_available_models(): array {
 		return array(
 			// Vision-capable models (recommended for image analysis).
-			'llama3.2-vision'    => 'Llama 3.2 Vision (11B) - Recommended',
-			'llava'              => 'LLaVA (7B) - Vision',
-			'llava:13b'          => 'LLaVA (13B) - Vision',
-			'llava:34b'          => 'LLaVA (34B) - Vision',
-			'bakllava'           => 'BakLLaVA (7B) - Vision',
-			'moondream'          => 'Moondream (1.8B) - Vision, Lightweight',
+			'llama3.2-vision' => 'Llama 3.2 Vision (11B) - Recommended',
+			'llava'           => 'LLaVA (7B) - Vision',
+			'llava:13b'       => 'LLaVA (13B) - Vision',
+			'llava:34b'       => 'LLaVA (34B) - Vision',
+			'bakllava'        => 'BakLLaVA (7B) - Vision',
+			'moondream'       => 'Moondream (1.8B) - Vision, Lightweight',
 			// Text-only models (for metadata-based analysis).
-			'llama3.2'           => 'Llama 3.2 (3B) - Text only',
-			'llama3.2:1b'        => 'Llama 3.2 (1B) - Text only, Lightweight',
-			'llama3.1'           => 'Llama 3.1 (8B) - Text only',
-			'mistral'            => 'Mistral (7B) - Text only',
-			'mixtral'            => 'Mixtral (8x7B) - Text only',
-			'phi3'               => 'Phi-3 (3.8B) - Text only',
-			'gemma2'             => 'Gemma 2 (9B) - Text only',
-			'qwen2.5'            => 'Qwen 2.5 (7B) - Text only',
+			'llama3.2'        => 'Llama 3.2 (3B) - Text only',
+			'llama3.2:1b'     => 'Llama 3.2 (1B) - Text only, Lightweight',
+			'llama3.1'        => 'Llama 3.1 (8B) - Text only',
+			'mistral'         => 'Mistral (7B) - Text only',
+			'mixtral'         => 'Mixtral (8x7B) - Text only',
+			'phi3'            => 'Phi-3 (3.8B) - Text only',
+			'gemma2'          => 'Gemma 2 (9B) - Text only',
+			'qwen2.5'         => 'Qwen 2.5 (7B) - Text only',
 		);
 	}
 }

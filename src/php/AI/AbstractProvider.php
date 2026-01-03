@@ -404,12 +404,12 @@ PROMPT;
 
 		// Handle the new schema format (from structured outputs).
 		// New format uses: action: existing/new/skip, folder_id, new_folder_path.
-		if ( isset( $data['action'] ) && in_array( $data['action'], array( 'existing', 'new', 'skip' ), true ) ) {
-			$action          = $data['action'];
-			$folder_id       = isset( $data['folder_id'] ) ? (int) $data['folder_id'] : null;
-			$new_folder_path = $data['new_folder_path'] ?? null;
-			$confidence      = (float) ( $data['confidence'] ?? 0.5 );
-			$reason          = $data['reason'] ?? '';
+		if ( isset( $data[ 'action' ] ) && in_array( $data[ 'action' ], array( 'existing', 'new', 'skip' ), true ) ) {
+			$action          = $data[ 'action' ];
+			$folder_id       = isset( $data[ 'folder_id' ] ) ? (int) $data[ 'folder_id' ] : null;
+			$new_folder_path = $data[ 'new_folder_path' ] ?? null;
+			$confidence      = (float) ( $data[ 'confidence' ] ?? 0.5 );
+			$reason          = $data[ 'reason' ] ?? '';
 
 			// Validate folder_id exists for "existing" action.
 			if ( 'existing' === $action && $folder_id ) {
@@ -459,10 +459,10 @@ PROMPT;
 
 		// Handle the legacy format (from other providers or old prompts).
 		// Legacy format uses: action: assign/create, folder_path.
-		$action      = $data['action'] ?? 'assign';
-		$folder_path = $data['folder_path'] ?? '';
-		$confidence  = (float) ( $data['confidence'] ?? 0.5 );
-		$reason      = $data['reason'] ?? '';
+		$action      = $data[ 'action' ] ?? 'assign';
+		$folder_path = $data[ 'folder_path' ] ?? '';
+		$confidence  = (float) ( $data[ 'confidence' ] ?? 0.5 );
+		$reason      = $data[ 'reason' ] ?? '';
 
 		// Check for missing folder_path.
 		if ( empty( $folder_path ) ) {
@@ -543,7 +543,7 @@ PROMPT;
 		return preg_replace_callback(
 			$pattern,
 			function ( $matches ) {
-				$content = $matches[1];
+				$content = $matches[ 1 ];
 				// Replace literal newlines with escaped versions.
 				$content = str_replace( array( "\r\n", "\r", "\n" ), '\\n', $content );
 				// Replace literal tabs with escaped versions.
@@ -569,41 +569,41 @@ PROMPT;
 
 		// Extract action.
 		if ( preg_match( '/"action"\s*:\s*"(existing|new|skip)"/', $json, $matches ) ) {
-			$data['action'] = $matches[1];
+			$data[ 'action' ] = $matches[ 1 ];
 		}
 
 		// Extract folder_id.
 		if ( preg_match( '/"folder_id"\s*:\s*(\d+|null)/', $json, $matches ) ) {
-			$data['folder_id'] = 'null' === $matches[1] ? null : (int) $matches[1];
+			$data[ 'folder_id' ] = 'null' === $matches[ 1 ] ? null : (int) $matches[ 1 ];
 		}
 
 		// Extract new_folder_path.
 		if ( preg_match( '/"new_folder_path"\s*:\s*"([^"]*)"/', $json, $matches ) ) {
-			$data['new_folder_path'] = $matches[1];
+			$data[ 'new_folder_path' ] = $matches[ 1 ];
 		} elseif ( preg_match( '/"new_folder_path"\s*:\s*null/', $json ) ) {
-			$data['new_folder_path'] = null;
+			$data[ 'new_folder_path' ] = null;
 		}
 
 		// Extract confidence.
 		if ( preg_match( '/"confidence"\s*:\s*([\d.]+)/', $json, $matches ) ) {
-			$data['confidence'] = (float) $matches[1];
+			$data[ 'confidence' ] = (float) $matches[ 1 ];
 		}
 
 		// Extract reason (might be truncated, that's OK).
 		if ( preg_match( '/"reason"\s*:\s*"([^"]*)"?/', $json, $matches ) ) {
-			$reason = $matches[1];
+			$reason = $matches[ 1 ];
 			// Clean up truncated reason.
 			$reason         = rtrim( $reason, '\\' );
-			$data['reason'] = $reason . ( strlen( $reason ) > 50 ? '...' : '' );
+			$data[ 'reason' ] = $reason . ( strlen( $reason ) > 50 ? '...' : '' );
 		}
 
 		// Check if we have enough data to proceed.
-		if ( isset( $data['action'] ) && ( isset( $data['folder_id'] ) || isset( $data['new_folder_path'] ) ) ) {
+		if ( isset( $data[ 'action' ] ) && ( isset( $data[ 'folder_id' ] ) || isset( $data[ 'new_folder_path' ] ) ) ) {
 			// Fill in defaults for missing fields.
-			$data['folder_id']       = $data['folder_id'] ?? null;
-			$data['new_folder_path'] = $data['new_folder_path'] ?? null;
-			$data['confidence']      = $data['confidence'] ?? 0.7;
-			$data['reason']          = $data['reason'] ?? 'Response was truncated but folder extracted.';
+			$data[ 'folder_id' ]       = $data[ 'folder_id' ] ?? null;
+			$data[ 'new_folder_path' ] = $data[ 'new_folder_path' ] ?? null;
+			$data[ 'confidence' ]      = $data[ 'confidence' ] ?? 0.7;
+			$data[ 'reason' ]          = $data[ 'reason' ] ?? 'Response was truncated but folder extracted.';
 
 			return $data;
 		}

@@ -61,7 +61,7 @@ class GrokProvider extends AbstractProvider {
 
 		// Note: Grok vision API format is OpenAI-compatible.
 		$user_content = $user_prompt;
-		if ( null !== $image_data && ! empty( $image_data['base64'] ) ) {
+		if ( null !== $image_data && ! empty( $image_data[ 'base64' ] ) ) {
 			$user_content = array(
 				array(
 					'type' => 'text',
@@ -70,7 +70,7 @@ class GrokProvider extends AbstractProvider {
 				array(
 					'type'      => 'image_url',
 					'image_url' => array(
-						'url' => 'data:' . $image_data['mime_type'] . ';base64,' . $image_data['base64'],
+						'url' => 'data:' . $image_data[ 'mime_type' ] . ';base64,' . $image_data[ 'base64' ],
 					),
 				),
 			);
@@ -99,7 +99,7 @@ class GrokProvider extends AbstractProvider {
 			)
 		);
 
-		if ( ! $response['success'] ) {
+		if ( ! $response[ 'success' ] ) {
 			return array(
 				'action'          => 'skip',
 				'folder_id'       => null,
@@ -108,12 +108,12 @@ class GrokProvider extends AbstractProvider {
 				'reason'          => sprintf(
 					/* translators: %s: error message */
 					__( 'Grok API error: %s', 'vmfa-ai-organizer' ),
-					$response['error']
+					$response[ 'error' ]
 				),
 			);
 		}
 
-		$content = $response['data']['choices'][0]['message']['content'] ?? '';
+		$content = $response[ 'data' ][ 'choices' ][ 0 ][ 'message' ][ 'content' ] ?? '';
 
 		return $this->parse_response( $content, $folder_paths );
 	}
@@ -122,8 +122,8 @@ class GrokProvider extends AbstractProvider {
 	 * {@inheritDoc}
 	 */
 	public function test( array $settings ): ?string {
-		$api_key = $settings['grok_key'] ?? '';
-		$model   = $settings['grok_model'] ?? 'grok-beta';
+		$api_key = $settings[ 'grok_key' ] ?? '';
+		$model   = $settings[ 'grok_model' ] ?? 'grok-beta';
 
 		if ( empty( $api_key ) ) {
 			return __( 'Grok API key is required.', 'vmfa-ai-organizer' );
@@ -146,8 +146,8 @@ class GrokProvider extends AbstractProvider {
 			)
 		);
 
-		if ( ! $response['success'] ) {
-			return $response['error'];
+		if ( ! $response[ 'success' ] ) {
+			return $response[ 'error' ];
 		}
 
 		return null;
@@ -166,8 +166,8 @@ class GrokProvider extends AbstractProvider {
 	 */
 	public function get_available_models(): array {
 		return array(
-			'grok-beta'  => 'Grok Beta',
-			'grok-2'     => 'Grok 2',
+			'grok-beta'   => 'Grok Beta',
+			'grok-2'      => 'Grok 2',
 			'grok-2-mini' => 'Grok 2 Mini',
 		);
 	}
