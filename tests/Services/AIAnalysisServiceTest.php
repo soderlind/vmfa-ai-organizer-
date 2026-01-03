@@ -5,7 +5,7 @@
  * @package VmfaAiOrganizer
  */
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
 namespace VmfaAiOrganizer\Tests\Services;
 
@@ -24,7 +24,7 @@ class AIAnalysisServiceTest extends BrainMonkeyTestCase {
 	 * Test service instantiation.
 	 */
 	public function test_service_instantiation(): void {
-		$factory = Mockery::mock( ProviderFactory::class );
+		$factory = Mockery::mock( ProviderFactory::class);
 		$this->stub_options( [ 'vmfa_settings' => [] ] );
 
 		$service = new AIAnalysisService( $factory );
@@ -44,16 +44,16 @@ class AIAnalysisServiceTest extends BrainMonkeyTestCase {
 		Functions\when( 'wp_get_attachment_metadata' )->justReturn( [] );
 		Functions\when( 'get_attached_file' )->justReturn( '/uploads/beach-sunset.jpg' );
 
-		$factory = Mockery::mock( ProviderFactory::class );
+		$factory = Mockery::mock( ProviderFactory::class);
 		$this->stub_options( [ 'vmfa_settings' => [] ] );
 
 		$service  = new AIAnalysisService( $factory );
 		$metadata = $service->get_media_metadata( $attachment_id );
 
 		$this->assertArrayHasKey( 'filename', $metadata );
-		$this->assertEquals( 'beach-sunset.jpg', $metadata['filename'] );
+		$this->assertEquals( 'beach-sunset.jpg', $metadata[ 'filename' ] );
 		$this->assertArrayHasKey( 'mime_type', $metadata );
-		$this->assertEquals( 'image/jpeg', $metadata['mime_type'] );
+		$this->assertEquals( 'image/jpeg', $metadata[ 'mime_type' ] );
 	}
 
 	/**
@@ -76,7 +76,7 @@ class AIAnalysisServiceTest extends BrainMonkeyTestCase {
 			}
 		);
 
-		$factory = Mockery::mock( ProviderFactory::class );
+		$factory = Mockery::mock( ProviderFactory::class);
 		$this->stub_options( array( 'vmfa_settings' => array() ) );
 		$service = new AIAnalysisService( $factory );
 
@@ -84,11 +84,11 @@ class AIAnalysisServiceTest extends BrainMonkeyTestCase {
 
 		$this->assertSame( 2, $term_id );
 		$this->assertCount( 2, $calls );
-		$this->assertSame( 'Plants', $calls[0]['name'] );
-		$this->assertSame( 'vmfo_folder', $calls[0]['taxonomy'] );
-		$this->assertSame( array( 'parent' => 0 ), $calls[0]['args'] );
-		$this->assertSame( 'Leaves', $calls[1]['name'] );
-		$this->assertSame( 'vmfo_folder', $calls[1]['taxonomy'] );
-		$this->assertSame( array( 'parent' => 1 ), $calls[1]['args'] );
+		$this->assertSame( 'Plants', $calls[ 0 ][ 'name' ] );
+		$this->assertSame( 'vmfo_folder', $calls[ 0 ][ 'taxonomy' ] );
+		$this->assertSame( array( 'parent' => 0 ), $calls[ 0 ][ 'args' ] );
+		$this->assertSame( 'Leaves', $calls[ 1 ][ 'name' ] );
+		$this->assertSame( 'vmfo_folder', $calls[ 1 ][ 'taxonomy' ] );
+		$this->assertSame( array( 'parent' => 1 ), $calls[ 1 ][ 'args' ] );
 	}
 }

@@ -686,7 +686,7 @@ PROMPT;
 		if ( preg_match( '/"reason"\s*:\s*"([^"]*)"?/', $json, $matches ) ) {
 			$reason = $matches[ 1 ];
 			// Clean up truncated reason.
-			$reason         = rtrim( $reason, '\\' );
+			$reason           = rtrim( $reason, '\\' );
 			$data[ 'reason' ] = $reason . ( strlen( $reason ) > 50 ? '...' : '' );
 		}
 

@@ -196,7 +196,7 @@ class AIAnalysisService {
 		$result = $provider->analyze( $metadata, $folder_paths, $max_depth, $allow_new, $image_data, $suggested_folders );
 
 		// Enforce allow_new_folders at runtime (providers/LLMs may ignore prompt constraints).
-		if ( ! $allow_new && 'create' === ( $result['action'] ?? '' ) ) {
+		if ( ! $allow_new && 'create' === ( $result[ 'action' ] ?? '' ) ) {
 			$result = array(
 				'action'          => 'skip',
 				'folder_id'       => null,
