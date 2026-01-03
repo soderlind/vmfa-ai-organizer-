@@ -130,12 +130,6 @@ Vision models can take 30+ seconds per image, and complex or high-resolution ima
 
 Use the "Reorganize All" scan mode. This removes all existing folder assignments and rebuilds your organization from scratch using the AI. Make sure to preview the results first with dry-run mode, and note that a backup is automatically created before reorganization.
 
-== Screenshots ==
-
-1. Media Scanner interface with real-time progress
-2. AI Provider configuration with multiple options
-3. Scan results preview before applying
-4. Backup and restore functionality
 
 == Changelog ==
 
