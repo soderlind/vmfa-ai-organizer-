@@ -1,7 +1,7 @@
 /**
  * Mock for @wordpress/keycodes.
  *
- * @package VmfaAiOrganizer
+ * @package
  */
 
 export const ENTER = 13;
@@ -27,7 +27,7 @@ export const ZERO = 48;
 
 export const OS = 'mac';
 
-const createShortcutHelper = () => ( {
+const createShortcutHelper = () => ({
 	primary: () => '',
 	primaryShift: () => '',
 	primaryAlt: () => '',
@@ -38,7 +38,7 @@ const createShortcutHelper = () => ( {
 	ctrlShift: () => '',
 	shift: () => '',
 	shiftAlt: () => '',
-} );
+});
 
 export const displayShortcut = createShortcutHelper();
 export const shortcutAriaLabel = createShortcutHelper();

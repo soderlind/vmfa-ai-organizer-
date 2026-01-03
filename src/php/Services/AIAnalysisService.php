@@ -19,6 +19,11 @@ use VmfaAiOrganizer\Plugin;
 class AIAnalysisService {
 
 	/**
+	 * Scan progress option key.
+	 */
+	private const PROGRESS_OPTION = 'vmfa_scan_progress';
+
+	/**
 	 * VMF folder taxonomy name.
 	 */
 	private const TAXONOMY = 'vmfo_folder';
@@ -142,19 +147,20 @@ class AIAnalysisService {
 
 		// For "reorganize_all" mode (even in dry-run/preview), simulate empty folders.
 		// This ensures the preview accurately shows what would happen after folders are deleted.
-		$progress = get_option( 'vmfa_scan_progress', array() );
-		if ( 'reorganize_all' === ( $progress[ 'mode' ] ?? '' ) ) {
+		$progress = get_option( self::PROGRESS_OPTION, array() );
+		$is_reorganize_all = 'reorganize_all' === ( $progress[ 'mode' ] ?? '' );
+		if ( $is_reorganize_all ) {
 			$folder_paths = array();
 		}
 
 		// Handle documents - assign to Documents folder.
 		if ( in_array( $mime_type, self::DOCUMENT_MIME_TYPES, true ) ) {
-			return $this->assign_to_type_folder( $attachment_id, __( 'Documents', 'vmfa-ai-organizer' ), $folder_paths );
+			return $this->assign_to_type_folder( $attachment_id, 'Documents', $folder_paths );
 		}
 
 		// Handle videos - assign to Videos folder.
 		if ( in_array( $mime_type, self::VIDEO_MIME_TYPES, true ) || str_starts_with( $mime_type, 'video/' ) ) {
-			return $this->assign_to_type_folder( $attachment_id, __( 'Videos', 'vmfa-ai-organizer' ), $folder_paths );
+			return $this->assign_to_type_folder( $attachment_id, 'Videos', $folder_paths );
 		}
 
 		// For images, require an AI provider.
@@ -186,7 +192,7 @@ class AIAnalysisService {
 		$suggested_folders = $this->get_session_suggested_folders();
 
 		// For "reorganize_all" mode, always allow creating new folders since we're starting fresh.
-		if ( 'reorganize_all' === ( $progress[ 'mode' ] ?? '' ) ) {
+		if ( $is_reorganize_all ) {
 			$allow_new = true;
 		}
 
@@ -308,7 +314,9 @@ class AIAnalysisService {
 		}
 
 		// Try to find folder by name anywhere in the hierarchy (prefers shallowest).
-		$found_folder = $this->find_folder_by_name( $folder_name );
+		// IMPORTANT: use the provided folder paths so reorganize_all preview (simulated empty folders)
+		// doesn't accidentally match folders that are about to be deleted.
+		$found_folder = $this->find_folder_by_name_in_paths( $folder_name, $folder_paths );
 		if ( $found_folder[ 'found' ] && ! empty( $found_folder[ 'folder_id' ] ) ) {
 			return array(
 				'action'          => 'assign',
@@ -342,6 +350,75 @@ class AIAnalysisService {
 			'attachment_id'   => $attachment_id,
 			'filename'        => $filename,
 			'folder_name'     => $folder_name,
+		);
+	}
+
+	/**
+	 * Find a folder by name within a provided folder path map.
+	 *
+	 * This is intentionally separate from {@see find_folder_by_name()} so callers can control
+	 * whether to consult the database-backed folder list (e.g., reorganize_all preview mode
+	 * simulates an empty folder set).
+	 *
+	 * @param string           $folder_name  Folder name to find.
+	 * @param array<string,int> $folder_paths Folder path => term ID map.
+	 * @return array{found: bool, path: string|null, folder_id: int|null}
+	 */
+	private function find_folder_by_name_in_paths( string $folder_name, array $folder_paths ): array {
+		if ( empty( $folder_paths ) ) {
+			return array(
+				'found'     => false,
+				'path'      => null,
+				'folder_id' => null,
+			);
+		}
+
+		$name_lower = mb_strtolower( $folder_name );
+		$paths      = array();
+
+		foreach ( array_keys( $folder_paths ) as $path ) {
+			$parts = explode( '/', $path );
+			foreach ( $parts as $part ) {
+				if ( mb_strtolower( $part ) === $name_lower ) {
+					$paths[] = $path;
+					break;
+				}
+			}
+		}
+
+		if ( empty( $paths ) ) {
+			return array(
+				'found'     => false,
+				'path'      => null,
+				'folder_id' => null,
+			);
+		}
+
+		// Sort by depth (shallowest first).
+		usort( $paths, function ( $a, $b ) {
+			$depth_a = substr_count( $a, '/' );
+			$depth_b = substr_count( $b, '/' );
+			return $depth_a - $depth_b;
+		} );
+
+		// Prefer paths where the folder is the leaf (last component).
+		foreach ( $paths as $path ) {
+			$parts = explode( '/', $path );
+			if ( mb_strtolower( end( $parts ) ) === $name_lower ) {
+				return array(
+					'found'     => true,
+					'path'      => $path,
+					'folder_id' => $folder_paths[ $path ] ?? null,
+				);
+			}
+		}
+
+		// Fall back to first occurrence.
+		$first_path = $paths[ 0 ];
+		return array(
+			'found'     => true,
+			'path'      => $first_path,
+			'folder_id' => $folder_paths[ $first_path ] ?? null,
 		);
 	}
 

@@ -66,6 +66,8 @@ class AnalysisController extends WP_REST_Controller {
 	 * @return void
 	 */
 	public function register_routes(): void {
+		$valid_modes = $this->scanner_service->get_valid_modes();
+
 		// Start a scan.
 		register_rest_route(
 			$this->namespace,
@@ -79,7 +81,7 @@ class AnalysisController extends WP_REST_Controller {
 						'mode'    => array(
 							'required'          => true,
 							'type'              => 'string',
-							'enum'              => array( 'organize_unassigned', 'reanalyze_all', 'reorganize_all' ),
+							'enum'              => $valid_modes,
 							'description'       => __( 'Scan mode.', 'vmfa-ai-organizer' ),
 							'sanitize_callback' => 'sanitize_key',
 						),
@@ -146,7 +148,7 @@ class AnalysisController extends WP_REST_Controller {
 						'mode' => array(
 							'required'          => true,
 							'type'              => 'string',
-							'enum'              => array( 'organize_unassigned', 'reanalyze_all', 'reorganize_all' ),
+							'enum'              => $valid_modes,
 							'description'       => __( 'Original scan mode.', 'vmfa-ai-organizer' ),
 							'sanitize_callback' => 'sanitize_key',
 						),

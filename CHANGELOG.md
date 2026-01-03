@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-01-03
+
+### Fixed
+
+- **Deterministic Type Routing**: Documents and videos are handled before image AI analysis
+  - Documents are always routed to `Documents`
+  - Videos are always routed to `Videos`
+
+- **Reorganize All Preview Accuracy**: Ensured type-based routing respects the simulated empty folder list
+  - Prevents preview mode from incorrectly “finding” folders that are about to be deleted
+
+### Changed
+
+- **Stable Folder Names**: `Documents` / `Videos` folder names are now deterministic (not translated)
 
 ## [0.2.4] - 2026-01-03
 

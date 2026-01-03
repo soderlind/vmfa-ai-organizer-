@@ -3,7 +3,7 @@
  * Plugin Name:       Virtual Media Folders AI Organizer
  * Plugin URI:        https://github.com/soderlind/vmfa-ai-organizer
  * Description:       AI-powered media organization add-on for Virtual Media Folders. Scans the WordPress Media Library and uses AI to place media in suitable virtual folders.
- * Version:           0.2.4
+ * Version:           0.3.0
  * Requires at least: 6.8
  * Requires PHP:      8.3
  * Requires Plugins:  virtual-media-folders
@@ -24,7 +24,7 @@ namespace VmfaAiOrganizer;
 defined( 'ABSPATH' ) || exit;
 
 // Plugin constants.
-define( 'VMFA_AI_ORGANIZER_VERSION', '0.2.4' );
+define( 'VMFA_AI_ORGANIZER_VERSION', '0.3.0' );
 define( 'VMFA_AI_ORGANIZER_FILE', __FILE__ );
 define( 'VMFA_AI_ORGANIZER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'VMFA_AI_ORGANIZER_URL', plugin_dir_url( __FILE__ ) );

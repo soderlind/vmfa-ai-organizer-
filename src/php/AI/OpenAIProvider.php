@@ -100,28 +100,10 @@ class OpenAIProvider extends AbstractProvider {
 		$user_prompt = $this->build_user_prompt( $media_metadata, $folder_paths, $max_depth, $allow_new_folders, $suggested_folders );
 
 		// Build user message content - with or without image.
-		$user_content = $this->build_user_content( $user_prompt, $image_data );
+		$user_content = $this->build_openai_compatible_user_content( $user_prompt, $image_data, 'low' );
 
 		// Build request body - Azure doesn't need model in body.
-		$body = array(
-			'messages'        => array(
-				array(
-					'role'    => 'system',
-					'content' => $this->get_system_prompt(),
-				),
-				array(
-					'role'    => 'user',
-					'content' => $user_content,
-				),
-			),
-			'max_tokens'      => 500,
-			'temperature'     => 0.3,
-			'response_format' => array( 'type' => 'json_object' ),
-		);
-
-		if ( 'openai' === $type ) {
-			$body[ 'model' ] = $model;
-		}
+		$body = $this->build_openai_compatible_chat_body( 'openai' === $type ? $model : null, $user_content, 500, 0.3 );
 
 		$response = $this->make_request(
 			$this->get_api_url( $model ),
@@ -148,39 +130,7 @@ class OpenAIProvider extends AbstractProvider {
 		return $this->parse_response( $content, $folder_paths );
 	}
 
-	/**
-	 * Build user content for the API request.
-	 *
-	 * For vision-capable models, this creates a multi-part content array with text and image.
-	 * For text-only requests, returns just the text prompt.
-	 *
-	 * @param string                   $text_prompt The text prompt.
-	 * @param array<string, mixed>|null $image_data  Image data (base64, mime_type, url).
-	 * @return string|array<int, array<string, mixed>> Content for the message.
-	 */
-	private function build_user_content( string $text_prompt, ?array $image_data ): string|array {
-		// If no image data, return plain text.
-		if ( null === $image_data || empty( $image_data[ 'base64' ] ) ) {
-			return $text_prompt;
-		}
-
-		// Build multi-part content with image for vision models.
-		$content = array(
-			array(
-				'type' => 'text',
-				'text' => $text_prompt,
-			),
-			array(
-				'type'      => 'image_url',
-				'image_url' => array(
-					'url'    => 'data:' . $image_data[ 'mime_type' ] . ';base64,' . $image_data[ 'base64' ],
-					'detail' => 'low', // Use 'low' for faster/cheaper processing, 'high' for more detail.
-				),
-			),
-		);
-
-		return $content;
-	}
+	// build_user_content() removed: now uses AbstractProvider::build_openai_compatible_user_content().
 
 	/**
 	 * {@inheritDoc}

@@ -211,6 +211,124 @@ PROMPT;
 	}
 
 	/**
+	 * Get OpenAI-compatible JSON response_format.
+	 *
+	 * @return array{type: string}
+	 */
+	protected function get_openai_json_response_format(): array {
+		return array( 'type' => 'json_object' );
+	}
+
+	/**
+	 * Build OpenAI-compatible user message content.
+	 *
+	 * For vision-capable models, this returns a multi-part content array (text + image_url).
+	 * For text-only requests, returns the plain string prompt.
+	 *
+	 * @param string            $text_prompt The text prompt.
+	 * @param array<mixed>|null $image_data  Image data (base64, mime_type).
+	 * @param string|null       $detail      Optional OpenAI image detail (e.g. "low" or "high").
+	 * @return string|array<int, array<string, mixed>>
+	 */
+	protected function build_openai_compatible_user_content( string $text_prompt, ?array $image_data, ?string $detail = null ): string|array {
+		if ( null === $image_data || empty( $image_data['base64'] ) ) {
+			return $text_prompt;
+		}
+
+		$image_url = array(
+			'url' => 'data:' . ( $image_data['mime_type'] ?? 'image/jpeg' ) . ';base64,' . $image_data['base64'],
+		);
+
+		if ( null !== $detail && '' !== $detail ) {
+			$image_url['detail'] = $detail;
+		}
+
+		return array(
+			array(
+				'type' => 'text',
+				'text' => $text_prompt,
+			),
+			array(
+				'type'      => 'image_url',
+				'image_url' => $image_url,
+			),
+		);
+	}
+
+	/**
+	 * Build an OpenAI-compatible chat request body.
+	 *
+	 * @param string|null       $model        Model name (optional for Azure-style endpoints).
+	 * @param string|array      $user_content User message content.
+	 * @param int               $max_tokens   Max tokens.
+	 * @param float             $temperature  Temperature.
+	 * @return array<string, mixed>
+	 */
+	protected function build_openai_compatible_chat_body( ?string $model, string|array $user_content, int $max_tokens = 500, float $temperature = 0.3 ): array {
+		$body = array(
+			'messages'        => array(
+				array(
+					'role'    => 'system',
+					'content' => $this->get_system_prompt(),
+				),
+				array(
+					'role'    => 'user',
+					'content' => $user_content,
+				),
+			),
+			'max_tokens'      => $max_tokens,
+			'temperature'     => $temperature,
+			'response_format' => $this->get_openai_json_response_format(),
+		);
+
+		if ( null !== $model && '' !== $model ) {
+			$body['model'] = $model;
+		}
+
+		return $body;
+	}
+
+	/**
+	 * Get a basic JSON schema for folder decision output.
+	 *
+	 * Primarily used by providers that support schema-constrained output (e.g. Ollama).
+	 *
+	 * @return array<string, mixed>
+	 */
+	protected function get_basic_result_json_schema(): array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'action'          => array(
+					'type' => 'string',
+					'enum' => array( 'existing', 'new', 'skip' ),
+				),
+				'folder_id'       => array(
+					'type' => array( 'integer', 'null' ),
+				),
+				'folder_path'     => array(
+					'type'      => array( 'string', 'null' ),
+					'maxLength' => 200,
+				),
+				'new_folder_path' => array(
+					'type'      => array( 'string', 'null' ),
+					'maxLength' => 100,
+				),
+				'confidence'      => array(
+					'type'    => 'number',
+					'minimum' => 0,
+					'maximum' => 1,
+				),
+				'reason'          => array(
+					'type'      => 'string',
+					'maxLength' => 150,
+				),
+			),
+			'required'   => array( 'action', 'folder_id', 'folder_path', 'new_folder_path', 'confidence', 'reason' ),
+		);
+	}
+
+	/**
 	 * Build the user prompt for media analysis.
 	 *
 	 * @param array<string, mixed> $media_metadata     Media metadata.

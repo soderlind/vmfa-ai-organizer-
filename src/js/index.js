@@ -1,7 +1,7 @@
 /**
  * Virtual Media Folders AI Organizer - Admin Scripts
  *
- * @package VmfaAiOrganizer
+ * @package
  */
 
 import { createRoot } from '@wordpress/element';
@@ -14,22 +14,22 @@ import './styles/admin.scss';
  *
  * @param {string} provider - The selected provider key.
  */
-function updateProviderFields( provider ) {
-	document.querySelectorAll( '.vmfa-provider-field' ).forEach( ( field ) => {
-		const row = field.closest( 'tr' );
-		if ( row ) {
-			row.classList.add( 'vmfa-provider-row' );
+function updateProviderFields(provider) {
+	document.querySelectorAll('.vmfa-provider-field').forEach((field) => {
+		const row = field.closest('tr');
+		if (row) {
+			row.classList.add('vmfa-provider-row');
 			const fieldProvider = field.dataset.provider;
-			if ( fieldProvider === provider ) {
-				row.classList.add( 'vmfa-provider-active' );
+			if (fieldProvider === provider) {
+				row.classList.add('vmfa-provider-active');
 			} else {
-				row.classList.remove( 'vmfa-provider-active' );
+				row.classList.remove('vmfa-provider-active');
 			}
 		}
-	} );
+	});
 
 	// Update Azure fields visibility based on openai_type when OpenAI is selected.
-	if ( provider === 'openai' ) {
+	if (provider === 'openai') {
 		updateAzureFields();
 	}
 }
@@ -38,48 +38,48 @@ function updateProviderFields( provider ) {
  * Update visibility of Azure-specific fields based on openai_type selector.
  */
 function updateAzureFields() {
-	const openaiTypeSelect = document.getElementById( 'vmfa_openai_type' );
-	if ( ! openaiTypeSelect ) {
+	const openaiTypeSelect = document.getElementById('vmfa_openai_type');
+	if (!openaiTypeSelect) {
 		return;
 	}
 
 	const isAzure = openaiTypeSelect.value === 'azure';
 
-	document.querySelectorAll( '.vmfa-azure-field' ).forEach( ( field ) => {
-		const row = field.closest( 'tr' );
-		if ( row ) {
+	document.querySelectorAll('.vmfa-azure-field').forEach((field) => {
+		const row = field.closest('tr');
+		if (row) {
 			// Mark as Azure row for CSS targeting
-			row.classList.add( 'vmfa-azure-row' );
-			if ( isAzure ) {
-				row.classList.add( 'vmfa-azure-active' );
+			row.classList.add('vmfa-azure-row');
+			if (isAzure) {
+				row.classList.add('vmfa-azure-active');
 			} else {
-				row.classList.remove( 'vmfa-azure-active' );
+				row.classList.remove('vmfa-azure-active');
 			}
 		}
-	} );
+	});
 }
 
 /**
  * Initialize the provider field toggle.
  */
 function initProviderToggle() {
-	const providerSelect = document.getElementById( 'vmfa_ai_provider' );
-	if ( providerSelect ) {
+	const providerSelect = document.getElementById('vmfa_ai_provider');
+	if (providerSelect) {
 		// Set initial state.
-		updateProviderFields( providerSelect.value );
+		updateProviderFields(providerSelect.value);
 
 		// Listen for changes.
-		providerSelect.addEventListener( 'change', ( e ) => {
-			updateProviderFields( e.target.value );
-		} );
+		providerSelect.addEventListener('change', (e) => {
+			updateProviderFields(e.target.value);
+		});
 	}
 
 	// Listen for OpenAI type changes.
-	const openaiTypeSelect = document.getElementById( 'vmfa_openai_type' );
-	if ( openaiTypeSelect ) {
-		openaiTypeSelect.addEventListener( 'change', () => {
+	const openaiTypeSelect = document.getElementById('vmfa_openai_type');
+	if (openaiTypeSelect) {
+		openaiTypeSelect.addEventListener('change', () => {
 			updateAzureFields();
-		} );
+		});
 	}
 }
 
@@ -87,20 +87,20 @@ function initProviderToggle() {
  * Initialize the AI Organizer panel.
  */
 function initAiOrganizer() {
-	const container = document.getElementById( 'vmfa-ai-organizer-scanner' );
+	const container = document.getElementById('vmfa-ai-organizer-scanner');
 
-	if ( container ) {
-		const root = createRoot( container );
-		root.render( <AiOrganizerPanel /> );
+	if (container) {
+		const root = createRoot(container);
+		root.render(<AiOrganizerPanel />);
 	}
 }
 
 // Initialize when DOM is ready.
-if ( document.readyState === 'loading' ) {
-	document.addEventListener( 'DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', () => {
 		initProviderToggle();
 		initAiOrganizer();
-	} );
+	});
 } else {
 	initProviderToggle();
 	initAiOrganizer();
