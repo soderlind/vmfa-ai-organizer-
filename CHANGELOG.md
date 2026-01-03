@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.2.1] - 2026-01-02
+
+### Fixed
+
+- **Settings Tab Isolation**: Fixed bug where saving Organization Settings would clear AI Provider settings
+  - Settings now properly merge with existing values instead of replacing the entire option
+
+### Changed
+
+- **Improved System Prompt**: Rewrote AI system prompt for better folder variety
+  - Removed overly restrictive language that limited folder creation
+  - Added balanced guidance for when to create vs reuse folders
+  - Folder names now allow natural spaces (e.g., "Street Art" instead of "Street_Art")
+  - Increased word limit per folder level from 1-2 to 1-3 words
+
+
 ## [0.2.0] - 2026-01-02
 
 ### Fixed

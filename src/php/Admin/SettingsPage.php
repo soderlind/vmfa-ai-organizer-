@@ -1333,7 +1333,9 @@ class SettingsPage {
 	 * @return array<string, mixed>
 	 */
 	public function sanitize_settings( array $input ): array {
-		$sanitized = array();
+		// Start with existing settings to preserve values from other tabs.
+		$existing  = get_option( self::OPTION_NAME, array() );
+		$sanitized = is_array( $existing ) ? $existing : array();
 
 		// Provider.
 		if ( isset( $input['ai_provider'] ) ) {

@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.2.0
+Stable tag: 0.2.1
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -132,6 +132,11 @@ Use the "Reorganize All" scan mode. This removes all existing folder assignments
 4. Backup and restore functionality
 
 == Changelog ==
+
+= 0.2.1 =
+* Fixed settings tab isolation: saving Organization Settings no longer clears AI Provider settings
+* Improved AI system prompt for better folder variety and naming
+* Folder names now allow natural spaces (e.g., "Street Art" instead of "Street_Art")
 
 = 0.2.0 =
 * Complete overhaul of "Reorganize All" feature
