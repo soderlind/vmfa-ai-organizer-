@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.4.1
+Stable tag: 0.4.2
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -153,6 +153,14 @@ Use the "Reorganize All" scan mode. This removes all existing folder assignments
 
 == Changelog ==
 
+= 0.4.2 =
+* Fixed scan status showing stale completed_at timestamp from previous scans
+
+= 0.4.1 =
+* Fixed WP-CLI `--watch` Action Scheduler processing
+* Added stale action recovery for killed CLI processes
+* Documented `--watch` is for interactive terminal use only
+
 = 0.4.0 =
 * Added comprehensive WP-CLI support for command-line automation
 * New commands: `wp vmfa-ai scan start`, `status`, `apply`, `cancel`, `reset`, `results`
@@ -227,11 +235,6 @@ Use the "Reorganize All" scan mode. This removes all existing folder assignments
 * Reorganized settings into three tabs: Media Scanner, Settings, and AI Provider
 * Simplified README documentation, now points to AI Provider Guide for details
 * Moved development documentation to separate file (docs/DEVELOPMENT.md)
-
-= 0.4.1 =
-* Fixed WP-CLI `--watch` Action Scheduler processing
-* Added stale action recovery for killed CLI processes
-* Documented `--watch` is for interactive terminal use only
 
 = 0.1.4 =
 * Folders are now sorted alphabetically in the preview modal and when creating virtual folders

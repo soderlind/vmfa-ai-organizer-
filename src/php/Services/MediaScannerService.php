@@ -478,14 +478,15 @@ class MediaScannerService {
 	private function initialize_progress( string $mode, bool $dry_run, int $total ): void {
 		$this->update_progress(
 			array(
-				'status'     => 'running',
-				'mode'       => $mode,
-				'dry_run'    => $dry_run,
-				'total'      => $total,
-				'processed'  => 0,
-				'results'    => array(),
-				'started_at' => time(),
-				'error'      => null,
+				'status'       => 'running',
+				'mode'         => $mode,
+				'dry_run'      => $dry_run,
+				'total'        => $total,
+				'processed'    => 0,
+				'results'      => array(),
+				'started_at'   => time(),
+				'completed_at' => null,
+				'error'        => null,
 			)
 		);
 	}
