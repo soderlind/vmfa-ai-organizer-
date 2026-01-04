@@ -112,7 +112,7 @@ When using `--watch`, you'll see a live-updating display with:
 - Real-time results table showing recent AI suggestions
 - Color-coded confidence levels (green ≥80%, yellow ≥50%, red <50%)
 
-> **Important:** The `--watch` option automatically runs pending Action Scheduler tasks, which means the scan will process while you watch. This is essential for CLI-based scanning since WP-CLI doesn't trigger the normal WordPress cron.
+> **Important:** The `--watch` option is designed for **interactive terminal use only**. It automatically runs pending Action Scheduler tasks while displaying live progress. For scripts or background automation, use `--porcelain` to poll status instead (see Scripting Example below).
 
 ---
 

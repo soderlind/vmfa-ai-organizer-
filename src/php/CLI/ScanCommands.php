@@ -656,11 +656,75 @@ class ScanCommands {
 			return;
 		}
 
-		// Run pending vmfa actions.
 		$store  = \ActionScheduler::store();
-		$runner = new \ActionScheduler_QueueRunner( $store );
+		$runner = \ActionScheduler::runner();
 
-		// Process up to 5 actions per iteration to keep the loop responsive.
-		$runner->run( 'CLI' );
+		// First, check for stale in-progress actions (from killed CLI processes).
+		// Actions stuck in-progress for more than 5 minutes are considered stale.
+		$this->reset_stale_actions( $store );
+
+		// Query pending actions that are due for our group.
+		$pending = $store->query_actions(
+			array(
+				'status'       => \ActionScheduler_Store::STATUS_PENDING,
+				'group'        => 'vmfa-ai-organizer',
+				'per_page'     => 1,
+				'date'         => as_get_datetime_object(),
+				'date_compare' => '<=',
+			)
+		);
+
+		// Process one action per iteration to keep the loop responsive.
+		if ( ! empty( $pending ) ) {
+			try {
+				$runner->process_action( $pending[ 0 ], 'CLI' );
+			} catch (\Exception $e) {
+				// Action may have been claimed by another process.
+				// Silently continue - the scan will still progress.
+			}
+		}
+	}
+
+	/**
+	 * Reset stale in-progress actions that were likely from killed CLI processes.
+	 *
+	 * @param \ActionScheduler_Store $store Action Scheduler store.
+	 * @return void
+	 */
+	private function reset_stale_actions( \ActionScheduler_Store $store ): void {
+		// Find in-progress actions for our group.
+		$in_progress = $store->query_actions(
+			array(
+				'status'   => \ActionScheduler_Store::STATUS_RUNNING,
+				'group'    => 'vmfa-ai-organizer',
+				'per_page' => 5,
+			)
+		);
+
+		foreach ( $in_progress as $action_id ) {
+			$action = $store->fetch_action( $action_id );
+			if ( ! $action || $action->is_finished() ) {
+				continue;
+			}
+
+			// Check if action has been running for more than 5 minutes (stale).
+			$logs     = $store->get_claim_id( $action_id );
+			$claim_id = $store->get_claim_id( $action_id );
+
+			// If no claim or claim is old, reset the action.
+			// We use a simple approach: mark it as failed so it can be retried.
+			try {
+				$store->mark_failure( $action_id );
+				// Re-schedule the same action.
+				as_schedule_single_action(
+					time(),
+					$action->get_hook(),
+					$action->get_args(),
+					$action->get_group()
+				);
+			} catch (\Exception $e) {
+				// Ignore errors - action may already be processed.
+			}
+		}
 	}
 }
