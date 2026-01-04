@@ -487,7 +487,7 @@ wp vmfa-ai provider test --debug
 
 ```bash
 # List pending VMFA actions
-wp action-scheduler list --group=vmfa-ai-organizer --status=pending
+wp action-scheduler action list --group=vmfa-ai-organizer --status=pending
 
 # Run pending actions manually
 wp action-scheduler run --group=vmfa-ai-organizer
