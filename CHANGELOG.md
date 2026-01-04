@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.3] - 2026-01-05
+
+### Improved
+
+- **AI System Prompt**: Added subset/superset rule to prevent creating overly specific folders
+  - AI now uses existing broader categories instead of creating specific subfolders (e.g., uses "Insects" instead of creating "Bees")
+  - Added explicit examples: Bees → Insects, Sparrows → Birds, Roses → Flowers
+  - Strengthened "Avoid These Mistakes" section with subset folder guidance
+
 ## [0.4.2] - 2026-01-04
 
 ### Fixed
@@ -393,6 +402,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bundles Action Scheduler 3.9.3 for background processing
 
 
+[0.4.3]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/soderlind/vmfa-ai-organizer/compare/v0.3.0...v0.4.0
