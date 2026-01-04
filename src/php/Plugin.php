@@ -150,8 +150,8 @@ final class Plugin {
 	 */
 	private function init_cli(): void {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			\WP_CLI::add_command( 'vmfa-ai', Commands::class );
-			\WP_CLI::add_command( 'vmfa-ai scan', CLI\ScanCommands::class );
+			\WP_CLI::add_command( 'vmfa-ai', Commands::class);
+			\WP_CLI::add_command( 'vmfa-ai scan', CLI\ScanCommands::class);
 		}
 	}
 

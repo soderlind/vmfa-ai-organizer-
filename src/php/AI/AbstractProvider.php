@@ -832,7 +832,7 @@ PROMPT;
 	 */
 	protected function get_setting( string $key ): mixed {
 		// Check for CLI overrides first (highest priority when running via WP-CLI).
-		if ( defined( 'WP_CLI' ) && WP_CLI && class_exists( \VmfaAiOrganizer\CLI\Commands::class ) ) {
+		if ( defined( 'WP_CLI' ) && WP_CLI && class_exists( \VmfaAiOrganizer\CLI\Commands::class) ) {
 			if ( \VmfaAiOrganizer\CLI\Commands::has_override( $key ) ) {
 				return \VmfaAiOrganizer\CLI\Commands::get_override( $key );
 			}

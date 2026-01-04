@@ -125,17 +125,17 @@ class Commands {
 		);
 
 		// Set provider override.
-		if ( ! empty( $assoc_args['provider'] ) ) {
-			self::set_override( 'ai_provider', $assoc_args['provider'] );
-			$provider = $assoc_args['provider'];
+		if ( ! empty( $assoc_args[ 'provider' ] ) ) {
+			self::set_override( 'ai_provider', $assoc_args[ 'provider' ] );
+			$provider = $assoc_args[ 'provider' ];
 
 			// Set model for the specific provider.
-			if ( ! empty( $assoc_args['model'] ) ) {
-				self::set_override( "{$provider}_model", $assoc_args['model'] );
+			if ( ! empty( $assoc_args[ 'model' ] ) ) {
+				self::set_override( "{$provider}_model", $assoc_args[ 'model' ] );
 			}
 
 			// Set API key for the specific provider.
-			if ( ! empty( $assoc_args['api-key'] ) ) {
+			if ( ! empty( $assoc_args[ 'api-key' ] ) ) {
 				$key_field = match ( $provider ) {
 					'openai'    => 'openai_key',
 					'anthropic' => 'anthropic_key',
@@ -144,25 +144,25 @@ class Commands {
 					default     => null,
 				};
 				if ( $key_field ) {
-					self::set_override( $key_field, $assoc_args['api-key'] );
+					self::set_override( $key_field, $assoc_args[ 'api-key' ] );
 				}
 			}
 
 			// Set endpoint for providers that use it.
-			if ( ! empty( $assoc_args['endpoint'] ) ) {
+			if ( ! empty( $assoc_args[ 'endpoint' ] ) ) {
 				$endpoint_field = match ( $provider ) {
 					'ollama' => 'ollama_url',
 					'exo'    => 'exo_endpoint',
 					default  => null,
 				};
 				if ( $endpoint_field ) {
-					self::set_override( $endpoint_field, $assoc_args['endpoint'] );
+					self::set_override( $endpoint_field, $assoc_args[ 'endpoint' ] );
 				}
 			}
 
 			// Set timeout.
-			if ( ! empty( $assoc_args['timeout'] ) ) {
-				self::set_override( "{$provider}_timeout", (int) $assoc_args['timeout'] );
+			if ( ! empty( $assoc_args[ 'timeout' ] ) ) {
+				self::set_override( "{$provider}_timeout", (int) $assoc_args[ 'timeout' ] );
 			}
 		}
 	}
@@ -222,14 +222,14 @@ class Commands {
 		self::check_dependencies();
 		self::apply_overrides( $assoc_args );
 
-		if ( empty( $args[0] ) ) {
+		if ( empty( $args[ 0 ] ) ) {
 			WP_CLI::error( 'Please provide an attachment ID.' );
 			return;
 		}
 
-		$attachment_id = absint( $args[0] );
+		$attachment_id = absint( $args[ 0 ] );
 		$apply         = Utils\get_flag_value( $assoc_args, 'apply', false );
-		$format        = $assoc_args['format'] ?? 'table';
+		$format        = $assoc_args[ 'format' ] ?? 'table';
 		$porcelain     = Utils\get_flag_value( $assoc_args, 'porcelain', false );
 
 		// Verify attachment exists.
@@ -251,11 +251,11 @@ class Commands {
 
 		$result = $analysis_service->analyze_media( $attachment_id );
 
-		if ( 'skip' === $result['action'] && ! empty( $result['reason'] ) ) {
+		if ( 'skip' === $result[ 'action' ] && ! empty( $result[ 'reason' ] ) ) {
 			if ( $porcelain ) {
-				WP_CLI::line( 'skip:' . sanitize_key( $result['reason'] ) );
+				WP_CLI::line( 'skip:' . sanitize_key( $result[ 'reason' ] ) );
 			} else {
-				WP_CLI::warning( 'Analysis skipped: ' . $result['reason'] );
+				WP_CLI::warning( 'Analysis skipped: ' . $result[ 'reason' ] );
 			}
 			return;
 		}
@@ -263,9 +263,9 @@ class Commands {
 		if ( $porcelain ) {
 			WP_CLI::line( sprintf(
 				'%s:%s:%.2f',
-				$result['action'],
-				$result['folder_name'] ?? $result['new_folder_path'] ?? '',
-				$result['confidence'] ?? 0
+				$result[ 'action' ],
+				$result[ 'folder_name' ] ?? $result[ 'new_folder_path' ] ?? '',
+				$result[ 'confidence' ] ?? 0
 			) );
 		} elseif ( 'json' === $format ) {
 			WP_CLI::line( wp_json_encode( $result, JSON_PRETTY_PRINT ) );
@@ -275,16 +275,16 @@ class Commands {
 			WP_CLI::line( '' );
 			WP_CLI::line( WP_CLI::colorize( '%BAnalysis Result%n' ) );
 			WP_CLI::line( str_repeat( '─', 50 ) );
-			WP_CLI::line( sprintf( 'Attachment:  %d (%s)', $attachment_id, $result['filename'] ?? 'Unknown' ) );
-			WP_CLI::line( sprintf( 'Action:      %s', self::format_action( $result['action'] ) ) );
-			WP_CLI::line( sprintf( 'Folder:      %s', $result['folder_name'] ?? $result['new_folder_path'] ?? 'N/A' ) );
-			WP_CLI::line( sprintf( 'Confidence:  %s', self::format_confidence( $result['confidence'] ?? 0 ) ) );
-			WP_CLI::line( sprintf( 'Reason:      %s', $result['reason'] ?? 'N/A' ) );
+			WP_CLI::line( sprintf( 'Attachment:  %d (%s)', $attachment_id, $result[ 'filename' ] ?? 'Unknown' ) );
+			WP_CLI::line( sprintf( 'Action:      %s', self::format_action( $result[ 'action' ] ) ) );
+			WP_CLI::line( sprintf( 'Folder:      %s', $result[ 'folder_name' ] ?? $result[ 'new_folder_path' ] ?? 'N/A' ) );
+			WP_CLI::line( sprintf( 'Confidence:  %s', self::format_confidence( $result[ 'confidence' ] ?? 0 ) ) );
+			WP_CLI::line( sprintf( 'Reason:      %s', $result[ 'reason' ] ?? 'N/A' ) );
 			WP_CLI::line( '' );
 		}
 
 		// Apply if requested.
-		if ( $apply && in_array( $result['action'], array( 'assign', 'create' ), true ) ) {
+		if ( $apply && in_array( $result[ 'action' ], array( 'assign', 'create' ), true ) ) {
 			$success = $analysis_service->apply_result( $result );
 
 			if ( $porcelain ) {
@@ -349,14 +349,14 @@ class Commands {
 	public function backup( array $args, array $assoc_args ): void {
 		self::check_dependencies();
 
-		if ( empty( $args[0] ) ) {
+		if ( empty( $args[ 0 ] ) ) {
 			WP_CLI::error( 'Please specify an action: export, restore, info, or delete.' );
 			return;
 		}
 
-		$action    = $args[0];
+		$action    = $args[ 0 ];
 		$yes       = Utils\get_flag_value( $assoc_args, 'yes', false );
-		$format    = $assoc_args['format'] ?? 'table';
+		$format    = $assoc_args[ 'format' ] ?? 'table';
 		$porcelain = Utils\get_flag_value( $assoc_args, 'porcelain', false );
 
 		$backup_service = new BackupService();
@@ -376,7 +376,7 @@ class Commands {
 			case 'info':
 				$info = $backup_service->get_backup_info();
 
-				if ( ! $info['exists'] ) {
+				if ( ! $info[ 'exists' ] ) {
 					if ( $porcelain ) {
 						WP_CLI::line( 'none' );
 					} else {
@@ -386,7 +386,7 @@ class Commands {
 				}
 
 				if ( $porcelain ) {
-					WP_CLI::line( sprintf( '%d:%d:%d', $info['timestamp'], $info['folder_count'], $info['assignment_count'] ) );
+					WP_CLI::line( sprintf( '%d:%d:%d', $info[ 'timestamp' ], $info[ 'folder_count' ], $info[ 'assignment_count' ] ) );
 				} elseif ( 'json' === $format ) {
 					WP_CLI::line( wp_json_encode( $info, JSON_PRETTY_PRINT ) );
 				} elseif ( 'yaml' === $format ) {
@@ -395,10 +395,10 @@ class Commands {
 					WP_CLI::line( '' );
 					WP_CLI::line( WP_CLI::colorize( '%BBackup Info%n' ) );
 					WP_CLI::line( str_repeat( '─', 50 ) );
-					WP_CLI::line( sprintf( 'Created:     %s', gmdate( 'Y-m-d H:i:s', $info['timestamp'] ) ) );
-					WP_CLI::line( sprintf( 'Folders:     %d', $info['folder_count'] ) );
-					WP_CLI::line( sprintf( 'Assignments: %d', $info['assignment_count'] ) );
-					WP_CLI::line( sprintf( 'Version:     %s', $info['version'] ?? 'N/A' ) );
+					WP_CLI::line( sprintf( 'Created:     %s', gmdate( 'Y-m-d H:i:s', $info[ 'timestamp' ] ) ) );
+					WP_CLI::line( sprintf( 'Folders:     %d', $info[ 'folder_count' ] ) );
+					WP_CLI::line( sprintf( 'Assignments: %d', $info[ 'assignment_count' ] ) );
+					WP_CLI::line( sprintf( 'Version:     %s', $info[ 'version' ] ?? 'N/A' ) );
 					WP_CLI::line( '' );
 				}
 				break;
@@ -418,7 +418,7 @@ class Commands {
 					WP_CLI::line( '' );
 					WP_CLI::line( WP_CLI::colorize( '%YRestore Backup%n' ) );
 					WP_CLI::line( str_repeat( '─', 50 ) );
-					WP_CLI::line( sprintf( 'This will restore %d folders and %d assignments.', $info['folder_count'], $info['assignment_count'] ) );
+					WP_CLI::line( sprintf( 'This will restore %d folders and %d assignments.', $info[ 'folder_count' ], $info[ 'assignment_count' ] ) );
 					WP_CLI::line( WP_CLI::colorize( '%RAll current folders will be deleted!%n' ) );
 					WP_CLI::line( '' );
 					WP_CLI::confirm( 'Proceed with restore?' );
@@ -427,19 +427,19 @@ class Commands {
 				$result = $backup_service->restore();
 
 				if ( $porcelain ) {
-					if ( $result['success'] ) {
-						WP_CLI::line( sprintf( 'restored:%d:%d', $result['folders_restored'], $result['assignments_restored'] ) );
+					if ( $result[ 'success' ] ) {
+						WP_CLI::line( sprintf( 'restored:%d:%d', $result[ 'folders_restored' ], $result[ 'assignments_restored' ] ) );
 					} else {
-						WP_CLI::line( 'error:' . sanitize_key( $result['error'] ?? 'unknown' ) );
+						WP_CLI::line( 'error:' . sanitize_key( $result[ 'error' ] ?? 'unknown' ) );
 					}
-				} elseif ( $result['success'] ) {
+				} elseif ( $result[ 'success' ] ) {
 					WP_CLI::success( sprintf(
 						'Restored %d folders and %d assignments.',
-						$result['folders_restored'],
-						$result['assignments_restored']
+						$result[ 'folders_restored' ],
+						$result[ 'assignments_restored' ]
 					) );
 				} else {
-					WP_CLI::error( $result['error'] ?? 'Restore failed.' );
+					WP_CLI::error( $result[ 'error' ] ?? 'Restore failed.' );
 				}
 				break;
 
@@ -535,13 +535,13 @@ class Commands {
 		self::check_dependencies();
 		self::apply_overrides( $assoc_args );
 
-		if ( empty( $args[0] ) ) {
+		if ( empty( $args[ 0 ] ) ) {
 			WP_CLI::error( 'Please specify an action: list, test, or info.' );
 			return;
 		}
 
-		$action    = $args[0];
-		$format    = $assoc_args['format'] ?? 'table';
+		$action    = $args[ 0 ];
+		$format    = $assoc_args[ 'format' ] ?? 'table';
 		$porcelain = Utils\get_flag_value( $assoc_args, 'porcelain', false );
 
 		switch ( $action ) {
@@ -603,11 +603,11 @@ class Commands {
 				$result = $provider->test();
 
 				if ( $porcelain ) {
-					WP_CLI::line( $result['success'] ? 'ok' : 'error:' . sanitize_key( $result['message'] ?? 'unknown' ) );
-				} elseif ( $result['success'] ) {
-					WP_CLI::success( $result['message'] ?? 'Provider test successful!' );
+					WP_CLI::line( $result[ 'success' ] ? 'ok' : 'error:' . sanitize_key( $result[ 'message' ] ?? 'unknown' ) );
+				} elseif ( $result[ 'success' ] ) {
+					WP_CLI::success( $result[ 'message' ] ?? 'Provider test successful!' );
 				} else {
-					WP_CLI::error( $result['message'] ?? 'Provider test failed.' );
+					WP_CLI::error( $result[ 'message' ] ?? 'Provider test failed.' );
 				}
 				break;
 
@@ -635,17 +635,17 @@ class Commands {
 				}
 
 				$info = array(
-					'provider'    => $provider_name,
-					'label'       => $provider->get_label(),
-					'configured'  => $provider->is_configured(),
+					'provider'   => $provider_name,
+					'label'      => $provider->get_label(),
+					'configured' => $provider->is_configured(),
 				);
 
 				// Add model info based on provider.
-				$model_key         = "{$provider_name}_model";
-				$info['model']     = Plugin::get_instance()->get_setting( $model_key, '' );
+				$model_key = "{$provider_name}_model";
+				$info[ 'model' ] = Plugin::get_instance()->get_setting( $model_key, '' );
 
 				if ( $porcelain ) {
-					WP_CLI::line( sprintf( '%s:%s:%s', $info['provider'], $info['model'], $info['configured'] ? 'yes' : 'no' ) );
+					WP_CLI::line( sprintf( '%s:%s:%s', $info[ 'provider' ], $info[ 'model' ], $info[ 'configured' ] ? 'yes' : 'no' ) );
 				} elseif ( 'json' === $format ) {
 					WP_CLI::line( wp_json_encode( $info, JSON_PRETTY_PRINT ) );
 				} elseif ( 'yaml' === $format ) {
@@ -654,9 +654,9 @@ class Commands {
 					WP_CLI::line( '' );
 					WP_CLI::line( WP_CLI::colorize( '%BProvider Info%n' ) );
 					WP_CLI::line( str_repeat( '─', 50 ) );
-					WP_CLI::line( sprintf( 'Provider:   %s (%s)', $info['provider'], $info['label'] ) );
-					WP_CLI::line( sprintf( 'Model:      %s', $info['model'] ?: 'Default' ) );
-					WP_CLI::line( sprintf( 'Configured: %s', $info['configured'] ? WP_CLI::colorize( '%GYes%n' ) : WP_CLI::colorize( '%RNo%n' ) ) );
+					WP_CLI::line( sprintf( 'Provider:   %s (%s)', $info[ 'provider' ], $info[ 'label' ] ) );
+					WP_CLI::line( sprintf( 'Model:      %s', $info[ 'model' ] ?: 'Default' ) );
+					WP_CLI::line( sprintf( 'Configured: %s', $info[ 'configured' ] ? WP_CLI::colorize( '%GYes%n' ) : WP_CLI::colorize( '%RNo%n' ) ) );
 					WP_CLI::line( '' );
 				}
 				break;
@@ -696,7 +696,7 @@ class Commands {
 	public function stats( array $args, array $assoc_args ): void {
 		self::check_dependencies();
 
-		$format    = $assoc_args['format'] ?? 'table';
+		$format    = $assoc_args[ 'format' ] ?? 'table';
 		$porcelain = Utils\get_flag_value( $assoc_args, 'porcelain', false );
 
 		$analysis_service = new AIAnalysisService();
@@ -709,7 +709,7 @@ class Commands {
 		$assigned   = $total - $unassigned;
 
 		// Get folder count.
-		$folders = get_terms( array(
+		$folders      = get_terms( array(
 			'taxonomy'   => self::TAXONOMY,
 			'hide_empty' => false,
 			'fields'     => 'count',
