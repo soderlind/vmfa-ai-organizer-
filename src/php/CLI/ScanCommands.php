@@ -677,8 +677,8 @@ class ScanCommands {
 		// Process one action per iteration to keep the loop responsive.
 		if ( ! empty( $pending ) ) {
 			try {
-				$runner->process_action( $pending[0], 'CLI' );
-			} catch ( \Exception $e ) {
+				$runner->process_action( $pending[ 0 ], 'CLI' );
+			} catch (\Exception $e) {
 				// Action may have been claimed by another process.
 				// Silently continue - the scan will still progress.
 			}
@@ -722,7 +722,7 @@ class ScanCommands {
 					$action->get_args(),
 					$action->get_group()
 				);
-			} catch ( \Exception $e ) {
+			} catch (\Exception $e) {
 				// Ignore errors - action may already be processed.
 			}
 		}
