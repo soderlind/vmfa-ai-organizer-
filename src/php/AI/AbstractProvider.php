@@ -825,10 +825,19 @@ PROMPT;
 	/**
 	 * Get a setting value with config resolution.
 	 *
+	 * Priority: CLI override > constant > environment variable > database > default.
+	 *
 	 * @param string $key Setting key.
 	 * @return mixed
 	 */
 	protected function get_setting( string $key ): mixed {
+		// Check for CLI overrides first (highest priority when running via WP-CLI).
+		if ( defined( 'WP_CLI' ) && WP_CLI && class_exists( \VmfaAiOrganizer\CLI\Commands::class) ) {
+			if ( \VmfaAiOrganizer\CLI\Commands::has_override( $key ) ) {
+				return \VmfaAiOrganizer\CLI\Commands::get_override( $key );
+			}
+		}
+
 		return Plugin::get_instance()->get_setting( $key );
 	}
 }

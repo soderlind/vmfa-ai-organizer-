@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.3.0
+Stable tag: 0.4.0
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -72,6 +72,26 @@ The AI analyzes each image in this priority order:
 5. Enter your API key and select your preferred model
 6. Start organizing your media!
 
+= WP-CLI Support =
+
+The plugin includes comprehensive WP-CLI commands for automation:
+
+`
+# Start a preview scan
+wp vmfa-ai scan start
+
+# Watch progress with live updates
+wp vmfa-ai scan status --watch
+
+# Apply the changes
+wp vmfa-ai scan apply
+
+# Show media statistics
+wp vmfa-ai stats
+`
+
+See the full [WP-CLI documentation](https://github.com/soderlind/vmfa-ai-organizer/blob/main/docs/WP-CLI.md) for all available commands.
+
 = Configuration via Constants =
 
 You can also configure the plugin using PHP constants in your `wp-config.php`:
@@ -132,6 +152,15 @@ Use the "Reorganize All" scan mode. This removes all existing folder assignments
 
 
 == Changelog ==
+
+= 0.4.0 =
+* Added comprehensive WP-CLI support for command-line automation
+* New commands: `wp vmfa-ai scan start`, `status`, `apply`, `cancel`, `reset`, `results`
+* New commands: `wp vmfa-ai analyze`, `backup`, `provider`, `stats`
+* Live progress monitoring with `--watch` flag (runs Action Scheduler queue automatically)
+* AI provider/model override via CLI parameters (`--provider`, `--model`, `--api-key`)
+* Machine-readable output with `--porcelain` for scripting
+* Full documentation in docs/WP-CLI.md
 
 = 0.3.0 =
 * Deterministic type routing: documents go to "Documents" and videos go to "Videos" before image AI analysis

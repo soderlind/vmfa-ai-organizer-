@@ -225,6 +225,16 @@ class MediaScannerService {
 				return;
 			}
 
+			// Update current item being processed for CLI progress display.
+			$attachment      = get_post( $attachment_id );
+			$attachment_name = $attachment ? basename( get_attached_file( $attachment_id ) ?: $attachment->post_title ) : '';
+			$this->update_progress(
+				array(
+					'current_item'  => (int) $attachment_id,
+					'current_title' => $attachment_name,
+				)
+			);
+
 			$result          = $this->analysis_service->analyze_media( (int) $attachment_id );
 			$batch_results[] = $result;
 
@@ -743,22 +753,26 @@ class MediaScannerService {
 	 *     results: array,
 	 *     started_at: int|null,
 	 *     completed_at: int|null,
+	 *     current_item: int|null,
+	 *     current_title: string|null,
 	 *     error: string|null
 	 * }
 	 */
 	public function get_progress(): array {
 		$defaults = array(
-			'status'       => 'idle',
-			'mode'         => '',
-			'dry_run'      => false,
-			'total'        => 0,
-			'processed'    => 0,
-			'results'      => array(),
-			'started_at'   => null,
-			'completed_at' => null,
-			'applied'      => 0,
-			'failed'       => 0,
-			'error'        => null,
+			'status'        => 'idle',
+			'mode'          => '',
+			'dry_run'       => false,
+			'total'         => 0,
+			'processed'     => 0,
+			'results'       => array(),
+			'started_at'    => null,
+			'completed_at'  => null,
+			'current_item'  => null,
+			'current_title' => null,
+			'applied'       => 0,
+			'failed'        => 0,
+			'error'         => null,
 		);
 
 		$progress = get_option( self::PROGRESS_OPTION, array() );

@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-01-04
+
+### Added
+
+- **WP-CLI Support**: Comprehensive command-line interface for automation and scripting
+  - `wp vmfa-ai scan start` - Start a preview scan with background processing
+  - `wp vmfa-ai scan status` - Show scan progress with optional `--watch` for live updates
+  - `wp vmfa-ai scan apply` - Apply previewed folder assignments
+  - `wp vmfa-ai scan cancel` - Cancel a running scan
+  - `wp vmfa-ai scan reset` - Reset stuck scan state
+  - `wp vmfa-ai scan results` - Display cached preview results
+  - `wp vmfa-ai analyze <id>` - Analyze a single attachment
+  - `wp vmfa-ai backup <action>` - Manage backups (export, restore, info, delete)
+  - `wp vmfa-ai provider <action>` - Manage AI providers (list, test, info)
+  - `wp vmfa-ai stats` - Show media library statistics
+
+- **CLI Provider Override**: Override AI provider/model via command-line parameters
+  - `--provider`, `--model`, `--api-key`, `--endpoint`, `--timeout`
+  - CLI overrides take priority over constants, env vars, and database settings
+
+- **Live Progress Monitoring**: `--watch` flag runs Action Scheduler queue automatically
+  - Real-time progress bar with ETA
+  - Color-coded results table
+  - Works in WP-CLI context without external cron
+
+- **Machine-Readable Output**: `--porcelain` flag for scripting and automation
+
+- **WP-CLI Documentation**: Full command reference in `docs/WP-CLI.md`
+
 ## [0.3.0] - 2026-01-03
 
 ### Fixed

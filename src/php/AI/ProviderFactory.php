@@ -36,7 +36,16 @@ class ProviderFactory {
 	 * @return ProviderInterface|null Null if no provider configured.
 	 */
 	public static function get_current_provider(): ?ProviderInterface {
-		$provider_name = Plugin::get_instance()->get_setting( 'ai_provider', '' );
+		// Check for CLI override first.
+		$provider_name = null;
+		if ( defined( 'WP_CLI' ) && WP_CLI && class_exists( \VmfaAiOrganizer\CLI\Commands::class) ) {
+			$provider_name = \VmfaAiOrganizer\CLI\Commands::get_override( 'ai_provider' );
+		}
+
+		if ( empty( $provider_name ) ) {
+			$provider_name = Plugin::get_instance()->get_setting( 'ai_provider', '' );
+		}
+
 		if ( empty( $provider_name ) || ! isset( self::$providers[ $provider_name ] ) ) {
 			return null;
 		}
@@ -66,7 +75,7 @@ class ProviderFactory {
 		$providers = array();
 
 		foreach ( self::$providers as $name => $class ) {
-			$instance            = new $class();
+			$instance           = new $class();
 			$providers[ $name ] = $instance->get_label();
 		}
 
@@ -91,7 +100,7 @@ class ProviderFactory {
 	 * @return void
 	 */
 	public static function register_provider( string $name, string $class ): void {
-		if ( is_subclass_of( $class, ProviderInterface::class ) ) {
+		if ( is_subclass_of( $class, ProviderInterface::class) ) {
 			self::$providers[ $name ] = $class;
 		}
 	}
