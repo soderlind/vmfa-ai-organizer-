@@ -29,6 +29,7 @@ AI-powered media organization add-on for the [Virtual Media Folders](https://wor
 ## Documentation
 
 - **[AI Provider Guide](docs/AI-PROVIDERS.md)** - Detailed guide on choosing and configuring AI providers.
+- **[WP-CLI Commands](docs/WP-CLI.md)** - Command-line interface for automation and scripting.
 
 ## Requirements
 

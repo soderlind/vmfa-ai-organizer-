@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace VmfaAiOrganizer;
 
 use VmfaAiOrganizer\Admin\SettingsPage;
+use VmfaAiOrganizer\CLI\Commands;
 use VmfaAiOrganizer\REST\AnalysisController;
 use VmfaAiOrganizer\REST\ExoController;
 use VmfaAiOrganizer\REST\OllamaController;
@@ -87,6 +88,7 @@ final class Plugin {
 	public function init(): void {
 		$this->init_services();
 		$this->init_hooks();
+		$this->init_cli();
 
 		// Load textdomain on init hook when locale is set.
 		add_action( 'init', array( $this, 'load_textdomain' ) );
@@ -139,6 +141,18 @@ final class Plugin {
 
 		// Enqueue admin assets.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
+	}
+
+	/**
+	 * Initialize WP-CLI commands.
+	 *
+	 * @return void
+	 */
+	private function init_cli(): void {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			\WP_CLI::add_command( 'vmfa-ai', Commands::class );
+			\WP_CLI::add_command( 'vmfa-ai scan', CLI\ScanCommands::class );
+		}
 	}
 
 	/**
