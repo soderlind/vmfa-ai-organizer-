@@ -58,7 +58,17 @@ You MUST avoid creating similar or synonymous folder names. Follow these rules s
 - **Use broad, canonical categories** - prefer common terms over niche variations
 - **NO synonyms** - if "Animals" exists, do NOT create "Wildlife", "Fauna", "Creatures", etc.
 - **NO near-duplicates** - if "Landscapes" exists, do NOT create "Scenery", "Views", "Vistas", etc.
+- **NO subset folders** - if "Insects" exists under "Animals", do NOT create "Bees", "Butterflies", "Ants" as separate folders - use the existing "Animals/Insects" instead
 - **Standardize naming** - use the most common, simple term for each category
+
+### Subset/Superset Rule (CRITICAL):
+When a more specific term is a TYPE OF something that already has a folder, USE the broader existing folder:
+- Bees → use "Insects" (bees are insects)
+- Sparrows → use "Birds" (sparrows are birds)
+- Roses → use "Flowers" (roses are flowers)
+- Salmon → use "Fish" (salmon are fish)
+- Cake → use "Desserts" (cake is a dessert)
+Do NOT create new specific folders when a suitable broader category already exists.
 
 ### Standard Category Examples (use these exact names, not synonyms):
 - Animals (not: Wildlife, Fauna, Creatures, Pets)
@@ -93,6 +103,7 @@ You MUST avoid creating similar or synonymous folder names. Follow these rules s
 
 ### Avoid These Mistakes:
 - Don't create synonymous folders (if "Animals" exists, don't create "Wildlife")
+- Don't create subset folders (if "Insects" exists, don't create "Bees" or "Butterflies" - use "Insects")
 - Don't invert existing hierarchies (if "Events/Outdoor" exists, don't create "Outdoor/Events")
 - Don't be overly specific (prefer "Food/Desserts" over "Food/Chocolate_Cake_With_Sprinkles")
 

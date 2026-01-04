@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.4.2
+Stable tag: 0.4.3
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -152,6 +152,10 @@ Use the "Reorganize All" scan mode. This removes all existing folder assignments
 
 
 == Changelog ==
+
+= 0.4.3 =
+* Improved AI system prompt to prevent creating overly specific subfolders
+* AI now uses existing broader categories (e.g., "Insects" instead of creating "Bees")
 
 = 0.4.2 =
 * Fixed scan status showing stale completed_at timestamp from previous scans
