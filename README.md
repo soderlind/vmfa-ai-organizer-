@@ -20,9 +20,9 @@ AI-powered media organization add-on for the [Virtual Media Folders](https://wor
 
 
 
-<a href="https://www.youtube.com/watch?v=d6xIvvE2bpI"><img src="assets/vmfa-order-in-chaos.png" alt="Virtual Media Folders AI Organizer - Order in Chaos" style="max-width:100%;height:auto;"/></a>
+<a href="https://www.youtube.com/watch?v=FMmvNUGd8Pg"><img src="assets/vmfa-order-in-chaos.png" alt="Virtual Media Folders AI Organizer - Order in Chaos" style="max-width:100%;height:auto;"/></a>
 
-<p align="center"><em>Watch: <a href="https://www.youtube.com/watch?v=d6xIvvE2bpI">See how Virtual Media Folders AI Organizer brings order to your media library chaos.</a></em></p>
+<p align="center"><em>Watch: <a href="https://www.youtube.com/watch?v=FMmvNUGd8Pg">See how Virtual Media Folders AI Organizer brings order to your media library chaos.</a></em></p>
 
 
 
