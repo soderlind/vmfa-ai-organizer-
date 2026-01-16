@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-01-16
+
+### Added
+- **Parent Plugin Tab Integration**: Settings now appear as a tab within Virtual Media Folders "Folder Settings" page
+  - Registers via `vmfo_settings_tabs` filter when parent plugin supports tabs
+  - Sub-tabs for Media Scanner, Settings, and AI Provider
+  - URL pattern: `?page=vmfo-settings&tab=ai-organizer&subtab=scanner`
+
+### Changed
+- Settings menu no longer appears as separate item under Media when parent supports tabs
+- Backwards compatible: falls back to standalone menu if parent plugin is outdated
+
 ## [0.4.3] - 2026-01-05
 
 ### Improved

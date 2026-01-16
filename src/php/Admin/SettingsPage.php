@@ -28,6 +28,11 @@ class SettingsPage {
 	private const SETTINGS_GROUP = 'vmfa_ai_organizer_settings_group';
 
 	/**
+	 * Tab slug for registration with parent plugin.
+	 */
+	private const TAB_SLUG = 'ai-organizer';
+
+	/**
 	 * Configuration map for settings with environment/constant overrides.
 	 *
 	 * @var array<string, array{env: string, const: string, default: mixed}>
@@ -141,16 +146,152 @@ class SettingsPage {
 	 * @return void
 	 */
 	public function init(): void {
-		add_action( 'admin_menu', array( $this, 'add_menu_page' ) );
+		// Check if parent plugin supports tabs.
+		if ( $this->supports_parent_tabs() ) {
+			// Register as a tab in the parent plugin.
+			add_filter( 'vmfo_settings_tabs', array( $this, 'register_tab' ) );
+			add_action( 'vmfo_settings_enqueue_scripts', array( $this, 'enqueue_tab_scripts' ), 10, 2 );
+		} else {
+			// Fall back to standalone menu.
+			add_action( 'admin_menu', array( $this, 'add_menu_page' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+		}
+
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
 		// Add admin notices for validation.
 		add_action( 'admin_notices', array( $this, 'show_admin_notices' ) );
 	}
 
 	/**
-	 * Add settings page to admin menu.
+	 * Check if the parent plugin supports add-on tabs.
+	 *
+	 * @return bool True if parent supports tabs, false otherwise.
+	 */
+	private function supports_parent_tabs(): bool {
+		return defined( 'VirtualMediaFolders\Settings::SUPPORTS_ADDON_TABS' )
+			&& \VirtualMediaFolders\Settings::SUPPORTS_ADDON_TABS;
+	}
+
+	/**
+	 * Register tab with parent plugin.
+	 *
+	 * @param array $tabs Existing tabs array.
+	 * @return array Modified tabs array.
+	 */
+	public function register_tab( array $tabs ): array {
+		$tabs[ self::TAB_SLUG ] = array(
+			'title'    => __( 'AI Organizer', 'vmfa-ai-organizer' ),
+			'callback' => array( $this, 'render_tab_content' ),
+		);
+		return $tabs;
+	}
+
+	/**
+	 * Render tab content within parent plugin's settings page.
+	 *
+	 * @param string $active_tab    The currently active tab slug.
+	 * @param string $active_subtab The currently active subtab slug.
+	 * @return void
+	 */
+	public function render_tab_content( string $active_tab, string $active_subtab ): void {
+		// Default to scanner subtab.
+		if ( empty( $active_subtab ) ) {
+			$active_subtab = 'scanner';
+		}
+
+		// Show save confirmation.
+		if ( isset( $_GET['settings-updated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			add_settings_error(
+				'vmfa_messages',
+				'vmfa_message',
+				__( 'Settings saved.', 'vmfa-ai-organizer' ),
+				'updated'
+			);
+		}
+
+		settings_errors( 'vmfa_messages' );
+
+		$base_url = admin_url( 'upload.php?page=' . \VirtualMediaFolders\Settings::PAGE_SLUG . '&tab=' . self::TAB_SLUG );
+
+		?>
+		<nav class="nav-tab-wrapper vmfa-nav-tabs" style="margin-top: 1em;">
+			<a href="<?php echo esc_url( $base_url . '&subtab=scanner' ); ?>" 
+			   class="nav-tab <?php echo 'scanner' === $active_subtab ? 'nav-tab-active' : ''; ?>">
+				<?php esc_html_e( 'Media Scanner', 'vmfa-ai-organizer' ); ?>
+			</a>
+			<a href="<?php echo esc_url( $base_url . '&subtab=settings' ); ?>" 
+			   class="nav-tab <?php echo 'settings' === $active_subtab ? 'nav-tab-active' : ''; ?>">
+				<?php esc_html_e( 'Settings', 'vmfa-ai-organizer' ); ?>
+			</a>
+			<a href="<?php echo esc_url( $base_url . '&subtab=provider' ); ?>" 
+			   class="nav-tab <?php echo 'provider' === $active_subtab ? 'nav-tab-active' : ''; ?>">
+				<?php esc_html_e( 'AI Provider', 'vmfa-ai-organizer' ); ?>
+			</a>
+		</nav>
+
+		<div class="vmfa-tab-content">
+			<?php $this->render_subtab_content( $active_subtab ); ?>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render subtab content.
+	 *
+	 * @param string $subtab The active subtab slug.
+	 * @return void
+	 */
+	private function render_subtab_content( string $subtab ): void {
+		if ( 'scanner' === $subtab ) :
+			?>
+			<div id="vmfa-ai-organizer-scanner">
+				<!-- React component will mount here -->
+				<noscript>
+					<?php esc_html_e( 'JavaScript is required for the media scanner.', 'vmfa-ai-organizer' ); ?>
+				</noscript>
+			</div>
+			<?php
+		elseif ( 'settings' === $subtab ) :
+			?>
+			<form method="post" action="options.php" id="vmfa-ai-organizer-settings">
+				<?php
+				settings_fields( self::SETTINGS_GROUP );
+				do_settings_sections( 'vmfa-ai-organizer-settings' );
+				submit_button( __( 'Save Settings', 'vmfa-ai-organizer' ) );
+				?>
+			</form>
+			<?php
+		else :
+			?>
+			<form method="post" action="options.php" id="vmfa-ai-organizer-provider">
+				<?php
+				settings_fields( self::SETTINGS_GROUP );
+				do_settings_sections( 'vmfa-ai-organizer-provider' );
+				submit_button( __( 'Save AI Settings', 'vmfa-ai-organizer' ) );
+				?>
+			</form>
+			<?php
+		endif;
+	}
+
+	/**
+	 * Enqueue scripts when AI Organizer tab is active.
+	 *
+	 * @param string $active_tab    The currently active tab slug.
+	 * @param string $active_subtab The currently active subtab slug.
+	 * @return void
+	 */
+	public function enqueue_tab_scripts( string $active_tab, string $active_subtab ): void {
+		if ( self::TAB_SLUG !== $active_tab ) {
+			return;
+		}
+
+		$this->do_enqueue_scripts();
+	}
+
+	/**
+	 * Add settings page to admin menu (fallback when parent doesn't support tabs).
 	 *
 	 * @return void
 	 */
@@ -166,7 +307,7 @@ class SettingsPage {
 	}
 
 	/**
-	 * Enqueue admin scripts and styles.
+	 * Enqueue admin scripts and styles (fallback for standalone page).
 	 *
 	 * @param string $hook_suffix The current admin page.
 	 * @return void
@@ -176,6 +317,15 @@ class SettingsPage {
 			return;
 		}
 
+		$this->do_enqueue_scripts();
+	}
+
+	/**
+	 * Actually enqueue the scripts and styles.
+	 *
+	 * @return void
+	 */
+	private function do_enqueue_scripts(): void {
 		$asset_file = VMFA_AI_ORGANIZER_PATH . 'build/index.asset.php';
 		if ( ! file_exists( $asset_file ) ) {
 			return;
@@ -218,7 +368,7 @@ class SettingsPage {
 	}
 
 	/**
-	 * Render the settings page.
+	 * Render the settings page (fallback for standalone page).
 	 *
 	 * @return void
 	 */
@@ -260,30 +410,7 @@ class SettingsPage {
 			</nav>
 
 			<div class="vmfa-tab-content">
-				<?php if ( 'scanner' === $active_tab ) : ?>
-					<div id="vmfa-ai-organizer-scanner">
-						<!-- React component will mount here -->
-						<noscript>
-							<?php esc_html_e( 'JavaScript is required for the media scanner.', 'vmfa-ai-organizer' ); ?>
-						</noscript>
-					</div>
-				<?php elseif ( 'settings' === $active_tab ) : ?>
-					<form method="post" action="options.php" id="vmfa-ai-organizer-settings">
-						<?php
-						settings_fields( self::SETTINGS_GROUP );
-						do_settings_sections( 'vmfa-ai-organizer-settings' );
-						submit_button( __( 'Save Settings', 'vmfa-ai-organizer' ) );
-						?>
-					</form>
-				<?php else : ?>
-					<form method="post" action="options.php" id="vmfa-ai-organizer-provider">
-						<?php
-						settings_fields( self::SETTINGS_GROUP );
-						do_settings_sections( 'vmfa-ai-organizer-provider' );
-						submit_button( __( 'Save AI Settings', 'vmfa-ai-organizer' ) );
-						?>
-					</form>
-				<?php endif; ?>
+				<?php $this->render_subtab_content( $active_tab ); ?>
 			</div>
 		</div>
 		<?php
