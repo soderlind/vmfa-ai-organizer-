@@ -4,7 +4,7 @@ Donate link: https://developer.yoast.com/blog/real-world-implementation-of-wordp
 Tags: media, folders, ai, organization, virtual folders
 Requires at least: 6.8
 Tested up to: 6.8
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 Requires PHP: 8.3
 Requires Plugins: virtual-media-folders
 License: GPLv2 or later
@@ -152,6 +152,13 @@ Use the "Reorganize All" scan mode. This removes all existing folder assignments
 
 
 == Changelog ==
+
+= 0.5.1 =
+* Housekeeping
+
+= 0.5.0 =
+* Settings now appear as a tab within Virtual Media Folders "Folder Settings" page
+* Backwards compatible: falls back to standalone menu if parent plugin is outdated
 
 = 0.4.3 =
 * Improved AI system prompt to prevent creating overly specific subfolders
